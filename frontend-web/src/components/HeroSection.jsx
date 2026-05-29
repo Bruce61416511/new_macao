@@ -1,12 +1,7 @@
 ﻿import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext.jsx";
 import PublicBenefitsModal from "./PublicBenefitsModal.jsx";
-const quickActions = [
-  { label: '申请入会', tone: 'primary', icon: DocumentIcon },
-  { label: '进度查询', icon: SearchCircleIcon, href: '/track' },
-  { label: '会员权益', icon: DiamondIcon },
-  { label: '活动报名', icon: CalendarIcon, href: '/events' },
-];
-
+import ResetPasswordModal from "./ResetPasswordModal.jsx";
 function ChevronRightIcon() {
   return (
     <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -50,6 +45,24 @@ function SearchCircleIcon() {
       <circle cx="21" cy="21" r="12" stroke="currentColor" strokeWidth="2.8" />
       <path d="m31 31 6 6" stroke="currentColor" strokeLinecap="round" strokeWidth="2.8" />
       <path d="M21 15v12M15 21h12" stroke="currentColor" strokeLinecap="round" strokeWidth="2.5" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg aria-hidden="true" className="h-[38px] w-[38px]" fill="none" viewBox="0 0 48 48">
+      <circle cx="24" cy="16" r="8" stroke="currentColor" strokeWidth="2.8" />
+      <path d="M8 40c2.4-7.2 7.2-12 16-12s13.6 4.8 16 12" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.8" />
+    </svg>
+  );
+}
+
+function KeyIcon() {
+  return (
+    <svg aria-hidden="true" className="h-[38px] w-[38px]" fill="none" viewBox="0 0 48 48">
+      <circle cx="18" cy="22" r="9" stroke="currentColor" strokeWidth="2.8" />
+      <path d="m25 29 9 9M36 27l-3 3M27.5 35.5l6 6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.8" />
     </svg>
   );
 }
@@ -140,9 +153,21 @@ function TrustCard() {
 
 export default function HeroSection() {
   const [showBenefits, setShowBenefits] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const { user } = useAuth();
+
+  const quickActions = [
+    { label: '会员登录', icon: UserIcon, href: user ? '/member' : '/login' },
+    { label: '申请入会', tone: 'primary', icon: DocumentIcon },
+    { label: '进度查询', icon: SearchCircleIcon, href: '/track' },
+    { label: '会员权益', icon: DiamondIcon },
+    { label: '活动报名', icon: CalendarIcon, href: '/events' },
+    { label: '重置密码', icon: KeyIcon },
+  ];
+
   return (
-    <div className="mx-auto mt-[43px] max-w-[1138px]">
-      <section className="relative h-auto max-w-[938px] rounded-[18px] border border-[#8fc6bf]/75 bg-[linear-gradient(148deg,rgba(255,255,255,0.86)_0%,rgba(241,250,248,0.78)_45%,rgba(221,242,239,0.72)_100%)] px-[22px] py-[22px] text-[#004f46] shadow-[0_10px_28px_rgba(53,96,101,0.08)] backdrop-blur-md xl:h-[368px] xl:px-[24px] xl:py-0">
+    <div className="mx-auto mt-[43px] max-w-[1196px]">
+      <section className="relative h-auto w-full rounded-[18px] border border-[#8fc6bf]/75 bg-[linear-gradient(148deg,rgba(255,255,255,0.86)_0%,rgba(241,250,248,0.78)_45%,rgba(221,242,239,0.72)_100%)] px-[22px] py-[22px] text-[#004f46] shadow-[0_10px_28px_rgba(53,96,101,0.08)] backdrop-blur-md xl:h-[368px] xl:px-[24px] xl:py-0">
         <div className="absolute inset-0 rounded-[18px] bg-[radial-gradient(circle_at_14%_44%,rgba(255,255,255,0.95)_0,rgba(255,255,255,0.7)_24%,rgba(255,255,255,0)_47%)]" />
         <div className="relative flex h-full flex-col items-center xl:flex-row">
           <div className="flex h-[300px] w-full shrink-0 items-center justify-center xl:h-full xl:w-[250px]">
@@ -155,10 +180,10 @@ export default function HeroSection() {
           </div>
 
           <div className="w-full pb-2 text-center xl:ml-[26px] xl:pb-0 xl:text-left">
-            <p className="font-serifCn text-[44px] font-semibold leading-[1.08] tracking-normal xl:text-[42px]">你好，</p>
-            <p className="mt-4 font-serifCn text-[34px] font-semibold leading-[1.08] tracking-normal xl:text-[32px]">我可以帮你：</p>
-            <p className="mt-7 text-[22px] font-semibold leading-none tracking-normal text-[#005d50] xl:text-[22px]">
-              咨询入会、填写申请、追踪进度、报名活动
+            <p className="font-serifCn text-[34px] leading-[1.08] tracking-normal xl:text-[32px]"><span className="font-bold">小扬同学</span> - 澳门直播协会</p>
+            <p className="mt-3 font-serifCn text-[34px] leading-[1.08] tracking-normal xl:text-[32px]">时刻在线，为您效劳</p>
+            <p className="mt-7 text-[20px] font-semibold leading-none tracking-normal text-[#005d50] xl:text-[20px]">
+              入会指导 ｜ 申请协助 ｜ 进度查询 ｜ 活动报名
             </p>
 
             <div className="mt-[26px] grid grid-cols-2 justify-items-center gap-4 sm:flex xl:gap-[14px]">
@@ -166,15 +191,18 @@ export default function HeroSection() {
                 if (action.label === "会员权益") {
                   return <ActionButton action={{...action, onClick: () => setShowBenefits(true)}} key={action.label} />;
                 }
+                if (action.label === "重置密码") {
+                  return <ActionButton action={{...action, onClick: () => setShowResetPassword(true)}} key={action.label} />;
+                }
                 return <ActionButton action={action} key={action.label} />;
               })}
             </div>
           </div>
         </div>
 
-        <TrustCard />
       </section>
       {showBenefits && <PublicBenefitsModal onClose={() => setShowBenefits(false)} />}
+      {showResetPassword && <ResetPasswordModal onClose={() => setShowResetPassword(false)} />}
     </div>
   );
 }

@@ -39,7 +39,7 @@ export default function EventCenterPage({ role }) {
     setLoading(true);
     try {
       const [evRes, myRes] = await Promise.all([
-        fetch(API),
+        fetch(API + "?page_size=50"),
         token ? fetch(API + "/my", { headers: authHeaders }) : Promise.resolve(null)
       ]);
       if (evRes.ok) {
@@ -52,7 +52,7 @@ export default function EventCenterPage({ role }) {
           if (!aOpen && bOpen) return 1;
           return new Date(a.event_date) - new Date(b.event_date);
         });
-        setEvents(isLoggedIn ? items : items.filter(e => e.registration_status === "开放"));
+        setEvents(isRoot ? items : items.filter(e => e.registration_status === "开放"));
       }
       if (myRes && myRes.ok) {
         const myData = await myRes.json();
@@ -60,7 +60,7 @@ export default function EventCenterPage({ role }) {
         setMyEventIds(ids);
       }
     } catch {} finally { setLoading(false); }
-  }, [token]);
+  }, [token, isRoot]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 

@@ -1,8 +1,4 @@
-﻿const sidebarItems = [
-  { label: '对话', active: true, icon: ChatIcon },  { label: '我的活动', icon: CalendarSmallIcon },
-  { label: '消息中心', icon: BellSmallIcon },
-];
-
+﻿
 function ChatIcon({ className = 'h-6 w-6' }) {
   return (
     <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
@@ -101,26 +97,28 @@ export default function AssistantPanel() {
   return (
     <section className="mx-auto mt-[12px] flex max-w-[1196px] overflow-hidden rounded-[10px] border border-white/70 bg-white/72 text-[#064f47] shadow-[0_18px_38px_rgba(38,74,78,0.18)] backdrop-blur-xl">
       <aside className="hidden w-[244px] shrink-0 border-r border-white/55 bg-white/58 px-[20px] py-[25px] backdrop-blur-xl md:block">
-        <h2 className="text-[22px] font-bold leading-none tracking-normal text-[#004f46]">小扬同学</h2>
-        <p className="mt-2 text-[15px] font-medium leading-none text-[#6c777b]">AI 智能助理</p>
+        {/* 头像 + 在线状态 */}
+        <div className="flex flex-col items-center">
+          <div className="relative">
+            <AvatarBadge large />
+            <span className="absolute bottom-1 right-1 h-[14px] w-[14px] rounded-full border-2 border-white bg-[#2ecc71] shadow-[0_2px_6px_rgba(46,204,113,0.4)]" />
+          </div>
+          <h2 className="mt-4 text-[22px] font-bold leading-none tracking-normal text-[#004f46]">小扬同学</h2>
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <span className="inline-block h-[7px] w-[7px] rounded-full bg-[#2ecc71]" />
+            <span className="text-[13px] font-medium text-[#4a9e8e]">在线</span>
+          </div>
+        </div>
 
-        <nav className="mt-[22px] space-y-3" aria-label="助手功能">
-          {sidebarItems.map((item) => (
-            <SidebarItem item={item} key={item.label} />
-          ))}
-        </nav>
+        {/* 简介 */}
+        <p className="mt-4 text-center text-[15px] leading-relaxed whitespace-nowrap text-[#6c777b]">
+          你的专属 AI 助理
+        </p>
 
-        <button
-          className="mt-[72px] flex h-[48px] w-full items-center justify-between rounded-[9px] border border-[#dce5e3] bg-white px-4 text-[15px] font-semibold text-[#5d696d] shadow-sm transition hover:border-[#a9ccc6]"
-          type="button"
-          onClick={() => { window.location.href = "/member"; }}
-        >
-          <span className="flex items-center gap-3">
-            <UserIcon className="h-[22px] w-[22px] text-[#006b5f]" />
-            个人中心
-          </span>
-          <span className="text-[22px] font-light text-[#607276]">›</span>
-        </button>
+        {/* 分割线 */}
+        <div className="mx-auto mt-5 h-px w-[60px] rounded-full bg-gradient-to-r from-transparent via-[#b6d8d2] to-transparent" />
+
+
       </aside>
 
       <div className="min-h-[438px] flex-1 bg-white/28 px-[44px] py-[29px] backdrop-blur-xl">
