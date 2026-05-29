@@ -1,4 +1,4 @@
-import uuid
+﻿import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import PlainTextResponse
@@ -16,6 +16,10 @@ class MemberUpdate(BaseModel):
     phone: str | None = None
     email: str | None = None
     real_name: str | None = None
+    address: str | None = None
+    career_history: str | None = None
+    qualifications: str | None = None
+    qualification_files: str | None = None
 
 
 class StaffMemberUpdate(BaseModel):

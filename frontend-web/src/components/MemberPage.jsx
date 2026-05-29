@@ -1,22 +1,21 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { getMyProfile } from "../services/api.js";
 import UpdateProfileModal from "./UpdateProfileModal.jsx";
+import ProfileViewModal from "./ProfileViewModal.jsx";
 import { useAuth } from "../contexts/AuthContext";
 ﻿const sidebarItems = [
   { label: '会员中心', active: true, icon: HomeIcon },
+  { label: '资料中心', icon: FolderIcon },
   { label: '我的权益', icon: ShieldIcon },
   { label: '活动报名', icon: CalendarIcon },
   { label: '培训课程', icon: BookIcon },
-  { label: '协会活动', icon: CalendarCheckIcon },
-  { label: '资料中心', icon: FolderIcon },
-  { label: '会员名录', icon: UsersIcon },
+  { label: '协会活动', icon: CalendarCheckIcon },  { label: '会员名录', icon: UsersIcon },
   { label: '消息通知', badge: 3, icon: BellIcon },
   { label: '我的收藏', icon: BookmarkIcon },
   { label: '设置中心', icon: GearIcon },
 ];
 
-const actions = [  { label: '续费', icon: CardIcon },
-  ({ label: '更新资料', icon: IdIcon }),
+const actions = [  { label: '续费', icon: CardIcon },  ({ label: '更新资料', icon: IdIcon }),
 ];
 
 const updates = [
@@ -201,7 +200,7 @@ function OutlineIcon({ children, className = 'h-6 w-6' }) {
   );
 }
 
-function MemberSidebar() {
+function MemberSidebar({ onViewProfile }) {
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] flex-col overflow-hidden bg-[linear-gradient(180deg,#00463d_0%,#005548_45%,#003f37_100%)] px-3 py-8 text-white shadow-[12px_0_30px_rgba(0,45,40,0.2)]">
       <div className="px-7">
@@ -224,6 +223,7 @@ function MemberSidebar() {
               ].join(' ')}
               key={item.label}
               type="button"
+              onClick={item.label === "资料中心" ? onViewProfile : undefined}
             >
               <Icon />
               <span className="flex-1 text-left">{item.label}</span>
@@ -379,7 +379,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
           </p>
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><CalendarIcon /></span>
-            会费到期：{profile?.is_active ? yearEnd : "-"}
+            会费到期：{profile?.annual_fee === 0 ? "永久生效" : profile?.is_active ? yearEnd : "-"}
           </p>
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><GiftIcon /></span>
@@ -556,6 +556,7 @@ export default function MemberPage() {
   const [profile, setProfile] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -574,7 +575,7 @@ export default function MemberPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fbf9] bg-[radial-gradient(circle_at_80%_0%,rgba(224,241,238,0.55),transparent_36%)] pl-[240px] text-[#004f46]">
-      <MemberSidebar />
+      <MemberSidebar onViewProfile={() => setShowProfileModal(true)} />
       <MemberTopBar
         profile={profile}
         dropdownOpen={dropdownOpen}
@@ -599,7 +600,10 @@ export default function MemberPage() {
           </div>
         </div>
       </div>
-          {showUpdateModal && (
+          {showProfileModal && (
+        <ProfileViewModal profile={profile} onClose={() => setShowProfileModal(false)} />
+      )}
+      {showUpdateModal && (
         <UpdateProfileModal
           profile={profile}
           onClose={() => setShowUpdateModal(false)}

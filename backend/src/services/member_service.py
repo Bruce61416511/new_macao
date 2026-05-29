@@ -169,4 +169,8 @@ class MemberService:
             "annual_fee": m.annual_fee,
             "is_active": m.is_active,
             "created_at": m.created_at.isoformat() if m.created_at else None,
-        }
+              "address": m.address,
+              "career_history": m.career_history,
+              "qualifications": m.qualifications,
+              "qualification_files": m.qualification_files,
+          }
