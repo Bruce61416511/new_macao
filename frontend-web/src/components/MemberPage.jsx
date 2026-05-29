@@ -1,4 +1,5 @@
-const sidebarItems = [
+import { useAuth } from "../contexts/AuthContext";
+﻿const sidebarItems = [
   { label: '会员中心', active: true, icon: HomeIcon },
   { label: '我的权益', icon: ShieldIcon },
   { label: '活动报名', icon: CalendarIcon },
@@ -245,6 +246,7 @@ function MemberSidebar() {
 }
 
 function MemberTopBar() {
+  const { user } = useAuth();
   return (
     <header className="sticky top-0 z-30 flex h-[96px] items-center justify-between bg-white/72 px-11 backdrop-blur-xl">
       <h1 className="font-serifCn text-[34px] font-semibold leading-none text-[#00473f]">会员中心 － 小扬同学与你同行</h1>
@@ -265,7 +267,7 @@ function MemberTopBar() {
         </div>
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-[url('/lotus-assistant.png')] bg-cover bg-center" />
-          <span className="text-[15px] font-bold">小扬同学⌄</span>
+          <span className="text-[15px] font-bold">{user?.username ?? "小扬同学"}⌄</span>
         </div>
       </div>
     </header>
@@ -273,6 +275,7 @@ function MemberTopBar() {
 }
 
 function MemberHero() {
+  const { user } = useAuth();
   return (
     <section className="relative overflow-hidden rounded-[14px] bg-[#004f46] text-white shadow-[0_18px_36px_rgba(0,45,40,0.2)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_34%_38%,rgba(255,255,255,0.08),transparent_30%),linear-gradient(90deg,#004f46_0%,#005347_54%,rgba(0,83,71,0.2)_70%,rgba(0,83,71,0)_100%)]" />
@@ -293,7 +296,7 @@ function MemberHero() {
           </div>
           <div>
             <div className="flex items-center gap-4">
-              <h2 className="font-serifCn text-[35px] font-semibold leading-none">小扬同学</h2>
+              <h2 className="font-serifCn text-[35px] font-semibold leading-none">{user?.username ?? "小扬同学"}</h2>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f1dba4] px-4 py-2 text-[14px] font-bold text-[#795915]">
                 <CrownIcon />
                 正式会员
