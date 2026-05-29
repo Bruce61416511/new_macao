@@ -5,7 +5,6 @@ const quickActions = [
   { label: '进度查询', icon: SearchCircleIcon, href: '/track' },
   { label: '会员权益', icon: DiamondIcon },
   { label: '活动报名', icon: CalendarIcon, href: '/events' },
-  { label: '续费提醒', icon: BellIcon },
 ];
 
 function ChevronRightIcon() {
