@@ -1,6 +1,8 @@
 ﻿import { useState } from "react";
 import AIAssistantCard from "./apply/AIAssistantCard.jsx";
 import BasicInfoForm from "./apply/BasicInfoForm.jsx";
+import CareerForm from "./apply/CareerForm.jsx";
+import QualificationForm from "./apply/QualificationForm.jsx";
 
 /* ── Icons ─────────────────────────────────── */
 
@@ -103,6 +105,7 @@ const INITIAL_FORM = {
   requested_tier: "",
   career_history: "",
   qualifications: "",
+  qualification_files: "",
 };
 
 /* ── Step Row ─────────────────────────────────── */
@@ -185,6 +188,12 @@ function StepForm({ stepIndex, formData, onFormChange, errors }) {
   if (stepIndex === 0) {
     return <BasicInfoForm data={formData} onChange={onFormChange} errors={errors} />;
   }
+  if (stepIndex === 1) {
+    return <CareerForm data={formData} onChange={onFormChange} errors={errors} />;
+  }
+  if (stepIndex === 2) {
+    return <QualificationForm data={formData} onChange={onFormChange} errors={errors} />;
+  }
 
   return (
     <div className="flex h-64 items-center justify-center rounded-[9px] border border-dashed border-[#cfd9d7] bg-[#f8fbfb]">
@@ -214,6 +223,20 @@ export default function ApplyWorkspace() {
         errs.applicant_email = "邮箱格式不正确";
       }
     }
+    if (stepIndex === 1) {
+      if (!formData.career_history || formData.career_history.trim().length < 10) {
+        errs.career_history = "请至少填写10个字的从业经历";
+      }
+    }
+    if (stepIndex === 2) {
+      const files = (() => {
+        try {
+          const raw = formData.qualification_files;
+          return raw ? (typeof raw === "string" ? JSON.parse(raw) : raw) : [];
+        } catch { return []; }
+      })();
+      if (files.length === 0) errs.qualification_files = "请至少上传一张资质文件";
+    }
     return errs;
   }
 
@@ -238,12 +261,31 @@ export default function ApplyWorkspace() {
     console.log("Submit:", formData);
   }
 
+  function parseFiles(raw) {
+    try {
+      if (!raw) return [];
+      return typeof raw === "string" ? JSON.parse(raw) : raw;
+    } catch { return []; }
+  }
+
   function getStepStatus(index) {
     if (index === 0) {
       const hasData = formData.username || formData.applicant_name || formData.id_number;
       if (!hasData) return { status: "danger", statusText: "未填写" };
       const errs = validateStep(0);
       if (Object.keys(errs).length > 0) return { status: "warn", statusText: "待完善" };
+      return { status: "done", statusText: "已完成" };
+    }
+    if (index === 1) {
+      if (!formData.career_history || formData.career_history.trim().length < 10) {
+        return { status: "danger", statusText: "未填写" };
+      }
+      return { status: "done", statusText: "已完成" };
+    }
+    if (index === 2) {
+      if (parseFiles(formData.qualification_files).length === 0) {
+        return { status: "danger", statusText: "未上传" };
+      }
       return { status: "done", statusText: "已完成" };
     }
     return { status: index < activeStep ? "done" : "danger", statusText: index < activeStep ? "已完成" : "未填写" };

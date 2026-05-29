@@ -1,4 +1,4 @@
-import uuid
+﻿import uuid
 from datetime import datetime
 
 from sqlalchemy import String, DateTime, Boolean, Text, Integer, ForeignKey, func
@@ -20,6 +20,7 @@ class Application(Base):
     applicant_address: Mapped[str | None] = mapped_column(Text, nullable=True)
     career_history: Mapped[str | None] = mapped_column(Text, nullable=True)
     qualifications: Mapped[str | None] = mapped_column(Text, nullable=True)
+    qualification_files: Mapped[str | None] = mapped_column(Text, nullable=True)
     password_hash: Mapped[str] = mapped_column(String(128), nullable=False, default='')
     requested_tier: Mapped[str | None] = mapped_column(String(20), nullable=True, default=None)
     status: Mapped[str] = mapped_column(

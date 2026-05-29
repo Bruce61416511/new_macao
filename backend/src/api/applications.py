@@ -29,6 +29,7 @@ class ApplicationCreate(BaseModel):
     applicant_address: str | None = None
     career_history: str | None = None
     qualifications: str | None = None
+    qualification_files: str | None = None
     password: str | None = None
     requested_tier: str | None = None
 
@@ -50,10 +51,24 @@ class ResubmitRequest(BaseModel):
     applicant_address: str | None = None
     career_history: str | None = None
     qualifications: str | None = None
+    qualification_files: str | None = None
     password: str | None = None
     requested_tier: str | None = None
 
 
+
+UPLOAD_QUAL_DIR = Path("uploads/qualifications")
+
+@router.post("/upload-file", response_model=dict)
+async def upload_qualification_file(file: UploadFile = File(...)):
+    """上传资质文件图片"""
+    UPLOAD_QUAL_DIR.mkdir(parents=True, exist_ok=True)
+    ext = os.path.splitext(file.filename or "file.jpg")[1] or ".jpg"
+    filename = f"{uuid.uuid4().hex}{ext}"
+    filepath = UPLOAD_QUAL_DIR / filename
+    content = await file.read()
+    filepath.write_bytes(content)
+    return {"url": f"/uploads/qualifications/{filename}"}
 @router.get("/check", response_model=dict)
 async def check_duplicate(
     username: str | None = Query(default=None),
@@ -113,6 +128,7 @@ async def get_application(app_id: str, db: AsyncSession = Depends(get_db)):
             "applicant_address": app.applicant_address,
             "career_history": app.career_history,
             "qualifications": app.qualifications,
+            "qualification_files": app.qualification_files,
             "status": app.status,
             "screening_result": app.screening_result,
             "final_review_result": app.final_review_result,

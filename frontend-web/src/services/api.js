@@ -58,3 +58,32 @@ export async function checkDuplicate(username, idNumber) {
   if (idNumber) params.set("id_number", idNumber);
   return request(`/applications/check?${params.toString()}`);
 }
+
+export async function uploadQualificationFile(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const token = getToken();
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(`${API_BASE}/applications/upload-file`, {
+      method: "POST",
+      headers,
+      body: formData,
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.detail || "上传失败");
+    }
+    return res.json();
+  } catch (err) {
+    if (err && err.name === "AbortError") {
+      throw new Error("上传超时，请检查网络后重试");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
+}

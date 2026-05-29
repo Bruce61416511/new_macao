@@ -14,16 +14,16 @@ class ApplicationService:
     """入会申请服务：CRUD + 状态流转 + 重复检测 + 驳回重申请"""
 
     VALID_TRANSITIONS = {
-        "待审核": ["初審通过", "初審不通过"],
-        "初審通过": ["终審通过", "终審不通过"],
-        "终審通过": ["待缴费"],
+        "待审核": ["初审通过", "初审不通过"],
+        "初审通过": ["终审通过", "终审不通过"],
+        "终审通过": ["待缴费"],
         "待缴费": ["已缴费", "已过期"],
         "已缴费": ["已入会", "待缴费"],
-        "初審不通过": ["待审核"],
-        "终審不通过": ["待审核"],
+        "初审不通过": ["待审核"],
+        "终审不通过": ["待审核"],
     }
 
-    RESUBMIT_COOLDOWN = {"初審不通过": timedelta(0), "终審不通过": timedelta(days=30)}
+    RESUBMIT_COOLDOWN = {"初审不通过": timedelta(0), "终审不通过": timedelta(days=30)}
 
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -96,7 +96,7 @@ class ApplicationService:
             member = member_result.scalar_one_or_none()
             if member:
                 member.tier = app.requested_tier or member.tier
-                member.annual_fee = {"初级会员": 500, "普通会员": 500, "高级会员": 1000}.get(app.requested_tier, 500)
+                member.annual_fee = {"普通会员": 500, "普通会员": 500, "高级会员": 1000}.get(app.requested_tier, 500)
                 member.is_active = True
                 member.updated_at = datetime.now(timezone.utc)
                 app.status = "已入会"
@@ -110,9 +110,9 @@ class ApplicationService:
             real_name=app.applicant_name,
             phone=app.applicant_phone,
             email=app.applicant_email,
-            tier=app.requested_tier or "初级会员",
+            tier=app.requested_tier or "普通会员",
             password_hash=app.password_hash,
-            annual_fee={"初级会员": 500, "普通会员": 500, "高级会员": 1000}.get(app.requested_tier, 500),
+            annual_fee={"普通会员": 500, "普通会员": 500, "高级会员": 1000}.get(app.requested_tier, 500),
         )
         self.db.add(member)
         await self.db.flush()
@@ -124,7 +124,7 @@ class ApplicationService:
     async def resubmit(self, app_id: uuid.UUID, updated_data: dict) -> Application:
         """驳回重申请：检查冷却期，保留原数据，修改后重新提交"""
         old_app = await self.get_application(app_id)
-        if old_app.status not in ("初審不通过", "终審不通过"):
+        if old_app.status not in ("初审不通过", "终审不通过"):
             raise HTTPException(status_code=400, detail={"error": "not_rejected", "message": "只有被驳回的申请才能重申请"})
 
         cooldown = self.RESUBMIT_COOLDOWN.get(old_app.status, timedelta(0))
@@ -132,7 +132,7 @@ class ApplicationService:
             elapsed = datetime.now(timezone.utc) - old_app.updated_at.replace(tzinfo=timezone.utc)
             if elapsed < cooldown:
                 remaining = (cooldown - elapsed).days
-                raise HTTPException(status_code=400, detail={"error": "cooldown", "message": f"终審驳回需等待30天，还剩 {remaining} 天"})
+                raise HTTPException(status_code=400, detail={"error": "cooldown", "message": f"终审驳回需等待30天，还剩 {remaining} 天"})
 
         # Delete old app and create new one
         old_username = old_app.username
