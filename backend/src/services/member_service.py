@@ -1,4 +1,4 @@
-import logging
+﻿import logging
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -25,7 +25,7 @@ class MemberService:
         return result.scalar_one_or_none()
 
     async def update_member(self, member: Member, data: dict) -> Member:
-        allowed_fields = {"phone", "email", "real_name"}
+        allowed_fields = {"phone", "email", "real_name", "address", "career_history", "qualifications", "qualification_files"}
         for k, v in data.items():
             if k in allowed_fields and v is not None:
                 setattr(member, k, v)

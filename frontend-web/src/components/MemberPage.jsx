@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { getMyProfile } from "../services/api.js";
+import UpdateProfileModal from "./UpdateProfileModal.jsx";
 import { useAuth } from "../contexts/AuthContext";
 ﻿const sidebarItems = [
   { label: '会员中心', active: true, icon: HomeIcon },
@@ -14,11 +15,8 @@ import { useAuth } from "../contexts/AuthContext";
   { label: '设置中心', icon: GearIcon },
 ];
 
-const actions = [
-  { label: '查看权益', icon: ShieldStarIcon },
-  { label: '报名活动', icon: CalendarSolidIcon },
-  { label: '续费', icon: CardIcon },
-  { label: '更新资料', icon: IdIcon },
+const actions = [  { label: '续费', icon: CardIcon },
+  ({ label: '更新资料', icon: IdIcon }),
 ];
 
 const updates = [
@@ -248,15 +246,8 @@ function MemberSidebar() {
 }
 
 
-function MemberTopBar() {
-    const { user, logout } = useAuth();
-    const [profile, setProfile] = useState(null);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
-
-    useEffect(() => {
-      getMyProfile().then(data => setProfile(data.member)).catch(() => {});
-    }, []);
+function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onLogout }) {
+    const { user } = useAuth();
 
     useEffect(() => {
       function handleClickOutside(e) {
@@ -333,7 +324,7 @@ function MemberTopBar() {
                 </div>
                 <button
                   className="mt-3 w-full rounded-[6px] border border-[#cfd9d7] py-2 text-[13px] font-medium text-[#6a7679] hover:bg-[#f8fbfb]"
-                  onClick={logout}
+                  onClick={onLogout}
                   type="button"
                 >
                   退出登录
@@ -345,8 +336,12 @@ function MemberTopBar() {
       </header>
     );
   }
-  function MemberHero() {
+  function MemberHero({ profile, onUpdateProfile }) {
   const { user } = useAuth();
+  const memberNo = profile?.id ? `MMA-${profile.id.replace(/-/g, "").slice(-8).toUpperCase()}` : "加载中...";
+  const yearEnd = `${new Date().getFullYear()}-12-31`;
+  const statusText = profile?.is_active ? (profile?.tier || "正式会员") : "已停用";
+
   return (
     <section className="relative overflow-hidden rounded-[14px] bg-[#004f46] text-white shadow-[0_18px_36px_rgba(0,45,40,0.2)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_34%_38%,rgba(255,255,255,0.08),transparent_30%),linear-gradient(90deg,#004f46_0%,#005347_54%,rgba(0,83,71,0.2)_70%,rgba(0,83,71,0)_100%)]" />
@@ -366,25 +361,25 @@ function MemberTopBar() {
             <LotusLogo className="h-[66px] w-[66px]" />
           </div>
           <div>
-            <div className="flex items-center gap-4">
-              <h2 className="font-serifCn text-[35px] font-semibold leading-none">{user?.username ?? "小扬同学"}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="font-serifCn text-[35px] font-semibold leading-none">{profile?.real_name || user?.username || "小扬同学"}</h2>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f1dba4] px-4 py-2 text-[14px] font-bold text-[#795915]">
                 <CrownIcon />
-                正式会员
+                {statusText}
               </span>
             </div>
-            <p className="mt-4 text-[15px] font-medium text-white/85">会员编号：MMA-PME-2024-0888</p>
+            <p className="mt-4 text-[15px] font-medium text-white/85">会员编号：{memberNo}</p>
           </div>
         </div>
 
         <div className="mt-8 space-y-4 text-[16px] font-semibold text-white/94">
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><CheckCircleIcon /></span>
-            当前状态：正式会员
+            当前状态：{statusText}
           </p>
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><CalendarIcon /></span>
-            会费到期：2027-03-31
+            会费到期：{profile?.is_active ? yearEnd : "-"}
           </p>
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><GiftIcon /></span>
@@ -392,16 +387,16 @@ function MemberTopBar() {
           </p>
         </div>
 
-        <div className="mt-8 grid max-w-[1010px] grid-cols-4 gap-5">
+        <div className="mt-8 grid max-w-[560px] grid-cols-2 gap-3">
           {actions.map((action) => {
             const Icon = action.icon;
             return (
-              <button className="flex h-[70px] items-center justify-between rounded-[10px] bg-white px-7 text-[17px] font-bold text-[#004f46] shadow-[0_10px_20px_rgba(0,28,25,0.2)]" key={action.label} type="button">
-                <span className="flex items-center gap-4">
-                  <IconShell className="bg-[#eef7f5]"><Icon /></IconShell>
+              <button className="flex h-[40px] items-center justify-between rounded-[6px] bg-white px-4 text-[14px] font-bold text-[#004f46] shadow-[0_4px_10px_rgba(0,28,25,0.12)]" key={action.label} type="button" onClick={action.label === "更新资料" ? onUpdateProfile : action.onClick}>
+                <span className="flex items-center gap-2">
+                  <span className="grid h-7 w-7 place-items-center rounded-[6px] text-[#006252] bg-[#eef7f5]"><Icon /></span>
                   {action.label}
                 </span>
-                <span className="text-[26px] font-light">›</span>
+                <span className="text-[18px] font-light">›</span>
               </button>
             );
           })}
@@ -410,7 +405,6 @@ function MemberTopBar() {
     </section>
   );
 }
-
 function RecentUpdates() {
   return (
     <section className="rounded-[12px] border border-[#dbe6e4] bg-white/82 p-4 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
@@ -558,12 +552,38 @@ function ContactCard() {
 }
 
 export default function MemberPage() {
+  const { logout } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    getMyProfile().then(data => setProfile(data.member)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <main className="min-h-screen bg-[#f8fbf9] bg-[radial-gradient(circle_at_80%_0%,rgba(224,241,238,0.55),transparent_36%)] pl-[240px] text-[#004f46]">
       <MemberSidebar />
-      <MemberTopBar />
+      <MemberTopBar
+        profile={profile}
+        dropdownOpen={dropdownOpen}
+        setDropdownOpen={setDropdownOpen}
+        dropdownRef={dropdownRef}
+        onLogout={logout}
+      />
       <div className="w-full px-3 pb-8">
-        <MemberHero />
+        <MemberHero profile={profile} onUpdateProfile={() => setShowUpdateModal(true)} />
         <div className="mt-4 grid grid-cols-[1fr_380px] items-stretch gap-4">
           <div className="flex h-full flex-col gap-4">
             <div className="grid grid-cols-[1fr_344px] gap-4">
@@ -579,6 +599,13 @@ export default function MemberPage() {
           </div>
         </div>
       </div>
+          {showUpdateModal && (
+        <UpdateProfileModal
+          profile={profile}
+          onClose={() => setShowUpdateModal(false)}
+          onSaved={(updated) => setProfile(updated)}
+        />
+      )}
     </main>
   );
 }
