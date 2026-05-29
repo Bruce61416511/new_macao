@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class MemberService:
-    """会员服务：查询、更新、删除、审计"""
+    """会员服务：查询、更新、删除、審计"""
 
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -126,14 +126,14 @@ class MemberService:
             password_hash=member.password_hash,
             requested_tier=requested_tier,
             member_id=member.id,
-            status="待审核"
+            status="待審核"
         )
         self.db.add(app)
         await self.db.flush()
 
         # Info updates skip AI screening - member already approved
         app.status = "初審通过"
-        app.screening_result = "会员信息变更-免审"
+        app.screening_result = "会员信息变更-免審"
         app.screening_by = "系统自动"
         await self.db.flush()
 

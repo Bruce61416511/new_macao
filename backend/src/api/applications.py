@@ -153,9 +153,9 @@ async def screening(app_id: str, body: ScreeningRequest, db: AsyncSession = Depe
 async def final_review(app_id: str, body: FinalReviewRequest, user: dict = Depends(require_role("root")), db: AsyncSession = Depends(get_db)):
     app_svc = ApplicationService(db)
     app = await app_svc.get_application(uuid.UUID(app_id))
-    new_status = "终审通过" if body.result == "pass" else "终审不通过"
+    new_status = "终審通过" if body.result == "pass" else "终審不通过"
     await app_svc.transition_status(app.id, new_status, {"final_review_result": body.comment})
-    if new_status == "终审通过":
+    if new_status == "终審通过":
         if app.member_id:
             from ..models.member import Member as M
             member_result = await db.execute(select(M).where(M.id == app.member_id))

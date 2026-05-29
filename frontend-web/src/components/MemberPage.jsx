@@ -13,6 +13,7 @@ import { useAuth } from "../contexts/AuthContext";
   { label: '消息通知', badge: 3, icon: BellIcon },
   { label: '我的收藏', icon: BookmarkIcon },
   { label: '设置中心', icon: GearIcon },
+  { label: '会员终审', icon: CheckBadgeIcon, adminOnly: true },
   { label: '会员管理', icon: UsersIcon, adminOnly: true },
 ];
 
@@ -87,6 +88,10 @@ function CalendarCheckIcon() {
 
 function FolderIcon() {
   return <OutlineIcon><path d="M3.5 7.5h6l2 2h9v9.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z" /></OutlineIcon>;
+}
+
+function CheckBadgeIcon() {
+  return <OutlineIcon><path d="M12 3.5 19 6.7v5.1c0 4.7-2.5 7.9-7 9.7-4.5-1.8-7-5-7-9.7V6.7z" /><path d="m8.7 12 2.2 2.2 4.5-5" /></OutlineIcon>;
 }
 
 function UsersIcon() {
@@ -225,7 +230,7 @@ function MemberSidebar({ onViewProfile, onShowBenefits }) {
               ].join(' ')}
               key={item.label}
               type="button"
-              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : item.label === "会员管理" ? () => window.location.href = "/admin/members" : item.label === "我的权益" ? () => onShowBenefits() : undefined}
+              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : item.label === "会员终审" ? () => window.location.href = "/admin/final-review" : item.label === "会员管理" ? () => window.location.href = "/admin/members" : item.label === "我的权益" ? () => onShowBenefits() : undefined}
             >
               <Icon />
               <span className="flex-1 text-left">{item.label}</span>

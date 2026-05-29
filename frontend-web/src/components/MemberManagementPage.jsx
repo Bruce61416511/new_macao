@@ -101,7 +101,8 @@ export default function MemberManagementPage() {
   const inactiveMembers = members.filter(m => !m.is_active);
 
   const pendingApps = applications.filter(a => a.status === "初審通过" || a.status === "终審通过");
-  const rejectedApps = applications.filter(a => a.status === "初審不通过" || a.status === "终審不通过");
+  const initialRejectedApps = applications.filter(a => a.status === "初審不通过");
+  const finalRejectedApps = applications.filter(a => a.status === "终審不通过");
   
   const truncate = (s, n) => s && s.length > n ? s.slice(0, n) + "..." : s || "-";
 
@@ -273,9 +274,14 @@ function statusBadge(status) {
                 <AppTable apps={pendingApps} />
               </Section>
             )}
-            {rejectedApps.length > 0 && (
-              <Section title={"已拒绝申请"} badge="text-[#c53030] bg-[#fef0f0]" count={rejectedApps.length}>
-                <AppTable apps={rejectedApps} />
+            {initialRejectedApps.length > 0 && (
+              <Section title={"初审不通过"} badge="text-[#e67e22] bg-[#fef5ec]" count={initialRejectedApps.length}>
+                <AppTable apps={initialRejectedApps} />
+              </Section>
+            )}
+            {finalRejectedApps.length > 0 && (
+              <Section title={"终审不通过"} badge="text-[#c53030] bg-[#fef0f0]" count={finalRejectedApps.length}>
+                <AppTable apps={finalRejectedApps} />
               </Section>
             )}
                         {members.length === 0 && applications.length === 0 && (

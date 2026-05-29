@@ -75,7 +75,7 @@ class ScreeningService:
                 return {"passed": False, "reasons": pre_reasons}
             return {
                 "passed": True,
-                "reasons": [f"AI 审核暂不可用，转人工处理 ({str(e)[:100]})"]
+                "reasons": [f"AI 審核暂不可用，转人工处理 ({str(e)[:100]})"]
             }
 
         # 合并前置结果和 AI 结果

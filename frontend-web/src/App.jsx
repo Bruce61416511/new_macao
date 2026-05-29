@@ -10,6 +10,7 @@ import LoginPage from "./components/LoginPage.jsx";
 import TrackPage from "./components/TrackPage.jsx";
 import EventCenterPage from "./components/EventCenterPage.jsx";
 import MemberManagementPage from "./components/MemberManagementPage.jsx";
+import FinalReviewPage from "./components/FinalReviewPage.jsx";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -47,6 +48,16 @@ function AppRoutes() {
         <MemberPage />
       </ProtectedRoute>
     );
+  }
+
+  if (path === "/admin/final-review") {
+    const token2 = sessionStorage.getItem("token");
+    if (!token2) { window.location.href = "/login"; return null; }
+    try {
+      const payload2 = JSON.parse(atob(token2.split(".")[0]));
+      if (payload2.role !== "root") { window.location.href = "/member"; return null; }
+    } catch { window.location.href = "/login"; return null; }
+    return <FinalReviewPage />;
   }
 
   if (path === "/admin/members") {

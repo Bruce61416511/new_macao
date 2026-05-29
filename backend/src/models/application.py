@@ -25,7 +25,7 @@ class Application(Base):
     requested_tier: Mapped[str | None] = mapped_column(String(20), nullable=True, default=None)
     status: Mapped[str] = mapped_column(
         String(20),
-        default="待审核", nullable=False, index=True
+        default="待審核", nullable=False, index=True
     )
     screening_result: Mapped[str | None] = mapped_column(Text, nullable=True)
     screening_by: Mapped[str | None] = mapped_column(String(50), nullable=True)

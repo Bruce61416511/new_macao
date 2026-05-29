@@ -255,8 +255,14 @@ async def admin_list_applications(
         if "_upd_" in uname:
             uname = uname.split("_upd_")[0]
         idnum = app.get("id_number", "") or ""
-        if len(idnum) > 6:
-            idnum = idnum[:6] + "****" + idnum[-4:] if len(idnum) > 10 else idnum[:4] + "****" + idnum[-2:]
+
+        # Also unmask id_number in the username-based dedup
+        raw_idnum = app.get("id_number", "") or ""
+        # Strip _upd_ suffix from id_number too
+        if "_upd_" in str(raw_idnum):
+            idnum = str(raw_idnum).split("_upd_")[0]
+        else:
+            idnum = raw_idnum
         items.append({
             "id": app.get("id"),
             "username": uname,
