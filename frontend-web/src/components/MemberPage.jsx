@@ -340,18 +340,26 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
   const memberNo = profile?.id ? `MMA-${profile.id.replace(/-/g, "").slice(-8).toUpperCase()}` : "加载中...";
   const yearEnd = `${new Date().getFullYear()}-12-31`;
   const [monthlyEvents, setMonthlyEvents] = useState(0);
+  const [myMonthlyCount, setMyMonthlyCount] = useState(0);
 
   useEffect(() => {
-    fetch("/v1/events").then(r => r.json()).then(data => {
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      const count = (data.items || []).filter(e => {
+    const now = new Date();
+    Promise.all([
+      fetch("/v1/events").then(r => r.json()),
+      fetch("/v1/events/my", { headers: user ? { Authorization: `Bearer ${sessionStorage.getItem("token")}` } : {} }).then(r => r.ok ? r.json() : { items: [] })
+    ]).then(([evData, myData]) => {
+      const count = (evData.items || []).filter(e => {
         if (e.registration_status !== "开放") return false;
         const d = new Date(e.event_date);
-        return d >= monthStart && d <= monthEnd;
+        return d >= now;
       }).length;
       setMonthlyEvents(count);
+      const myItems = myData.items || [];
+      const myCount = myItems.filter(e => {
+        const d = new Date(e.event_date);
+        return d >= now;
+      }).length;
+      setMyMonthlyCount(myCount);
     }).catch(() => {});
   }, []);
   const statusText = profile?.is_active ? (profile?.tier || "正式会员") : "已停用";
@@ -397,7 +405,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
           </p>
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><GiftIcon /></span>
-            本月可用活动：{monthlyEvents > 0 ? `${monthlyEvents} 场可报名` : "暂无"}
+            当前可用活动：{user?.role === "root" ? "-" : (monthlyEvents > 0 ? `${monthlyEvents} 场可报名` : "暂无")}{user?.role !== "root" && myMonthlyCount > 0 ? `，已报名 ${myMonthlyCount} 场` : ""}
           </p>
         </div>
 

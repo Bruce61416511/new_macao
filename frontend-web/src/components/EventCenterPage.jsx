@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 
 const API = "/v1/events";
 
 export default function EventCenterPage({ role }) {
   const isRoot = role === "root";
   const [events, setEvents] = useState([]);
+  const [myEventIds, setMyEventIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ title: "", event_date: "", location: "", description: "", price_normal: 0, max_participants: "" });
@@ -13,21 +14,42 @@ export default function EventCenterPage({ role }) {
   const token = sessionStorage.getItem("token");
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
-  async function fetchEvents() {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(API);
-      if (res.ok) { const data = await res.json(); setEvents(data.items || []); }
+      const [evRes, myRes] = await Promise.all([
+        fetch(API),
+        token ? fetch(API + "/my", { headers: authHeaders }) : Promise.resolve(null)
+      ]);
+      if (evRes.ok) {
+        const data = await evRes.json();
+        const items = data.items || [];
+        items.sort((a, b) => {
+          const aOpen = a.registration_status === "开放";
+          const bOpen = b.registration_status === "开放";
+          if (aOpen && !bOpen) return -1;
+          if (!aOpen && bOpen) return 1;
+          return new Date(a.event_date) - new Date(b.event_date);
+        });
+        setEvents(items);
+      }
+      if (myRes && myRes.ok) {
+        const myData = await myRes.json();
+        const ids = new Set((myData.items || []).map(e => e.id));
+        setMyEventIds(ids);
+      }
     } catch {} finally { setLoading(false); }
-  }
+  }, [token]);
 
-  useEffect(() => { fetchEvents(); }, []);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   async function handleRegister(eventId) {
     try {
       const res = await fetch(`${API}/${eventId}/register`, { method: "POST", headers: { ...authHeaders } });
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || "报名失败"); }
-      setMsg("报名成功！"); fetchEvents();
+      setMsg("报名成功！");
+      setMyEventIds(prev => new Set([...prev, eventId]));
+      fetchData();
     } catch (e) { setMsg(e.message); }
   }
 
@@ -35,7 +57,9 @@ export default function EventCenterPage({ role }) {
     try {
       const res = await fetch(`${API}/${eventId}/register`, { method: "DELETE", headers: { ...authHeaders } });
       if (!res.ok) throw new Error("取消失败");
-      setMsg("已取消报名"); fetchEvents();
+      setMsg("已取消报名");
+      setMyEventIds(prev => { const next = new Set(prev); next.delete(eventId); return next; });
+      fetchData();
     } catch (e) { setMsg(e.message); }
   }
 
@@ -44,7 +68,7 @@ export default function EventCenterPage({ role }) {
     try {
       const res = await fetch(`${API}/${eventId}`, { method: "DELETE", headers: { ...authHeaders } });
       if (!res.ok) throw new Error("删除失败");
-      setMsg("活动已删除"); fetchEvents();
+      setMsg("活动已删除"); fetchData();
     } catch (e) { setMsg(e.message); }
   }
 
@@ -54,7 +78,7 @@ export default function EventCenterPage({ role }) {
       const body = { ...form, max_participants: form.max_participants ? parseInt(form.max_participants) : null, price_normal: parseInt(form.price_normal) || 0 };
       const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json", ...authHeaders }, body: JSON.stringify(body) });
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(typeof d.detail === "object" ? d.detail.message : d.detail || "创建失败"); }
-      setMsg("活动创建成功！"); setShowCreate(false); setForm({ title: "", event_date: "", location: "", description: "", price_normal: 0, max_participants: "" }); fetchEvents();
+      setMsg("活动创建成功！"); setShowCreate(false); setForm({ title: "", event_date: "", location: "", description: "", price_normal: 0, max_participants: "" }); fetchData();
     } catch (e) { setMsg(e.message); }
   }
 
@@ -90,10 +114,12 @@ export default function EventCenterPage({ role }) {
                 <div className="flex items-center gap-3 ml-4">
                   {isRoot ? (
                     <button onClick={() => handleDelete(event.id)} className="text-[13px] font-medium text-red-500 hover:text-red-600">删除</button>
+                  ) : myEventIds.has(event.id) ? (
+                    <button onClick={() => handleCancel(event.id)} className="rounded-[6px] border border-[#cfd9d7] px-4 py-2 text-[13px] font-medium text-[#6a7679]">取消报名</button>
                   ) : event.registration_status === "开放" ? (
                     <button onClick={() => handleRegister(event.id)} className="rounded-[6px] bg-[#006252] px-4 py-2 text-[13px] font-bold text-white">报名</button>
                   ) : (
-                    <button onClick={() => handleCancel(event.id)} className="rounded-[6px] border border-[#cfd9d7] px-4 py-2 text-[13px] font-medium text-[#6a7679]">取消报名</button>
+                    <span className="text-[13px] text-[#9ba8aa]">截止</span>
                   )}
                 </div>
               </div>

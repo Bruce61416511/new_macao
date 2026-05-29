@@ -43,7 +43,7 @@
               <span className="text-[#6a7679] text-[13px]">资质文件</span>
               <div className="mt-2 grid grid-cols-3 gap-2">
                 {fileUrls.map((url, i) => (
-                  <img key={i} src={url} alt={`资质 ${i + 1}`} className="w-full h-28 object-cover rounded-[4px] border border-[#dde7e5]" />
+                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block cursor-pointer group"><img src={url} alt={`资质 ${i + 1}`} className="w-full h-28 object-cover rounded-[4px] border border-[#dde7e5] group-hover:opacity-80 transition-opacity" /></a>
                 ))}
               </div>
             </div>

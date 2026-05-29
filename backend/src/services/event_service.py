@@ -123,6 +123,10 @@ class EventService:
         return {"status": "已取消"}
 
     def _to_dict(self, e: Event) -> dict:
+        status = e.registration_status
+        # Automatically mark past events as closed
+        if status == "开放" and e.event_date and e.event_date.replace(tzinfo=None) < datetime.utcnow():
+            status = "截止"
         return {
             "id": str(e.id),
             "title": e.title,
@@ -132,7 +136,7 @@ class EventService:
             "price_normal": e.price_normal,
             "price_advanced": e.price_advanced,
             "max_participants": e.max_participants,
-            "registration_status": e.registration_status,
+            "registration_status": status,
         }
 
     async def delete(self, event_id: uuid.UUID) -> dict:
