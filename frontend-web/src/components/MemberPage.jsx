@@ -2,6 +2,7 @@
 import { getMyProfile } from "../services/api.js";
 import UpdateProfileModal from "./UpdateProfileModal.jsx";
 import ProfileViewModal from "./ProfileViewModal.jsx";
+import BenefitsModal from "./BenefitsModal.jsx";
 import { useAuth } from "../contexts/AuthContext";
 ﻿const sidebarItems = [
   { label: '会员中心', active: true, icon: HomeIcon },
@@ -200,7 +201,7 @@ function OutlineIcon({ children, className = 'h-6 w-6' }) {
   );
 }
 
-function MemberSidebar({ onViewProfile }) {
+function MemberSidebar({ onViewProfile, onShowBenefits }) {
   const { user } = useAuth();
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] flex-col overflow-hidden bg-[linear-gradient(180deg,#00463d_0%,#005548_45%,#003f37_100%)] px-3 py-8 text-white shadow-[12px_0_30px_rgba(0,45,40,0.2)]">
@@ -224,7 +225,7 @@ function MemberSidebar({ onViewProfile }) {
               ].join(' ')}
               key={item.label}
               type="button"
-              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : item.label === "会员管理" ? () => window.location.href = "/admin/members" : undefined}
+              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : item.label === "会员管理" ? () => window.location.href = "/admin/members" : item.label === "我的权益" ? () => onShowBenefits() : undefined}
             >
               <Icon />
               <span className="flex-1 text-left">{item.label}</span>
@@ -581,6 +582,7 @@ export default function MemberPage() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showBenefits, setShowBenefits] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -599,7 +601,7 @@ export default function MemberPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fbf9] bg-[radial-gradient(circle_at_80%_0%,rgba(224,241,238,0.55),transparent_36%)] pl-[240px] text-[#004f46]">
-      <MemberSidebar onViewProfile={() => setShowProfileModal(true)} />
+      <MemberSidebar onViewProfile={() => setShowProfileModal(true)} onShowBenefits={() => setShowBenefits(true)} />
       <MemberTopBar
         profile={profile}
         dropdownOpen={dropdownOpen}
@@ -626,6 +628,9 @@ export default function MemberPage() {
       </div>
           {showProfileModal && (
         <ProfileViewModal profile={profile} onClose={() => setShowProfileModal(false)} />
+      )}
+      {showBenefits && (
+        <BenefitsModal tier={profile?.tier} onClose={() => setShowBenefits(false)} />
       )}
       {showUpdateModal && (
         <UpdateProfileModal
