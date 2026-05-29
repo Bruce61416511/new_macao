@@ -134,3 +134,13 @@ class EventService:
             "max_participants": e.max_participants,
             "registration_status": e.registration_status,
         }
+
+    async def delete(self, event_id: uuid.UUID) -> dict:
+        event = await self.get(event_id)
+        # Delete registrations first
+        result = await self.db.execute(select(EventRegistration).where(EventRegistration.event_id == event_id))
+        for reg in result.scalars().all():
+            await self.db.delete(reg)
+        await self.db.delete(event)
+        await self.db.flush()
+        return {"id": str(event_id), "deleted": True}

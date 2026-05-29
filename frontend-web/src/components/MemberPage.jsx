@@ -7,9 +7,8 @@ import { useAuth } from "../contexts/AuthContext";
   { label: '会员中心', active: true, icon: HomeIcon },
   { label: '资料中心', icon: FolderIcon },
   { label: '我的权益', icon: ShieldIcon },
-  { label: '活动报名', icon: CalendarIcon },
+  { label: '协会活动', icon: CalendarIcon },
   { label: '培训课程', icon: BookIcon },
-  { label: '协会活动', icon: CalendarCheckIcon },  { label: '会员名录', icon: UsersIcon },
   { label: '消息通知', badge: 3, icon: BellIcon },
   { label: '我的收藏', icon: BookmarkIcon },
   { label: '设置中心', icon: GearIcon },
@@ -223,7 +222,7 @@ function MemberSidebar({ onViewProfile }) {
               ].join(' ')}
               key={item.label}
               type="button"
-              onClick={item.label === "资料中心" ? onViewProfile : undefined}
+              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : undefined}
             >
               <Icon />
               <span className="flex-1 text-left">{item.label}</span>
@@ -340,6 +339,21 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
   const { user } = useAuth();
   const memberNo = profile?.id ? `MMA-${profile.id.replace(/-/g, "").slice(-8).toUpperCase()}` : "加载中...";
   const yearEnd = `${new Date().getFullYear()}-12-31`;
+  const [monthlyEvents, setMonthlyEvents] = useState(0);
+
+  useEffect(() => {
+    fetch("/v1/events").then(r => r.json()).then(data => {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const count = (data.items || []).filter(e => {
+        if (e.registration_status !== "开放") return false;
+        const d = new Date(e.event_date);
+        return d >= monthStart && d <= monthEnd;
+      }).length;
+      setMonthlyEvents(count);
+    }).catch(() => {});
+  }, []);
   const statusText = profile?.is_active ? (profile?.tier || "正式会员") : "已停用";
 
   return (
@@ -383,7 +397,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
           </p>
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><GiftIcon /></span>
-            本月可用权益：培训报名 2 场 / 会员活动 1 场
+            本月可用活动：{monthlyEvents > 0 ? `${monthlyEvents} 场可报名` : "暂无"}
           </p>
         </div>
 

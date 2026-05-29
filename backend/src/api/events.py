@@ -91,3 +91,8 @@ async def cancel_registration(event_id: str, user: dict = Depends(get_current_us
         raise HTTPException(status_code=401)
     svc = EventService(db)
     return await svc.cancel_registration(uuid.UUID(event_id), uuid.UUID(user["sub"]))
+
+@router.delete("/{event_id}", response_model=dict)
+async def delete_event(event_id: str, user: dict = Depends(require_role("staff", "root")), db: AsyncSession = Depends(get_db)):
+    svc = EventService(db)
+    return await svc.delete(uuid.UUID(event_id))

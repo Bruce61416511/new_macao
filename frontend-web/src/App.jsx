@@ -8,6 +8,7 @@ import MemberPage from "./components/MemberPage.jsx";
 import ReviewPage from "./components/ReviewPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 import TrackPage from "./components/TrackPage.jsx";
+import EventCenterPage from "./components/EventCenterPage.jsx";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -37,6 +38,7 @@ function AppRoutes() {
   if (path === "/login") return <LoginPage />;
   if (path === "/apply") return <ApplyPage />;
   if (path === "/track") return <TrackPage />;
+  if (path === "/events") return <EventCenterPage role={JSON.parse(atob((sessionStorage.getItem("token") || ".").split(".")[0]) || "{}").role || "member"} />;
 
   if (path === "/member") {
     return (
