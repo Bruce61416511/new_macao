@@ -12,6 +12,7 @@ export default function EventCenterPage({ role }) {
   const [msg, setMsg] = useState("");
 
   const token = sessionStorage.getItem("token");
+  const isLoggedIn = !!token;
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   const fetchData = useCallback(async () => {
@@ -31,7 +32,7 @@ export default function EventCenterPage({ role }) {
           if (!aOpen && bOpen) return 1;
           return new Date(a.event_date) - new Date(b.event_date);
         });
-        setEvents(items);
+        setEvents(isLoggedIn ? items : items.filter(e => e.registration_status === "开放"));
       }
       if (myRes && myRes.ok) {
         const myData = await myRes.json();
@@ -114,6 +115,8 @@ export default function EventCenterPage({ role }) {
                 <div className="flex items-center gap-3 ml-4">
                   {isRoot ? (
                     <button onClick={() => handleDelete(event.id)} className="text-[13px] font-medium text-red-500 hover:text-red-600">删除</button>
+                  ) : !isLoggedIn ? (
+                    <a href="/login" className="rounded-[6px] border border-[#006252] px-4 py-2 text-[13px] font-medium text-[#006252]">请登录</a>
                   ) : myEventIds.has(event.id) ? (
                     <button onClick={() => handleCancel(event.id)} className="rounded-[6px] border border-[#cfd9d7] px-4 py-2 text-[13px] font-medium text-[#6a7679]">取消报名</button>
                   ) : event.registration_status === "开放" ? (

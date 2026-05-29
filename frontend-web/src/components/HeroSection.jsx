@@ -1,8 +1,10 @@
-﻿const quickActions = [
+﻿import { useState } from "react";
+import PublicBenefitsModal from "./PublicBenefitsModal.jsx";
+const quickActions = [
   { label: '申请入会', tone: 'primary', icon: DocumentIcon },
   { label: '进度查询', icon: SearchCircleIcon, href: '/track' },
   { label: '会员权益', icon: DiamondIcon },
-  { label: '活动报名', icon: CalendarIcon },
+  { label: '活动报名', icon: CalendarIcon, href: '/events' },
   { label: '续费提醒', icon: BellIcon },
 ];
 
@@ -90,12 +92,14 @@ function ShieldIcon() {
 }
 
 function ActionButton({ action }) {
+  const actionClick = action.onClick;
   const Icon = action.icon;
   const isPrimary = action.tone === 'primary';
   const Element = isPrimary || action.href ? 'a' : 'button';
 
   return (
     <Element
+      onClick={actionClick}
       className={[
         'group flex h-[112px] w-[130px] flex-col items-center justify-center rounded-[12px] border transition',
         isPrimary
@@ -136,6 +140,7 @@ function TrustCard() {
 }
 
 export default function HeroSection() {
+  const [showBenefits, setShowBenefits] = useState(false);
   return (
     <div className="mx-auto mt-[43px] max-w-[1138px]">
       <section className="relative h-auto max-w-[938px] rounded-[18px] border border-[#8fc6bf]/75 bg-[linear-gradient(148deg,rgba(255,255,255,0.86)_0%,rgba(241,250,248,0.78)_45%,rgba(221,242,239,0.72)_100%)] px-[22px] py-[22px] text-[#004f46] shadow-[0_10px_28px_rgba(53,96,101,0.08)] backdrop-blur-md xl:h-[368px] xl:px-[24px] xl:py-0">
@@ -158,15 +163,19 @@ export default function HeroSection() {
             </p>
 
             <div className="mt-[26px] grid grid-cols-2 justify-items-center gap-4 sm:flex xl:gap-[14px]">
-              {quickActions.map((action) => (
-                <ActionButton action={action} key={action.label} />
-              ))}
+              {quickActions.map((action) => {
+                if (action.label === "会员权益") {
+                  return <ActionButton action={{...action, onClick: () => setShowBenefits(true)}} key={action.label} />;
+                }
+                return <ActionButton action={action} key={action.label} />;
+              })}
             </div>
           </div>
         </div>
 
         <TrustCard />
       </section>
+      {showBenefits && <PublicBenefitsModal onClose={() => setShowBenefits(false)} />}
     </div>
   );
 }

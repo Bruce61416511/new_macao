@@ -1,5 +1,4 @@
-﻿import React, { useState } from "react";
-import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
+﻿import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import HeaderNav from "./components/HeaderNav.jsx";
 import HeroSection from "./components/HeroSection.jsx";
 import AssistantPanel from "./components/AssistantPanel.jsx";
@@ -10,7 +9,6 @@ import ReviewPage from "./components/ReviewPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 import TrackPage from "./components/TrackPage.jsx";
 import EventCenterPage from "./components/EventCenterPage.jsx";
-import PublicBenefitsModal from "./components/PublicBenefitsModal.jsx";
 import MemberManagementPage from "./components/MemberManagementPage.jsx";
 
 function ProtectedRoute({ children }) {
@@ -25,18 +23,13 @@ function ProtectedRoute({ children }) {
 }
 
 function HomePage() {
-  const [showBenefits, setShowBenefits] = useState(false);
   return (
-    <>
     <main className="min-h-screen bg-[#f8fbfb] bg-[url('/macau-page-bg.webp')] bg-cover bg-top bg-no-repeat p-0 pb-10">
       <HeaderNav />
       <HeroSection />
       <AssistantPanel />
       <PageFooter />
     </main>
-      <button onClick={() => setShowBenefits(true)} className="fixed bottom-6 right-6 z-[999] bg-[#006252] text-white px-5 py-3 rounded-full shadow-lg font-bold text-[15px] hover:bg-[#004f46] transition">会员权益</button>
-      {showBenefits && <PublicBenefitsModal onClose={() => setShowBenefits(false)} />}
-    </>
   );
 }
 
