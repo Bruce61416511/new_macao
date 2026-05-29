@@ -1,4 +1,4 @@
-function HomeIcon() {
+﻿function HomeIcon() {
   return (
     <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
       <path d="m4 11 8-7 8 7v8a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H5.5A1.5 1.5 0 0 1 4 19z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
@@ -27,14 +27,14 @@ function UserAvatar() {
   );
 }
 
-export default function ApplyTopBar() {
+export default function ApplyTopBar({ progress = 0 }) {
   return (
     <header className="sticky top-0 z-50 h-[78px] w-full rounded-b-[10px] bg-[linear-gradient(110deg,#003d36_0%,#005548_45%,#00483f_100%)] px-[42px] text-white shadow-[0_12px_30px_rgba(0,45,40,0.24)]">
       <div className="mx-auto grid h-full max-w-[1450px] grid-cols-[360px_1fr_360px] items-center">
         <div className="flex items-center">
           <a className="flex h-[58px] items-center" href="/" aria-label="返回首页">
             <img
-              alt="小扬同学 澳门直播协会"
+              alt="小洋同学 澳门直播协会"
               className="h-[50px] w-auto select-none object-contain"
               draggable="false"
               src="/apply-top-logo.png"
@@ -49,7 +49,7 @@ export default function ApplyTopBar() {
         </div>
 
         <h1 className="text-center font-serifCn text-[31px] font-semibold leading-none tracking-[0.08em] text-white">
-          申请入会 · 进度 40%
+          申请入会 · 进度 {progress}%
         </h1>
 
         <div className="flex items-center justify-end gap-[24px] text-[15px] font-medium">

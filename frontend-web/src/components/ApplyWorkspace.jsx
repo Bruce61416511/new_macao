@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react";
 import AIAssistantCard from "./apply/AIAssistantCard.jsx";
 import BasicInfoForm from "./apply/BasicInfoForm.jsx";
 import CareerForm from "./apply/CareerForm.jsx";
@@ -210,7 +210,7 @@ function StepForm({ stepIndex, formData, onFormChange, errors }) {
 
 /* ── Main ─────────────────────────────────── */
 
-export default function ApplyWorkspace() {
+export default function ApplyWorkspace({ onProgressChange }) {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
@@ -318,7 +318,12 @@ export default function ApplyWorkspace() {
   }
 
   const stepsWithStatus = STEPS.map((s, i) => ({ ...s, ...getStepStatus(i) }));
-  const pct = Math.round((activeStep / (STEPS.length - 1)) * 100);
+  const doneCount = stepsWithStatus.filter(s => s.status === "done").length;
+  const pct = Math.round((doneCount / STEPS.length) * 100);
+
+  useEffect(() => {
+    onProgressChange?.(pct);
+  }, [pct, onProgressChange]);
 
   return (
     <div className="mx-auto mt-5 grid max-w-[1290px] grid-cols-[606px_1fr] items-stretch gap-[28px]">
