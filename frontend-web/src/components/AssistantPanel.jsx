@@ -1,7 +1,5 @@
-const sidebarItems = [
-  { label: '对话', active: true, icon: ChatIcon },
-  { label: '入会进度', icon: ProgressIcon },
-  { label: '我的活动', icon: CalendarSmallIcon },
+﻿const sidebarItems = [
+  { label: '对话', active: true, icon: ChatIcon },  { label: '我的活动', icon: CalendarSmallIcon },
   { label: '消息中心', icon: BellSmallIcon },
 ];
 
@@ -14,18 +12,6 @@ function ChatIcon({ className = 'h-6 w-6' }) {
   );
 }
 
-function ProgressIcon({ className = 'h-6 w-6' }) {
-  return (
-    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
-      <path d="m4 16 4.5-4.8 3.2 3.1L19 7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
-      <path d="M4 19h16" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
-      <circle cx="4" cy="16" fill="currentColor" r="1.8" />
-      <circle cx="8.5" cy="11.2" fill="currentColor" r="1.8" />
-      <circle cx="11.7" cy="14.3" fill="currentColor" r="1.8" />
-      <circle cx="19" cy="7" fill="currentColor" r="1.8" />
-    </svg>
-  );
-}
 
 function CalendarSmallIcon({ className = 'h-6 w-6' }) {
   return (

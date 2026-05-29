@@ -1,3 +1,5 @@
+﻿import { useState, useEffect, useRef } from "react";
+import { getMyProfile } from "../services/api.js";
 import { useAuth } from "../contexts/AuthContext";
 ﻿const sidebarItems = [
   { label: '会员中心', active: true, icon: HomeIcon },
@@ -245,36 +247,105 @@ function MemberSidebar() {
   );
 }
 
-function MemberTopBar() {
-  const { user } = useAuth();
-  return (
-    <header className="sticky top-0 z-30 flex h-[96px] items-center justify-between bg-white/72 px-11 backdrop-blur-xl">
-      <h1 className="font-serifCn text-[34px] font-semibold leading-none text-[#00473f]">会员中心 － 小扬同学与你同行</h1>
-      <div className="flex items-center gap-8 text-[#285c55]">
-        <div className="flex items-center gap-2 text-[14px] font-semibold">
-          <ShieldCheckOutlineIcon />
-          权威认证 · 值得信赖
-        </div>
-        <div className="flex items-center gap-5 text-[14px] font-semibold">
-          <span className="rounded-full bg-[#006252] px-4 py-2 text-white">简体</span>
-          <span>繁體</span>
-          <span>EN</span>
-          <span>PT</span>
-        </div>
-        <div className="relative">
-          <BellIcon />
-          <span className="absolute -right-2 -top-2 grid h-4 w-4 place-items-center rounded-full bg-[#ef513f] text-[10px] font-bold text-white">3</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-[url('/lotus-assistant.png')] bg-cover bg-center" />
-          <span className="text-[15px] font-bold">{user?.username ?? "小扬同学"}⌄</span>
-        </div>
-      </div>
-    </header>
-  );
-}
 
-function MemberHero() {
+function MemberTopBar() {
+    const { user, logout } = useAuth();
+    const [profile, setProfile] = useState(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+      getMyProfile().then(data => setProfile(data.member)).catch(() => {});
+    }, []);
+
+    useEffect(() => {
+      function handleClickOutside(e) {
+        if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+          setDropdownOpen(false);
+        }
+      }
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    return (
+      <header className="sticky top-0 z-30 flex h-[96px] items-center justify-between bg-white/72 px-11 backdrop-blur-xl">
+        <h1 className="font-serifCn text-[34px] font-semibold leading-none text-[#00473f]">会员中心 － 小扬同学与你同行</h1>
+        <div className="flex items-center gap-8 text-[#285c55]">
+          <div className="flex items-center gap-2 text-[14px] font-semibold">
+            <ShieldCheckOutlineIcon />
+            权威认证 · 值得信赖
+          </div>
+          <div className="flex items-center gap-5 text-[14px] font-semibold">
+            <span className="rounded-full bg-[#006252] px-4 py-2 text-white">简体</span>
+            <span>繁體</span>
+            <span>EN</span>
+            <span>PT</span>
+          </div>
+          <div className="relative">
+            <BellIcon />
+            <span className="absolute -right-2 -top-2 grid h-4 w-4 place-items-center rounded-full bg-[#ef513f] text-[10px] font-bold text-white">3</span>
+          </div>
+          <div className="relative" ref={dropdownRef}>
+            <button
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              type="button"
+            >
+              <div className="h-10 w-10 rounded-full bg-[url('/lotus-assistant.png')] bg-cover bg-center" />
+              <span className="text-[15px] font-bold">{user?.username ?? "小扬同学"}⌄</span>
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-[260px] rounded-[10px] border border-[#dde7e5] bg-white p-4 shadow-[0_14px_30px_rgba(35,70,74,0.16)] text-[#1b292b]">
+                <div className="flex items-center gap-3 pb-3 border-b border-[#e5eceb]">
+                  <div className="h-10 w-10 rounded-full bg-[url('/lotus-assistant.png')] bg-cover bg-center shrink-0" />
+                  <div>
+                    <p className="text-[15px] font-bold">{profile?.real_name || user?.username || "小扬同学"}</p>
+                    <p className="text-[12px] text-[#6a7679]">{profile?.tier || "会员"}</p>
+                  </div>
+                </div>
+                <div className="mt-3 space-y-2 text-[13px]">
+                  <div className="flex justify-between">
+                    <span className="text-[#6a7679]">用户名</span>
+                    <span className="font-medium">{profile?.username || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6a7679]">手机号</span>
+                    <span className="font-medium">{profile?.phone || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6a7679]">邮箱</span>
+                    <span className="font-medium">{profile?.email || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6a7679]">会员级别</span>
+                    <span className="font-medium">{profile?.tier || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6a7679]">年费</span>
+                    <span className="font-medium">{profile?.annual_fee ? `${profile.annual_fee} 澳门元` : "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6a7679]">注册时间</span>
+                    <span className="font-medium">{profile?.created_at ? new Date(profile.created_at).toLocaleDateString("zh-CN") : "-"}</span>
+                  </div>
+                </div>
+                <button
+                  className="mt-3 w-full rounded-[6px] border border-[#cfd9d7] py-2 text-[13px] font-medium text-[#6a7679] hover:bg-[#f8fbfb]"
+                  onClick={logout}
+                  type="button"
+                >
+                  退出登录
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+    );
+  }
+  function MemberHero() {
   const { user } = useAuth();
   return (
     <section className="relative overflow-hidden rounded-[14px] bg-[#004f46] text-white shadow-[0_18px_36px_rgba(0,45,40,0.2)]">

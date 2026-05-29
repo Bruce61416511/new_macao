@@ -1,5 +1,6 @@
-const quickActions = [
+﻿const quickActions = [
   { label: '申请入会', tone: 'primary', icon: DocumentIcon },
+  { label: '进度查询', icon: SearchCircleIcon, href: '/track' },
   { label: '会员权益', icon: DiamondIcon },
   { label: '活动报名', icon: CalendarIcon },
   { label: '续费提醒', icon: BellIcon },
@@ -38,6 +39,16 @@ function CalendarIcon() {
       <rect height="31" rx="4" stroke="currentColor" strokeLinejoin="round" strokeWidth="2.8" width="34" x="7" y="11" />
       <path d="M15 7v8M33 7v8M7 20h34" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.8" />
       <path d="m24 27 2 4 4.4.7-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.7z" stroke="currentColor" strokeLinejoin="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
+function SearchCircleIcon() {
+  return (
+    <svg aria-hidden="true" className="h-[38px] w-[38px]" fill="none" viewBox="0 0 48 48">
+      <circle cx="21" cy="21" r="12" stroke="currentColor" strokeWidth="2.8" />
+      <path d="m31 31 6 6" stroke="currentColor" strokeLinecap="round" strokeWidth="2.8" />
+      <path d="M21 15v12M15 21h12" stroke="currentColor" strokeLinecap="round" strokeWidth="2.5" />
     </svg>
   );
 }
@@ -81,7 +92,7 @@ function ShieldIcon() {
 function ActionButton({ action }) {
   const Icon = action.icon;
   const isPrimary = action.tone === 'primary';
-  const Element = isPrimary ? 'a' : 'button';
+  const Element = isPrimary || action.href ? 'a' : 'button';
 
   return (
     <Element
@@ -91,7 +102,7 @@ function ActionButton({ action }) {
           ? 'border-[#006d60] bg-gradient-to-br from-[#00836f] to-[#006354] text-white shadow-[0_14px_24px_rgba(0,93,80,0.24)]'
           : 'border-[#d7e5e2] bg-white text-[#006354] shadow-[0_7px_16px_rgba(21,65,68,0.12)] hover:border-[#94c9c0]',
       ].join(' ')}
-      href={isPrimary ? '/apply' : undefined}
+      href={action.href || (isPrimary ? '/apply' : undefined)}
       type={isPrimary ? undefined : 'button'}
     >
       <Icon />

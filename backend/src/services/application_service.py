@@ -1,4 +1,4 @@
-import uuid
+﻿import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -178,4 +178,5 @@ class ApplicationService:
             "submitted_at": app.submitted_at.isoformat() if app.submitted_at else None,
             "member_id": str(app.member_id) if app.member_id else None,
             "payment_proof_url": app.payment_proof_url,
+            "requested_tier": app.requested_tier,
         }

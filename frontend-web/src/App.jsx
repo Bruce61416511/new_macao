@@ -1,4 +1,4 @@
-import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
+﻿import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import HeaderNav from "./components/HeaderNav.jsx";
 import HeroSection from "./components/HeroSection.jsx";
 import AssistantPanel from "./components/AssistantPanel.jsx";
@@ -7,6 +7,7 @@ import ApplyPage from "./components/ApplyPage.jsx";
 import MemberPage from "./components/MemberPage.jsx";
 import ReviewPage from "./components/ReviewPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
+import TrackPage from "./components/TrackPage.jsx";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -35,6 +36,7 @@ function AppRoutes() {
 
   if (path === "/login") return <LoginPage />;
   if (path === "/apply") return <ApplyPage />;
+  if (path === "/track") return <TrackPage />;
 
   if (path === "/member") {
     return (
