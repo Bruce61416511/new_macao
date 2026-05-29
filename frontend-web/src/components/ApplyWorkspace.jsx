@@ -274,8 +274,8 @@ export default function ApplyWorkspace() {
     try {
       const { declaration_agreed, ...payload } = formData;
       await submitApplication(payload);
-      setSaved(true);
       alert("申请已成功提交！");
+      window.location.href = "/";
     } catch (err) {
       setSubmitError(err.message || "提交失败，请重试");
     } finally {
