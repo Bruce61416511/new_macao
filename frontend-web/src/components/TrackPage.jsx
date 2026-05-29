@@ -1,11 +1,11 @@
 ﻿import { useState } from "react";
 
 const STATUS_MAP = {
-  "待審核": { label: "待審核", color: "text-[#ad7b00]", bg: "bg-[#fff8e9]", desc: "您的申请已提交，正在等待審核" },
-  "初審通过": { label: "初審通过", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "初审已通过，等待终审" },
-  "初審不通过": { label: "初審不通过", color: "text-[#c53030]", bg: "bg-[#fef0f0]", desc: "初审未通过，可修改后重新提交" },
-  "终審通过": { label: "终審通过", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "终审已通过，请完成缴费" },
-  "终審不通过": { label: "终審不通过", color: "text-[#c53030]", bg: "bg-[#fef0f0]", desc: "终审未通过，30天后可重新申请" },
+  "待审核": { label: "待审核", color: "text-[#ad7b00]", bg: "bg-[#fff8e9]", desc: "您的申请已提交，正在等待审核" },
+  "初审通过": { label: "初审通过", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "初审已通过，等待终审" },
+  "初审不通过": { label: "初审不通过", color: "text-[#c53030]", bg: "bg-[#fef0f0]", desc: "初审未通过，可修改后重新提交" },
+  "终审通过": { label: "终审通过", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "终审已通过，请完成缴费" },
+  "终审不通过": { label: "终审不通过", color: "text-[#c53030]", bg: "bg-[#fef0f0]", desc: "终审未通过，30天后可重新申请" },
   "待缴费": { label: "待缴费", color: "text-[#ad7b00]", bg: "bg-[#fff8e9]", desc: "审核已通过，请尽快完成缴费" },
   "已缴费": { label: "已缴费", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "缴费已提交，等待确认" },
   "已入会": { label: "已入会", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "恭喜！您已是正式会员" },
@@ -43,7 +43,9 @@ export default function TrackPage() {
       if (!data.items || data.items.length === 0) {
         setError("未找到该证件号码对应的申请记录");
       } else {
-        setResult(data.items[0]);
+        const item = data.items[0];
+        if (item.status) item.status = item.status.replace(/\u5be9/g, '\u5ba1');
+        setResult(item);
       }
     } catch (err) {
       setError(err.message || "网络错误，请重试");
@@ -127,7 +129,7 @@ export default function TrackPage() {
                   </div>
                 )}
               </div>
-              {(result.status === "初審不通过" || result.status === "终審不通过") && (
+              {(result.status === "初审不通过" || result.status === "终审不通过") && (
                 <div className="mt-4 rounded-[7px] border border-[#f5d0d0] bg-[#fff5f5] p-3">
                   <p className="text-[13px] font-semibold text-[#c53030]">驳回理由</p>
                   <p className="mt-1 text-[13px] leading-relaxed text-[#8b3a3a]">

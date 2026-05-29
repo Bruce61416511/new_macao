@@ -68,7 +68,7 @@ export default function FinalReviewPage() {
       <div className="flex items-center justify-between border-b border-[#dbe6e4] bg-white px-8 py-5">
         <div>
           <h1 className="text-[24px] font-bold">会员终审</h1>
-          <p className="mt-0.5 text-[13px] text-[#8ba09c]">初審通过的申请 · 理事人工确认</p>
+          <p className="mt-0.5 text-[13px] text-[#8ba09c]">初审通过的申请 · 理事人工确认</p>
         </div>
         <span className="rounded-full bg-[#e7f5f0] px-4 py-1.5 text-[13px] font-semibold text-[#006252]">
           {applications.length} 条待终审
@@ -89,7 +89,7 @@ export default function FinalReviewPage() {
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="text-[48px]">✅</div>
             <p className="mt-3 text-[16px] font-medium text-[#6c777b]">暂无待终审的申请</p>
-            <p className="mt-1 text-[13px] text-[#8ba09c]">所有初審通过的申请已处理完毕</p>
+            <p className="mt-1 text-[13px] text-[#8ba09c]">所有初审通过的申请已处理完毕</p>
           </div>
         ) : (
           <div className="space-y-4">

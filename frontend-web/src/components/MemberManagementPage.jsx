@@ -31,7 +31,9 @@ export default function MemberManagementPage() {
       }
       if (aRes.ok) {
         const data = await aRes.json();
-        setApplications(data.items || []);
+        const appsData = data.items || [];
+        appsData.forEach(a => { if (a.status) a.status = a.status.replace(/\u5be9/g, '\u5ba1'); });
+        setApplications(appsData);
       }
     } catch (e) {
       setMsg(e.message);
@@ -97,12 +99,34 @@ export default function MemberManagementPage() {
     }
   }
 
-  const activeMembers = members.filter(m => m.is_active);
-  const inactiveMembers = members.filter(m => !m.is_active);
+  // Cross-reference members with their latest application status
+  const memberAppStatus = {};
+  applications.forEach(a => {
+    const mid = a.member_id;
+    const uname = (a.username || "").replace(/_upd_\d+$/, "");
+    const idnum = (a.id_number || "").replace(/_upd_\d+$/, "");
+    if (mid) memberAppStatus[mid] = a.status.replace(/\u5be9/g, '\u5ba1');
+    members.forEach(m => {
+      if (!memberAppStatus[m.id] && (m.username === uname || m.id_number === idnum || (m.id_number || "").replace(/_upd_\d+$/, "") === idnum)) {
+        memberAppStatus[m.id] = a.status.replace(/\u5be9/g, '\u5ba1');
+      }
+    });
+  });
+  const membersWithStatus = members.map(m => ({
+    ...m,
+    _appStatus: memberAppStatus[m.id] || null,
+  }));
+  // Group members by application status
+  const memberGroups = {};
+  membersWithStatus.forEach(m => {
+    const key = m._appStatus || "无申请记录";
+    if (!memberGroups[key]) memberGroups[key] = [];
+    memberGroups[key].push(m);
+  });
 
-  const pendingApps = applications.filter(a => a.status === "初審通过" || a.status === "终審通过");
-  const initialRejectedApps = applications.filter(a => a.status === "初審不通过");
-  const finalRejectedApps = applications.filter(a => a.status === "终審不通过");
+  const pendingApps = applications.filter(a => a.status === "初审通过" || a.status === "终审通过");
+  const initialRejectedApps = applications.filter(a => a.status === "初审不通过");
+  const finalRejectedApps = applications.filter(a => a.status === "终审不通过");
   
   const truncate = (s, n) => s && s.length > n ? s.slice(0, n) + "..." : s || "-";
 
@@ -113,10 +137,10 @@ export default function MemberManagementPage() {
   const BACKEND = "http://localhost:8000";
 function statusBadge(status) {
     const colors = {
-      "初審通过": "bg-[#fef9e7] text-[#b7950b]",
-      "终審通过": "bg-[#e7f5f0] text-[#006252]",
-      "初審不通过": "bg-[#fef0f0] text-[#c53030]",
-      "终審不通过": "bg-[#fef0f0] text-[#c53030]",
+      "初审通过": "bg-[#fef9e7] text-[#b7950b]",
+      "终审通过": "bg-[#e7f5f0] text-[#006252]",
+      "初审不通过": "bg-[#fef0f0] text-[#c53030]",
+      "终审不通过": "bg-[#fef0f0] text-[#c53030]",
       "已入会": "bg-[#e7f5f0] text-[#006252]",
     };
     return colors[status] || "bg-[#f2f5f4] text-[#6a7679]";
@@ -161,8 +185,8 @@ function statusBadge(status) {
                 <td className="px-4 py-3 text-[#6a7679]">{m.annual_fee === 0 ? "永久" : (m.annual_fee || "-")}</td>
                 {showStatus && (
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold ${m.is_active ? "bg-[#e7f5f0] text-[#006252]" : "bg-[#fef0f0] text-[#c53030]"}`}>
-                      {m.is_active ? "在籍" : "停用"}
+                    <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold ${m._derivedActive ? "bg-[#e7f5f0] text-[#006252]" : "bg-[#fef0f0] text-[#c53030]"}`}>
+                      {m._derivedActive ? "在籍" : "停用"}
                     </span>
                   </td>
                 )}
@@ -225,11 +249,20 @@ function statusBadge(status) {
     );
   }
 
-  function Section({ title, badge, count, children }) {
+  const STATUS_DISPLAY = {
+  "初审通过": "初审通过",
+  "初审不通过": "初审不通过",
+  "终审通过": "终审通过",
+  "终审不通过": "终审不通过",
+  "待审核": "待审核",
+};
+function statusDisplay(s) { return STATUS_DISPLAY[s] || s; }
+
+function Section({ title, badge, count, children }) {
     return (
       <div className="mb-6">
         <h3 className="text-[16px] font-bold text-[#142528] mb-3">
-          <span className={`inline-block px-3 py-1 rounded-full text-[13px] ${badge}`}>{title}</span>
+          <span className={`inline-block px-3 py-1 rounded-full text-[13px] ${badge}`}>{statusDisplay(title)}</span>
           <span className="ml-2 text-[14px] text-[#6a7679] font-normal">共 {count} 人</span>
         </h3>
         {children}
@@ -259,16 +292,16 @@ function statusBadge(status) {
           <p className="text-center text-[#9ba8aa] py-10">加载中...</p>
         ) : (
           <>
-            {activeMembers.length > 0 && (
-              <Section title={"在籍会员"} badge="text-[#006252] bg-[#e7f5f0]" count={activeMembers.length}>
-                <MemberTable members={activeMembers} />
-              </Section>
-            )}
-            {inactiveMembers.length > 0 && (
-              <Section title={"停用会员"} badge="text-[#c53030] bg-[#fef0f0]" count={inactiveMembers.length}>
-                <MemberTable members={inactiveMembers} />
-              </Section>
-            )}
+            {Object.entries(memberGroups).map(([status, groupMembers]) => {
+              const isOk = status === "已入会";
+              const isBad = status === "终审不通过" || status === "初审不通过";
+              const badgeColor = isOk ? "text-[#006252] bg-[#e7f5f0]" : isBad ? "text-[#c53030] bg-[#fef0f0]" : "text-[#b7950b] bg-[#fef9e7]";
+              return (
+                <Section key={status} title={status} badge={badgeColor} count={groupMembers.length}>
+                  <MemberTable members={groupMembers} showStatus={false} />
+                </Section>
+              );
+            })}
             {pendingApps.length > 0 && (
               <Section title={"待处理申请"} badge="text-[#b7950b] bg-[#fef9e7]" count={pendingApps.length}>
                 <AppTable apps={pendingApps} />
@@ -284,7 +317,7 @@ function statusBadge(status) {
                 <AppTable apps={finalRejectedApps} />
               </Section>
             )}
-                        {members.length === 0 && applications.length === 0 && (
+                        {membersWithStatus.length === 0 && applications.length === 0 && (
               <p className="text-center text-[#9ba8aa] py-10">暂无数据</p>
             )}
           </>
