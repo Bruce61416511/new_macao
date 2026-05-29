@@ -1,4 +1,4 @@
-const API_BASE = "/v1";
+﻿const API_BASE = "/v1";
 
 function getToken() {
   return sessionStorage.getItem("token");
@@ -51,3 +51,10 @@ export async function getMyProfile() {
 
 export { getToken, setToken };
 export default request;
+
+export async function checkDuplicate(username, idNumber) {
+  const params = new URLSearchParams();
+  if (username) params.set("username", username);
+  if (idNumber) params.set("id_number", idNumber);
+  return request(`/applications/check?${params.toString()}`);
+}

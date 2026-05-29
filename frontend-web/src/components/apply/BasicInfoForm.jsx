@@ -1,4 +1,5 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
+import { checkDuplicate } from "../../services/api.js";
 
 const TIER_OPTIONS = [
   { value: "普通会员", label: "普通会员", desc: "适合个人从业者，年费 500 澳门元" },
@@ -28,16 +29,57 @@ function ErrorText({ children }) {
   return <p className="mt-1 text-[12px] font-medium text-red-500">{children}</p>;
 }
 
+function ConflictWarning({ children }) {
+  if (!children) return null;
+  return <p className="mb-1.5 text-[12px] font-medium text-red-500">{children}</p>;
+}
+
 export default function BasicInfoForm({ data, onChange, errors }) {
   const set = (field, value) => onChange({ ...data, [field]: value });
+  const [conflicts, setConflicts] = useState({});
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    const username = data.username || "";
+    const idNumber = data.id_number || "";
+
+    if (username.length < 2 && idNumber.length < 15) {
+      setConflicts({});
+      return;
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const u = username.length >= 2 ? username : null;
+        const id = idNumber.length >= 15 ? idNumber : null;
+        if (!u && !id) {
+          setConflicts({});
+          return;
+        }
+        const result = await checkDuplicate(u, id);
+        const next = {};
+        if (result.username_exists) next.username = "该用户名已被占用，请更换";
+        if (result.id_number_exists) next.id_number = "该证件号码已被注册，请检查";
+        setConflicts(next);
+      } catch {
+        // Silently ignore network errors
+      }
+    }, 600);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [data.username, data.id_number]);
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-5">
         <div>
           <Label required>用户名</Label>
+          <ConflictWarning>{conflicts.username}</ConflictWarning>
           <input
-            className={fieldClass(errors?.username)}
+            className={fieldClass(errors?.username || conflicts.username)}
             placeholder="字母或数字，2-50 位"
             autoComplete="off"
             value={data.username || ""}
@@ -73,8 +115,9 @@ export default function BasicInfoForm({ data, onChange, errors }) {
         </div>
         <div>
           <Label required>证件号码</Label>
+          <ConflictWarning>{conflicts.id_number}</ConflictWarning>
           <input
-            className={fieldClass(errors?.id_number)}
+            className={fieldClass(errors?.id_number || conflicts.id_number)}
             placeholder="身份证 / 护照号码，15-18 位"
             autoComplete="off"
             value={data.id_number || ""}

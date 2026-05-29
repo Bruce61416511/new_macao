@@ -1,16 +1,19 @@
-import uuid
+﻿import uuid
 import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from pydantic import BaseModel, Field
 
 from ..core.database import get_db
 from ..core.security import require_role
 from ..services.application_service import ApplicationService
 from ..services.screening_service import ScreeningService
+from ..models.application import Application
+from ..models.member import Member
 
 router = APIRouter(prefix="/v1/applications", tags=["applications"])
 
@@ -50,6 +53,35 @@ class ResubmitRequest(BaseModel):
     password: str | None = None
     requested_tier: str | None = None
 
+
+@router.get("/check", response_model=dict)
+async def check_duplicate(
+    username: str | None = Query(default=None),
+    id_number: str | None = Query(default=None),
+    db: AsyncSession = Depends(get_db),
+):
+    """检查用户名或身份证号是否已被占用（含申请记录和已入会会员）"""
+    result = {"username_exists": False, "id_number_exists": False}
+
+    if username:
+        app_exists = await db.execute(
+            select(Application).where(Application.username == username)
+        )
+        member_exists = await db.execute(
+            select(Member).where(Member.username == username)
+        )
+        result["username_exists"] = app_exists.scalar_one_or_none() is not None or member_exists.scalar_one_or_none() is not None
+
+    if id_number:
+        app_exists = await db.execute(
+            select(Application).where(Application.id_number == id_number)
+        )
+        member_exists = await db.execute(
+            select(Member).where(Member.id_number == id_number)
+        )
+        result["id_number_exists"] = app_exists.scalar_one_or_none() is not None or member_exists.scalar_one_or_none() is not None
+
+    return result
 
 
 @router.get("", response_model=dict)
@@ -105,29 +137,27 @@ async def screening(app_id: str, body: ScreeningRequest, db: AsyncSession = Depe
 async def final_review(app_id: str, body: FinalReviewRequest, user: dict = Depends(require_role("root")), db: AsyncSession = Depends(get_db)):
     app_svc = ApplicationService(db)
     app = await app_svc.get_application(uuid.UUID(app_id))
-    new_status = "终審通过" if body.result == "pass" else "终審不通过"
+    new_status = "终审通过" if body.result == "pass" else "终审不通过"
     await app_svc.transition_status(app.id, new_status, {"final_review_result": body.comment})
-    if new_status == "终審通过":
-        # Check if this is a member info update
+    if new_status == "终审通过":
         if app.member_id:
-            from ..models.member import Member
-            member_result = await db.execute(__import__("sqlalchemy").select(Member).where(Member.id == app.member_id))
+            from ..models.member import Member as M
+            member_result = await db.execute(select(M).where(M.id == app.member_id))
             member = member_result.scalar_one_or_none()
             if member:
                 tier_changed = app.requested_tier and app.requested_tier != member.tier
-                # Update member info
                 member.phone = app.applicant_phone
                 member.email = app.applicant_email
                 member.real_name = app.applicant_name
                 if tier_changed:
                     member.tier = app.requested_tier
                     member.annual_fee = {"普通会员": 500, "高级会员": 1000}.get(app.requested_tier, member.annual_fee)
-                    member.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+                    member.updated_at = datetime.now(timezone.utc)
                     await db.flush()
                     await app_svc.transition_status(app.id, "待缴费")
                     app = await app_svc.get_application(uuid.UUID(app_id))
                 else:
-                    member.updated_at = __import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+                    member.updated_at = datetime.now(timezone.utc)
                     await db.flush()
                     app.status = "已入会"
                     await db.flush()
@@ -153,9 +183,8 @@ async def upload_payment_proof(app_id: str, file: UploadFile = File(...), db: As
     return {"status": app.status, "payment_proof_url": app.payment_proof_url}
 
 
-
 class VerifyPaymentRequest(BaseModel):
-    action: str = "verify"  # verify | reject
+    action: str = "verify"
 
 
 @router.post("/{app_id}/verify-payment", response_model=dict)
