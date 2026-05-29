@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 const MEMBERS_API = "/v1/admin/members";
 const APPS_API = "/v1/admin/members/applications";
@@ -103,7 +103,14 @@ export default function MemberManagementPage() {
   const pendingApps = applications.filter(a => a.status === "初審通过" || a.status === "终審通过");
   const rejectedApps = applications.filter(a => a.status === "初審不通过" || a.status === "终審不通过");
   
-  function statusBadge(status) {
+  const truncate = (s, n) => s && s.length > n ? s.slice(0, n) + "..." : s || "-";
+
+  function parseFiles(raw) {
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch { return [raw]; }
+  }
+  const BACKEND = "http://localhost:8000";
+function statusBadge(status) {
     const colors = {
       "初審通过": "bg-[#fef9e7] text-[#b7950b]",
       "终審通过": "bg-[#e7f5f0] text-[#006252]",
@@ -122,12 +129,16 @@ export default function MemberManagementPage() {
             <tr className="bg-[#f4f8f7] text-left text-[#4a5c5f] font-semibold">
               <th className="px-4 py-3">用户名</th>
               <th className="px-4 py-3">姓名</th>
+              <th className="px-4 py-3">身份证</th>
               <th className="px-4 py-3">手机</th>
               <th className="px-4 py-3">邮箱</th>
               <th className="px-4 py-3">等级</th>
               <th className="px-4 py-3">年费</th>
               {showStatus && <th className="px-4 py-3">状态</th>}
               <th className="px-4 py-3">入会时间</th>
+              <th className="px-4 py-3">从业经历</th>
+              <th className="px-4 py-3">资质</th>
+              <th className="px-4 py-3">资质文件</th>
               <th className="px-4 py-3 w-[140px]">操作</th>
             </tr>
           </thead>
@@ -136,6 +147,7 @@ export default function MemberManagementPage() {
               <tr key={m.id} className="border-t border-[#eef3f1] hover:bg-[#f9fbfa]">
                 <td className="px-4 py-3 text-[#142528]">{m.username}</td>
                 <td className="px-4 py-3 text-[#142528]">{m.real_name || m.applicant_name || "-"}</td>
+                <td className="px-4 py-3 text-[#6a7679] text-[12px]">{m.id_number || "-"}</td>
                 <td className="px-4 py-3 text-[#6a7679]">{m.phone || m.applicant_phone || "-"}</td>
                 <td className="px-4 py-3 text-[#6a7679]">{m.email || m.applicant_email || "-"}</td>
                 <td className="px-4 py-3">
@@ -154,6 +166,9 @@ export default function MemberManagementPage() {
                   </td>
                 )}
                 <td className="px-4 py-3 text-[#9ba8aa] text-[12px]">{m.created_at ? new Date(m.created_at).toLocaleDateString("zh-CN") : "-"}</td>
+                <td className="px-4 py-3 text-[#6a7679] text-[12px] max-w-[140px] truncate" title={m.career_history}>{truncate(m.career_history, 15)}</td>
+                <td className="px-4 py-3 text-[#6a7679] text-[12px] max-w-[140px] truncate" title={m.qualifications}>{truncate(m.qualifications, 15)}</td>
+                <td className="px-4 py-3 text-[12px]">{(() => { const files = parseFiles(m.qualification_files); return files.length > 0 ? files.map((f, i) => React.createElement("a", { key: i, href: BACKEND + f, target: "_blank", className: "text-[#006252] hover:underline mr-2" }, "附件" + (i+1))) : "-"; })()}</td>
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
                     <button onClick={() => openEdit(m)} className="text-[13px] font-medium text-[#006252] hover:underline">编辑</button>
@@ -176,8 +191,12 @@ export default function MemberManagementPage() {
             <tr className="bg-[#f4f8f7] text-left text-[#4a5c5f] font-semibold">
               <th className="px-4 py-3">用户名</th>
               <th className="px-4 py-3">申请人</th>
+              <th className="px-4 py-3">身份证</th>
               <th className="px-4 py-3">电话</th>
               <th className="px-4 py-3">申请等级</th>
+              <th className="px-4 py-3">从业经历</th>
+              <th className="px-4 py-3">资质</th>
+              <th className="px-4 py-3">资质文件</th>
               <th className="px-4 py-3">状态</th>
               <th className="px-4 py-3">提交时间</th>
             </tr>
@@ -187,8 +206,12 @@ export default function MemberManagementPage() {
               <tr key={a.id} className="border-t border-[#eef3f1] hover:bg-[#f9fbfa]">
                 <td className="px-4 py-3 text-[#142528]">{a.username}</td>
                 <td className="px-4 py-3 text-[#142528]">{a.applicant_name || "-"}</td>
+                <td className="px-4 py-3 text-[#6a7679] text-[12px]">{a.id_number || "-"}</td>
                 <td className="px-4 py-3 text-[#6a7679]">{a.applicant_phone || "-"}</td>
                 <td className="px-4 py-3 text-[#6a7679]">{a.requested_tier || "-"}</td>
+                <td className="px-4 py-3 text-[#6a7679] text-[12px] max-w-[140px] truncate" title={a.career_history}>{truncate(a.career_history, 15)}</td>
+                <td className="px-4 py-3 text-[#6a7679] text-[12px] max-w-[140px] truncate" title={a.qualifications}>{truncate(a.qualifications, 15)}</td>
+                <td className="px-4 py-3 text-[12px]">{(() => { const files = parseFiles(a.qualification_files); return files.length > 0 ? files.map((f, i) => React.createElement("a", { key: i, href: BACKEND + f, target: "_blank", className: "text-[#006252] hover:underline mr-2" }, "附件" + (i+1))) : "-"; })()}</td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold ${statusBadge(a.status)}`}>{a.status}</span>
                 </td>

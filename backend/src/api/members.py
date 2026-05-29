@@ -268,5 +268,8 @@ async def admin_list_applications(
             "requested_tier": app.get("requested_tier", ""),
             "submitted_at": app.get("submitted_at"),
             "member_id": app.get("member_id"),
+            "career_history": app.get("career_history", ""),
+            "qualifications": app.get("qualifications", ""),
+            "qualification_files": app.get("qualification_files", ""),
         })
     return {"items": items, "total": len(items), "page": page}
