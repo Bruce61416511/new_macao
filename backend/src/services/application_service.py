@@ -184,6 +184,7 @@ class ApplicationService:
             "submitted_at": app.submitted_at.isoformat() if app.submitted_at else None,
             "member_id": str(app.member_id) if app.member_id else None,
             "payment_proof_url": app.payment_proof_url,
+            "payment_reject_reason": app.payment_reject_reason,
             "requested_tier": app.requested_tier,
             "screening_result": app.screening_result,
             "final_review_result": app.final_review_result,

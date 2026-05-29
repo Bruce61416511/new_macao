@@ -11,6 +11,7 @@ import TrackPage from "./components/TrackPage.jsx";
 import EventCenterPage from "./components/EventCenterPage.jsx";
 import MemberManagementPage from "./components/MemberManagementPage.jsx";
 import FinalReviewPage from "./components/FinalReviewPage.jsx";
+import PaymentApprovalPage from "./components/PaymentApprovalPage.jsx";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -58,6 +59,16 @@ function AppRoutes() {
       if (payload2.role !== "root") { window.location.href = "/member"; return null; }
     } catch { window.location.href = "/login"; return null; }
     return <FinalReviewPage />;
+  }
+
+  if (path === "/admin/payment-approval") {
+    const token3 = sessionStorage.getItem("token");
+    if (!token3) { window.location.href = "/login"; return null; }
+    try {
+      const payload3 = JSON.parse(atob(token3.split(".")[0]));
+      if (payload3.role !== "root") { window.location.href = "/member"; return null; }
+    } catch { window.location.href = "/login"; return null; }
+    return <PaymentApprovalPage />;
   }
 
   if (path === "/admin/members") {

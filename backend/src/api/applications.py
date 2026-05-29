@@ -210,6 +210,7 @@ async def upload_payment_proof(app_id: str, file: UploadFile = File(...), db: As
 
 class VerifyPaymentRequest(BaseModel):
     action: str = "verify"
+    reject_reason: str = ""
 
 
 @router.post("/{app_id}/verify-payment", response_model=dict)
@@ -218,8 +219,9 @@ async def verify_payment(app_id: str, body: VerifyPaymentRequest | None = None, 
     action = body.action if body else "verify"
     if action == "reject":
         app = await app_svc.get_application(uuid.UUID(app_id))
-        await app_svc.transition_status(app.id, "待缴费", {"payment_rejected": True})
-        return {"application_id": str(app.id), "status": "待缴费"}
+        reject_reason = body.reject_reason if body else ""
+        await app_svc.transition_status(app.id, "待缴费", {"payment_rejected": True, "payment_reject_reason": reject_reason})
+        return {"application_id": str(app.id), "status": "待缴费", "reject_reason": reject_reason}
     result = await app_svc.verify_payment_and_create_member(uuid.UUID(app_id), uuid.uuid4())
     return result
 

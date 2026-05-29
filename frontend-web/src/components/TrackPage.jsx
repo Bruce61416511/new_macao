@@ -166,6 +166,14 @@ export default function TrackPage() {
                   </p>
                 </div>
               )}
+              {result.payment_reject_reason && (
+                <div className="mt-4 rounded-[7px] border border-[#f5d0d0] bg-[#fff5f5] p-3">
+                  <p className="text-[13px] font-semibold text-[#c53030]">缴费驳回理由</p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-[#8b3a3a]">
+                    {result.payment_reject_reason}
+                  </p>
+                </div>
+              )}
               {result.status === "待缴费" && !uploadDone && (
                 <div className="mt-4 rounded-[7px] border border-[#d4e8e3] bg-[#f4faf7] p-4">
                   <p className="text-[13px] font-semibold text-[#004f46]">提交缴费凭证</p>

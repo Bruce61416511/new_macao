@@ -34,6 +34,7 @@ class Application(Base):
     payment_proof_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     payment_verified_by: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("members.id"), nullable=True)
     payment_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    payment_reject_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     member_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("members.id"), nullable=True)
     submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     payment_due_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
