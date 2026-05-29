@@ -1,0 +1,9 @@
+﻿__pycache__/
+.env
+*.db
+xiaoyang-source.zip
+uploads/
+chroma_data/
+node_modules/
+dist/
+*.log
