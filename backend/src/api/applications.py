@@ -181,6 +181,15 @@ async def final_review(app_id: str, body: FinalReviewRequest, user: dict = Depen
         else:
             await app_svc.transition_status(app.id, "待缴费")
             app = await app_svc.get_application(uuid.UUID(app_id))
+    else:
+        if app.member_id:
+            from ..models.member import Member as M
+            member_result = await db.execute(select(M).where(M.id == app.member_id))
+            member = member_result.scalar_one_or_none()
+            if member and member.is_active:
+                member.is_active = False
+                member.updated_at = datetime.now(timezone.utc)
+                await db.flush()
     return {"status": app.status}
 
 
