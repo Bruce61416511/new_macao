@@ -127,6 +127,7 @@ export default function MemberManagementPage() {
   const pendingApps = applications.filter(a => a.status === "初审通过" || a.status === "终审通过");
   const initialRejectedApps = applications.filter(a => a.status === "初审不通过");
   const finalRejectedApps = applications.filter(a => a.status === "终审不通过");
+  const paymentPendingApps = applications.filter(a => a.status === "待缴费");
   
   const truncate = (s, n) => s && s.length > n ? s.slice(0, n) + "..." : s || "-";
 
@@ -292,7 +293,7 @@ function Section({ title, badge, count, children }) {
           <p className="text-center text-[#9ba8aa] py-10">加载中...</p>
         ) : (
           <>
-            {Object.entries(memberGroups).map(([status, groupMembers]) => {
+            {Object.entries(memberGroups).filter(([s]) => s !== "待缴费").map(([status, groupMembers]) => {
               const isOk = status === "已入会";
               const isBad = status === "终审不通过" || status === "初审不通过";
               const badgeColor = isOk ? "text-[#006252] bg-[#e7f5f0]" : isBad ? "text-[#c53030] bg-[#fef0f0]" : "text-[#b7950b] bg-[#fef9e7]";
@@ -315,6 +316,11 @@ function Section({ title, badge, count, children }) {
             {finalRejectedApps.length > 0 && (
               <Section title={"终审不通过"} badge="text-[#c53030] bg-[#fef0f0]" count={finalRejectedApps.length}>
                 <AppTable apps={finalRejectedApps} />
+              </Section>
+            )}
+            {paymentPendingApps.length > 0 && (
+              <Section title={"待缴费"} badge="text-[#b7950b] bg-[#fef9e7]" count={paymentPendingApps.length}>
+                <AppTable apps={paymentPendingApps} />
               </Section>
             )}
                         {membersWithStatus.length === 0 && applications.length === 0 && (

@@ -30,12 +30,38 @@ class WxLoginRequest(BaseModel):
 async def login(req: LoginRequest, db = Depends(get_db)):
     result = await db.execute(select(Member).where(Member.username == req.username))
     member = result.scalar_one_or_none()
-    if not member or not verify_password(req.password, member.password_hash):
+    if not member:
+        # Check if user has a rejected application
+        from ..models.application import Application
+        app_result = await db.execute(
+            select(Application).where(Application.username == req.username)
+        )
+        app = app_result.scalar_one_or_none()
+        if app and app.status in ("初審不通过", "終審不通过"):
+            raise HTTPException(status_code=403, detail="申请已被驳回")
+        if app and app.status == "待缴费":
+            raise HTTPException(status_code=403, detail="请先完成缴费")
+        raise HTTPException(status_code=401, detail="用户名或密码错误")
+    if not verify_password(req.password, member.password_hash):
         raise HTTPException(status_code=401, detail="用户名或密码错误")
     tier_to_role = {"理事": "root"}
     role = tier_to_role.get(member.tier, member.tier)
+    if role != "root":
+        from ..models.application import Application
+        app_result = await db.execute(
+            select(Application).where(
+                (Application.member_id == member.id) |
+                (Application.username == member.username)
+            ).order_by(Application.submitted_at.desc()).limit(1)
+        )
+        latest_app = app_result.scalar_one_or_none()
+        if latest_app and latest_app.status != "已入会":
+            status_msg = {"待缴费": "请先完成缴费", "終審不通过": "申请已被驳回", "初審不通过": "申请已被驳回"}.get(latest_app.status, "账号状态异常")
+            raise HTTPException(status_code=403, detail=status_msg)
+        if not member.is_active:
+            raise HTTPException(status_code=403, detail="该账号当前不在籍无法登录")
     token = create_access_token(data={"sub": str(member.id), "username": member.username, "role": role})
-    return TokenResponse(access_token=token)
+
 
 
 @router.post("/wx-login", response_model=TokenResponse)

@@ -173,11 +173,11 @@ async def final_review(app_id: str, body: FinalReviewRequest, user: dict = Depen
                     await app_svc.transition_status(app.id, "待缴费")
                     app = await app_svc.get_application(uuid.UUID(app_id))
                 else:
+                    member.is_active = False
                     member.updated_at = datetime.now(timezone.utc)
                     await db.flush()
-                    app.status = "已入会"
-                    await db.flush()
-                    return {"status": app.status}
+                    await app_svc.transition_status(app.id, "待缴费")
+                    app = await app_svc.get_application(uuid.UUID(app_id))
         else:
             await app_svc.transition_status(app.id, "待缴费")
             app = await app_svc.get_application(uuid.UUID(app_id))
