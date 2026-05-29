@@ -79,6 +79,7 @@ class ApplicationService:
             for k, v in extra.items():
                 setattr(app, k, v)
         if new_status == "待缴费":
+            app.payment_proof_url = None
             app.payment_due_date = datetime.now(timezone.utc) + timedelta(days=7)
         await self.db.flush()
         return app
@@ -174,6 +175,11 @@ class ApplicationService:
             "applicant_name": app.applicant_name,
             "applicant_phone": app.applicant_phone,
             "id_number": app.id_number,
+            "applicant_email": app.applicant_email,
+            "applicant_address": app.applicant_address,
+            "career_history": app.career_history,
+            "qualifications": app.qualifications,
+            "qualification_files": app.qualification_files,
             "status": app.status,
             "submitted_at": app.submitted_at.isoformat() if app.submitted_at else None,
             "member_id": str(app.member_id) if app.member_id else None,

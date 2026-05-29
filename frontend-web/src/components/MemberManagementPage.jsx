@@ -1,39 +1,24 @@
 import React, { useState, useEffect } from "react";
 
-const MEMBERS_API = "/v1/admin/members";
-const APPS_API = "/v1/admin/members/applications";
+const APPS_API = "/v1/admin/members/applications-summary";
 
 export default function MemberManagementPage() {
-  const [members, setMembers] = useState([]);
-  const [applications, setApplications] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
   const [editTarget, setEditTarget] = useState(null);
   const [editForm, setEditForm] = useState({});
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const pageSize = 50;
 
   const token = sessionStorage.getItem("token");
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
-  async function fetchData(p = page) {
+  async function fetchData() {
     setLoading(true);
     try {
-      const [mRes, aRes] = await Promise.all([
-        fetch(`${MEMBERS_API}?page=${p}&page_size=${pageSize}`, { headers: authHeaders }),
-        fetch(APPS_API, { headers: authHeaders }),
-      ]);
-      if (mRes.ok) {
-        const data = await mRes.json();
-        setMembers(data.items || []);
-        setTotal(data.total || 0);
-      }
-      if (aRes.ok) {
-        const data = await aRes.json();
-        const appsData = data.items || [];
-        appsData.forEach(a => { if (a.status) a.status = a.status.replace(/\u5be9/g, '\u5ba1'); });
-        setApplications(appsData);
+      const res = await fetch(APPS_API, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data.items || []);
       }
     } catch (e) {
       setMsg(e.message);
@@ -44,20 +29,17 @@ export default function MemberManagementPage() {
 
   useEffect(() => { fetchData(); }, []);
 
-  function openEdit(member) {
-    setEditTarget(member.id);
+  function openEdit(user) {
+    setEditTarget(user.id);
     setEditForm({
-      username: member.username || "",
-      real_name: member.real_name || "",
-      phone: member.phone || "",
-      email: member.email || "",
-      tier: member.tier || "",
-      annual_fee: member.annual_fee ?? 0,
-      is_active: member.is_active,
-      address: member.address || "",
-      career_history: member.career_history || "",
-      qualifications: member.qualifications || "",
-      qualification_files: member.qualification_files || "",
+      username: user.username || "",
+      real_name: user.applicant_name || "",
+      phone: user.applicant_phone || "",
+      email: user.applicant_email || "",
+      tier: user.requested_tier || "",
+      career_history: user.career_history || "",
+      qualifications: user.qualifications || "",
+      qualification_files: user.qualification_files || "",
     });
   }
 
@@ -66,8 +48,13 @@ export default function MemberManagementPage() {
   }
 
   async function handleSave() {
+    const memberId = users.find(u => u.id === editTarget)?.member_id;
+    if (!memberId) {
+      setMsg("该用户尚未创建会员记录，无法编辑");
+      return;
+    }
     try {
-      const res = await fetch(`${MEMBERS_API}/${editTarget}`, {
+      const res = await fetch(`/v1/admin/members/${memberId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify(editForm),
@@ -84,10 +71,16 @@ export default function MemberManagementPage() {
     }
   }
 
-  async function handleDelete(memberId) {
+  async function handleDelete(userId) {
+    const user = users.find(u => u.id === userId);
+    const memberId = user?.member_id;
+    if (!memberId) {
+      setMsg("该用户没有会员记录，无法删除");
+      return;
+    }
     if (!confirm("确认删除该会员？此操作不可恢复。")) return;
     try {
-      const res = await fetch(`${MEMBERS_API}/${memberId}`, { method: "DELETE", headers: authHeaders });
+      const res = await fetch(`/v1/admin/members/${memberId}`, { method: "DELETE", headers: authHeaders });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
         throw new Error(d.detail || "删除失败");
@@ -99,234 +92,135 @@ export default function MemberManagementPage() {
     }
   }
 
-  // Cross-reference members with their latest application status
-  const memberAppStatus = {};
-  applications.forEach(a => {
-    const mid = a.member_id;
-    const uname = (a.username || "").replace(/_upd_\d+$/, "");
-    const idnum = (a.id_number || "").replace(/_upd_\d+$/, "");
-    if (mid) memberAppStatus[mid] = a.status.replace(/\u5be9/g, '\u5ba1');
-    members.forEach(m => {
-      if (!memberAppStatus[m.id] && (m.username === uname || m.id_number === idnum || (m.id_number || "").replace(/_upd_\d+$/, "") === idnum)) {
-        memberAppStatus[m.id] = a.status.replace(/\u5be9/g, '\u5ba1');
-      }
-    });
-  });
-  const membersWithStatus = members.map(m => ({
-    ...m,
-    _appStatus: memberAppStatus[m.id] || null,
-  }));
-  // Group members by application status
-  const memberGroups = {};
-  membersWithStatus.forEach(m => {
-    const key = m._appStatus || "无申请记录";
-    if (!memberGroups[key]) memberGroups[key] = [];
-    memberGroups[key].push(m);
+  const STATUS_ORDER = [
+    "待審核", "待审核",
+    "初審通过", "初审通过",
+    "初審不通过", "初审不通过",
+    "终審通过", "终审通过",
+    "终審不通过", "终审不通过",
+    "待缴费",
+    "已缴费",
+    "已入会",
+  ];
+
+  const sortedUsers = [...users].sort((a, b) => {
+    const ai = STATUS_ORDER.indexOf(a.status);
+    const bi = STATUS_ORDER.indexOf(b.status);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
   });
 
-  const pendingApps = applications.filter(a => a.status === "初审通过" || a.status === "终审通过");
-  const initialRejectedApps = applications.filter(a => a.status === "初审不通过");
-  const finalRejectedApps = applications.filter(a => a.status === "终审不通过");
-  const paymentPendingApps = applications.filter(a => a.status === "待缴费");
-  
+  const totalUsers = users.length;
+
   const truncate = (s, n) => s && s.length > n ? s.slice(0, n) + "..." : s || "-";
 
   function parseFiles(raw) {
     if (!raw) return [];
     try { return JSON.parse(raw); } catch { return [raw]; }
   }
+
   const BACKEND = "http://localhost:8000";
-function statusBadge(status) {
-    const colors = {
-      "初审通过": "bg-[#fef9e7] text-[#b7950b]",
-      "终审通过": "bg-[#e7f5f0] text-[#006252]",
-      "初审不通过": "bg-[#fef0f0] text-[#c53030]",
-      "终审不通过": "bg-[#fef0f0] text-[#c53030]",
-      "已入会": "bg-[#e7f5f0] text-[#006252]",
+
+  function statusBadge(status) {
+    const col = {
+      "待審核": "text-[#8b6914] bg-[#fef9e7]", "待审核": "text-[#8b6914] bg-[#fef9e7]",
+      "初審通过": "text-[#0d7d4a] bg-[#eafaf1]", "初审通过": "text-[#0d7d4a] bg-[#eafaf1]",
+      "初審不通过": "text-[#c0392b] bg-[#fdedec]", "初审不通过": "text-[#c0392b] bg-[#fdedec]",
+      "终審通过": "text-[#1a6fb5] bg-[#e8f4fd]", "终审通过": "text-[#1a6fb5] bg-[#e8f4fd]",
+      "终審不通过": "text-[#c0392b] bg-[#fdedec]", "终审不通过": "text-[#c0392b] bg-[#fdedec]",
+      "待缴费": "text-[#b7950b] bg-[#fef9e7]",
+      "已缴费": "text-[#7d3c98] bg-[#f4ecf7]",
+      "已入会": "text-[#0d7d4a] bg-[#eafaf1]",
     };
-    return colors[status] || "bg-[#f2f5f4] text-[#6a7679]";
+    const cls = col[status] || "text-[#6a7679] bg-[#f0f3f3]";
+    return <span className={`inline-block rounded-[4px] px-2 py-0.5 text-[12px] font-bold ${cls}`}>{status}</span>;
   }
 
-  function MemberTable({ members, showStatus = true }) {
-    return (
-      <div className="overflow-x-auto rounded-[10px] border border-[#dde7e5] bg-white shadow-sm">
-        <table className="w-full text-[13px]">
-          <thead>
-            <tr className="bg-[#f4f8f7] text-left text-[#4a5c5f] font-semibold">
-              <th className="px-4 py-3">用户名</th>
-              <th className="px-4 py-3">姓名</th>
-              <th className="px-4 py-3">身份证</th>
-              <th className="px-4 py-3">手机</th>
-              <th className="px-4 py-3">邮箱</th>
-              <th className="px-4 py-3">等级</th>
-              <th className="px-4 py-3">年费</th>
-              {showStatus && <th className="px-4 py-3">状态</th>}
-              <th className="px-4 py-3">入会时间</th>
-              <th className="px-4 py-3">从业经历</th>
-              <th className="px-4 py-3">资质</th>
-              <th className="px-4 py-3">资质文件</th>
-              <th className="px-4 py-3 w-[140px]">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {members.map(m => (
-              <tr key={m.id} className="border-t border-[#eef3f1] hover:bg-[#f9fbfa]">
-                <td className="px-4 py-3 text-[#142528]">{m.username}</td>
-                <td className="px-4 py-3 text-[#142528]">{m.real_name || m.applicant_name || "-"}</td>
-                <td className="px-4 py-3 text-[#6a7679] text-[12px]">{m.id_number || "-"}</td>
-                <td className="px-4 py-3 text-[#6a7679]">{m.phone || m.applicant_phone || "-"}</td>
-                <td className="px-4 py-3 text-[#6a7679]">{m.email || m.applicant_email || "-"}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold ${
-                    (m.tier || m.requested_tier) === "root" ? "bg-[#fef0f0] text-[#c53030]" :
-                    (m.tier || m.requested_tier) === "理事" ? "bg-[#fef9e7] text-[#b7950b]" :
-                    "bg-[#e7f5f0] text-[#006252]"
-                  }`}>{m.tier || m.requested_tier || "-"}</span>
-                </td>
-                <td className="px-4 py-3 text-[#6a7679]">{m.annual_fee === 0 ? "永久" : (m.annual_fee || "-")}</td>
-                {showStatus && (
-                  <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold ${m._derivedActive ? "bg-[#e7f5f0] text-[#006252]" : "bg-[#fef0f0] text-[#c53030]"}`}>
-                      {m._derivedActive ? "在籍" : "停用"}
-                    </span>
-                  </td>
-                )}
-                <td className="px-4 py-3 text-[#9ba8aa] text-[12px]">{m.created_at ? new Date(m.created_at).toLocaleDateString("zh-CN") : "-"}</td>
-                <td className="px-4 py-3 text-[#6a7679] text-[12px] max-w-[140px] truncate" title={m.career_history}>{truncate(m.career_history, 15)}</td>
-                <td className="px-4 py-3 text-[#6a7679] text-[12px] max-w-[140px] truncate" title={m.qualifications}>{truncate(m.qualifications, 15)}</td>
-                <td className="px-4 py-3 text-[12px]">{(() => { const files = parseFiles(m.qualification_files); return files.length > 0 ? files.map((f, i) => React.createElement("a", { key: i, href: BACKEND + f, target: "_blank", className: "text-[#006252] hover:underline mr-2" }, "附件" + (i+1))) : "-"; })()}</td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    <button onClick={() => openEdit(m)} className="text-[13px] font-medium text-[#006252] hover:underline">编辑</button>
-                    <button onClick={() => handleDelete(m.id)} className="text-[13px] font-medium text-red-500 hover:underline">删除</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function AppTable({ apps }) {
-    return (
-      <div className="overflow-x-auto rounded-[10px] border border-[#dde7e5] bg-white shadow-sm">
-        <table className="w-full text-[13px]">
-          <thead>
-            <tr className="bg-[#f4f8f7] text-left text-[#4a5c5f] font-semibold">
-              <th className="px-4 py-3">用户名</th>
-              <th className="px-4 py-3">申请人</th>
-              <th className="px-4 py-3">身份证</th>
-              <th className="px-4 py-3">电话</th>
-              <th className="px-4 py-3">申请等级</th>
-              <th className="px-4 py-3">从业经历</th>
-              <th className="px-4 py-3">资质</th>
-              <th className="px-4 py-3">资质文件</th>
-              <th className="px-4 py-3">状态</th>
-              <th className="px-4 py-3">提交时间</th>
-            </tr>
-          </thead>
-          <tbody>
-            {apps.map(a => (
-              <tr key={a.id} className="border-t border-[#eef3f1] hover:bg-[#f9fbfa]">
-                <td className="px-4 py-3 text-[#142528]">{a.username}</td>
-                <td className="px-4 py-3 text-[#142528]">{a.applicant_name || "-"}</td>
-                <td className="px-4 py-3 text-[#6a7679] text-[12px]">{a.id_number || "-"}</td>
-                <td className="px-4 py-3 text-[#6a7679]">{a.applicant_phone || "-"}</td>
-                <td className="px-4 py-3 text-[#6a7679]">{a.requested_tier || "-"}</td>
-                <td className="px-4 py-3 text-[#6a7679] text-[12px] max-w-[140px] truncate" title={a.career_history}>{truncate(a.career_history, 15)}</td>
-                <td className="px-4 py-3 text-[#6a7679] text-[12px] max-w-[140px] truncate" title={a.qualifications}>{truncate(a.qualifications, 15)}</td>
-                <td className="px-4 py-3 text-[12px]">{(() => { const files = parseFiles(a.qualification_files); return files.length > 0 ? files.map((f, i) => React.createElement("a", { key: i, href: BACKEND + f, target: "_blank", className: "text-[#006252] hover:underline mr-2" }, "附件" + (i+1))) : "-"; })()}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-0.5 rounded-full text-[12px] font-bold ${statusBadge(a.status)}`}>{a.status}</span>
-                </td>
-                <td className="px-4 py-3 text-[#9ba8aa] text-[12px]">{a.submitted_at ? new Date(a.submitted_at).toLocaleDateString("zh-CN") : "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  const STATUS_DISPLAY = {
-  "初审通过": "初审通过",
-  "初审不通过": "初审不通过",
-  "终审通过": "终审通过",
-  "终审不通过": "终审不通过",
-  "待审核": "待审核",
-};
-function statusDisplay(s) { return STATUS_DISPLAY[s] || s; }
-
-function Section({ title, badge, count, children }) {
-    return (
-      <div className="mb-6">
-        <h3 className="text-[16px] font-bold text-[#142528] mb-3">
-          <span className={`inline-block px-3 py-1 rounded-full text-[13px] ${badge}`}>{statusDisplay(title)}</span>
-          <span className="ml-2 text-[14px] text-[#6a7679] font-normal">共 {count} 人</span>
-        </h3>
-        {children}
-      </div>
-    );
+  function formatDate(iso) {
+    if (!iso) return "-";
+    const d = new Date(iso);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fbf9] pl-[240px]">
-      <header className="sticky top-0 z-30 flex h-[96px] items-center justify-between bg-white/72 px-11 backdrop-blur-xl">
-        <h1 className="font-serifCn text-[34px] font-semibold leading-none text-[#00473f]">会员管理</h1>
-        <a href="/member" className="text-[14px] font-medium text-[#006252]">← 返回会员中心</a>
-      </header>
-      <div className="px-11 py-6">
-        {msg && <p className="mb-4 text-center text-[14px] font-medium text-[#006252] bg-[#e7f5f0] py-2 rounded-[6px]">{msg}</p>}
-
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[14px] text-[#6a7679]">会员 {total} 名，申请 {applications.filter(a => a.status !== "已入会").length} 条</p>
-          <div className="flex gap-2">
-            <button disabled={page <= 1} onClick={() => { setPage(p => p - 1); fetchData(page - 1); }} className="rounded-[6px] border border-[#cfd9d7] px-4 py-1.5 text-[13px] text-[#6a7679] disabled:opacity-40">上一页</button>
-            <span className="px-3 py-1.5 text-[13px] text-[#6a7679]">第 {page} 页</span>
-            <button disabled={page * pageSize >= total} onClick={() => { setPage(p => p + 1); fetchData(page + 1); }} className="rounded-[6px] border border-[#cfd9d7] px-4 py-1.5 text-[13px] text-[#6a7679] disabled:opacity-40">下一页</button>
+    <div className="min-h-screen bg-[#f5f0eb]">
+      <div className="w-full mx-0 px-6 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-[24px] font-bold text-[#142528]">会员管理</h1>
+            <p className="text-[14px] text-[#6a7679] mt-1">
+              共 <b className="text-[#142528]">{totalUsers}</b> 名用户，来自 applications 表
+            </p>
           </div>
         </div>
 
+        {msg && (
+          <div className="mb-4 rounded-[8px] bg-[#e8f4fd] px-4 py-3 text-[14px] text-[#1a6fb5] flex justify-between items-center">
+            <span>{msg}</span>
+            <button onClick={() => setMsg("")} className="text-[20px]">×</button>
+          </div>
+        )}
+
         {loading ? (
           <p className="text-center text-[#9ba8aa] py-10">加载中...</p>
+        ) : sortedUsers.length === 0 ? (
+          <p className="text-center text-[#9ba8aa] py-10">暂无数据</p>
         ) : (
-          <>
-            {Object.entries(memberGroups).filter(([s]) => s !== "待缴费").map(([status, groupMembers]) => {
-              const isOk = status === "已入会";
-              const isBad = status === "终审不通过" || status === "初审不通过";
-              const badgeColor = isOk ? "text-[#006252] bg-[#e7f5f0]" : isBad ? "text-[#c53030] bg-[#fef0f0]" : "text-[#b7950b] bg-[#fef9e7]";
-              return (
-                <Section key={status} title={status} badge={badgeColor} count={groupMembers.length}>
-                  <MemberTable members={groupMembers} showStatus={false} />
-                </Section>
-              );
-            })}
-            {pendingApps.length > 0 && (
-              <Section title={"待处理申请"} badge="text-[#b7950b] bg-[#fef9e7]" count={pendingApps.length}>
-                <AppTable apps={pendingApps} />
-              </Section>
-            )}
-            {initialRejectedApps.length > 0 && (
-              <Section title={"初审不通过"} badge="text-[#e67e22] bg-[#fef5ec]" count={initialRejectedApps.length}>
-                <AppTable apps={initialRejectedApps} />
-              </Section>
-            )}
-            {finalRejectedApps.length > 0 && (
-              <Section title={"终审不通过"} badge="text-[#c53030] bg-[#fef0f0]" count={finalRejectedApps.length}>
-                <AppTable apps={finalRejectedApps} />
-              </Section>
-            )}
-            {paymentPendingApps.length > 0 && (
-              <Section title={"待缴费"} badge="text-[#b7950b] bg-[#fef9e7]" count={paymentPendingApps.length}>
-                <AppTable apps={paymentPendingApps} />
-              </Section>
-            )}
-                        {membersWithStatus.length === 0 && applications.length === 0 && (
-              <p className="text-center text-[#9ba8aa] py-10">暂无数据</p>
-            )}
-          </>
+          <div className="rounded-[10px] border border-[#dde7e5] bg-white overflow-hidden">
+            <table className="w-full text-[14px] table-fixed">
+              <thead>
+                <tr className="bg-[#f5f7f6] text-[#4a5c5e] text-[12px] font-semibold">
+                  <th className="px-4 py-3 text-left">用户名</th>
+                  <th className="px-4 py-3 text-left">姓名</th>
+                  <th className="pl-4 pr-4 py-3 text-left w-[150px]">身份证号</th>
+                  <th className="pl-4 pr-4 py-3 text-left w-[150px]">手机</th>
+                  <th className="px-4 py-3 text-left">等级</th>
+                  <th className="px-4 py-3 text-left">状态</th>
+                  <th className="px-4 py-3 text-left">提交时间</th>
+                  <th className="px-4 py-3 text-left">缴费凭证</th>
+                  <th className="px-4 py-3 text-left">从业经历</th>
+                  <th className="px-4 py-3 text-left">资质</th>
+                  <th className="px-4 py-3 text-left">资质文件</th>
+                  <th className="px-4 py-3 text-center w-[110px]">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedUsers.map(u => {
+                  const files = parseFiles(u.qualification_files);
+                  return (
+                    <tr key={u.id} className="border-t border-[#eef3f1] hover:bg-[#fafbfb]">
+                      <td className="px-4 py-3 font-medium text-[#142528]">{u.username}</td>
+                      <td className="px-4 py-3">{truncate(u.applicant_name, 10)}</td>
+                      <td className="px-4 py-3 text-[12px] text-[#6a7679] w-[150px]">{u.id_number || "-"}</td>
+                      <td className="px-4 py-3 text-[12px] text-[#6a7679] w-[150px]">{u.applicant_phone || "-"}</td>
+                      <td className="px-4 py-3">{u.requested_tier || "-"}</td>
+                      <td className="px-4 py-3">{statusBadge(u.status)}</td>
+                      <td className="px-4 py-3 text-[12px] text-[#6a7679]">{formatDate(u.submitted_at)}</td>
+                      <td className="px-4 py-3">
+                        {u.payment_proof_url ? (
+                          <a href={BACKEND + u.payment_proof_url} target="_blank" rel="noreferrer" className="text-[#006252] underline text-[12px]">查看</a>
+                        ) : (
+                          <span className="text-[#9ba8aa]">-</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-[12px] text-[#6a7679]">{truncate(u.career_history, 15)}</td>
+                      <td className="px-4 py-3 text-[12px] text-[#6a7679]">{truncate(u.qualifications, 15)}</td>
+                      <td className="px-4 py-3">
+                        {files.length > 0 ? files.map((f, i) => (
+                          <a key={i} href={BACKEND + f} target="_blank" rel="noreferrer" className="block text-[#006252] underline text-[12px]">文件{i+1}</a>
+                        )) : <span className="text-[#9ba8aa]">-</span>}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-3">
+                          <button onClick={() => openEdit(u)} className="text-[#006252] text-[13px] font-semibold hover:underline">编辑</button>
+                          <button onClick={() => handleDelete(u.id)} className="text-[#c53030] text-[13px] font-semibold hover:underline">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
 
         {editTarget && (
@@ -342,18 +236,6 @@ function Section({ title, badge, count, children }) {
                 <Field label={"手机"} value={editForm.phone} onChange={v => updateField("phone", v)} />
                 <Field label={"邮箱"} value={editForm.email} onChange={v => updateField("email", v)} />
                 <Field label={"等级"} value={editForm.tier} onChange={v => updateField("tier", v)} />
-                <div>
-                  <label className="block mb-1 text-[13px] font-semibold text-[#27383a]">年费 (0=永久)</label>
-                  <input type="number" className="w-full rounded-[6px] border border-[#cfd9d7] bg-white px-3 py-2 text-[14px]" value={editForm.annual_fee} onChange={e => updateField("annual_fee", parseInt(e.target.value) || 0)} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <label className="text-[13px] font-semibold text-[#27383a]">状态</label>
-                  <select className="rounded-[6px] border border-[#cfd9d7] bg-white px-3 py-2 text-[14px]" value={editForm.is_active ? "true" : "false"} onChange={e => updateField("is_active", e.target.value === "true")}>
-                    <option value="true">在籍</option>
-                    <option value="false">停用</option>
-                  </select>
-                </div>
-                <Field label={"地址"} value={editForm.address} onChange={v => updateField("address", v)} />
                 <div>
                   <label className="block mb-1 text-[13px] font-semibold text-[#27383a]">从业经历</label>
                   <textarea className="w-full rounded-[6px] border border-[#cfd9d7] bg-white px-3 py-2 text-[14px] h-20 resize-none" value={editForm.career_history} onChange={e => updateField("career_history", e.target.value)} />

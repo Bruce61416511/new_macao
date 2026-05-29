@@ -280,3 +280,48 @@ async def admin_list_applications(
             "payment_proof_url": app.get("payment_proof_url", ""),
         })
     return {"items": items, "total": len(items), "page": page}
+
+@router_admin.get("/applications-summary", response_model=dict)
+async def admin_applications_summary(
+    user: dict = Depends(require_role("root")),
+    db: AsyncSession = Depends(get_db)
+):
+    """Return all unique users from applications with their latest status, deduplicated."""
+    svc = ApplicationService(db)
+    # Fetch all applications
+    from sqlalchemy import select
+    from ..models.application import Application as AppModel
+    result = await db.execute(select(AppModel).order_by(AppModel.submitted_at.desc()))
+    apps = result.scalars().all()
+    
+    # Deduplicate: keep only the latest application per unique user
+    # Match by base username (strip _upd_ suffix) + base id_number (strip _upd_ suffix)
+    seen = {}
+    for app in apps:
+        uname = (app.username or "").split("_upd_")[0]
+        idnum = (app.id_number or "").split("_upd_")[0]
+        key = f"{uname}||{idnum}"
+        if key not in seen:
+            status = (app.status or "").replace("審", "审")
+            seen[key] = {
+                "id": str(app.id),
+                "username": uname,
+                "id_number": idnum,
+                "applicant_name": app.applicant_name or "",
+                "applicant_phone": app.applicant_phone or "",
+                "applicant_email": app.applicant_email or "",
+                "status": status,
+                "requested_tier": app.requested_tier or "",
+                "submitted_at": app.submitted_at.isoformat() if app.submitted_at else None,
+                "member_id": str(app.member_id) if app.member_id else None,
+                "career_history": app.career_history or "",
+                "qualifications": app.qualifications or "",
+                "qualification_files": app.qualification_files or "",
+                "payment_proof_url": app.payment_proof_url or "",
+                "screening_result": app.screening_result or "",
+                "final_review_result": app.final_review_result or "",
+            }
+    
+    items = list(seen.values())
+    return {"items": items, "total": len(items), "page": 1}
+
