@@ -61,6 +61,7 @@ async def login(req: LoginRequest, db = Depends(get_db)):
         if not member.is_active:
             raise HTTPException(status_code=403, detail="该账号当前不在籍无法登录")
     token = create_access_token(data={"sub": str(member.id), "username": member.username, "role": role})
+    return TokenResponse(access_token=token)
 
 
 

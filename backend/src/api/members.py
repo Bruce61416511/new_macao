@@ -277,5 +277,6 @@ async def admin_list_applications(
             "career_history": app.get("career_history", ""),
             "qualifications": app.get("qualifications", ""),
             "qualification_files": app.get("qualification_files", ""),
+            "payment_proof_url": app.get("payment_proof_url", ""),
         })
     return {"items": items, "total": len(items), "page": page}

@@ -25,6 +25,10 @@ export default function TrackPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMsg, setUploadMsg] = useState("");
+  const [uploadDone, setUploadDone] = useState(false);
 
   async function handleQuery(e) {
     e.preventDefault();
@@ -51,6 +55,31 @@ export default function TrackPage() {
       setError(err.message || "网络错误，请重试");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleUpload(appId) {
+    if (!uploadFile) return;
+    setUploading(true);
+    setUploadMsg("");
+    try {
+      const formData = new FormData();
+      formData.append("file", uploadFile);
+      const res = await fetch(`/v1/applications/${appId}/payment-proof`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("上传失败");
+      const data = await res.json();
+      setUploadMsg("缴费凭证已提交，等待审核");
+      setUploadDone(true);
+      setUploadFile(null);
+      // Refresh result
+      setResult(prev => ({ ...prev, status: "已缴费", payment_proof_url: data.payment_proof_url }));
+    } catch (e) {
+      setUploadMsg(e.message || "上传失败");
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -135,6 +164,35 @@ export default function TrackPage() {
                   <p className="mt-1 text-[13px] leading-relaxed text-[#8b3a3a]">
                     {result.final_review_result || result.screening_result || "无"}
                   </p>
+                </div>
+              )}
+              {result.status === "待缴费" && !uploadDone && (
+                <div className="mt-4 rounded-[7px] border border-[#d4e8e3] bg-[#f4faf7] p-4">
+                  <p className="text-[13px] font-semibold text-[#004f46]">提交缴费凭证</p>
+                  <p className="mt-1 text-[12px] text-[#6a7679]">请上传缴费截图或转账记录</p>
+                  <div className="mt-3 flex gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setUploadFile(e.target.files[0])}
+                      className="flex-1 rounded-[6px] border border-[#cfd9d7] bg-white px-3 py-2 text-[13px] file:mr-3 file:rounded-[4px] file:border-0 file:bg-[#e7f5f0] file:px-3 file:py-1 file:text-[12px] file:font-medium file:text-[#006252]"
+                    />
+                    <button
+                      onClick={() => handleUpload(result.id)}
+                      disabled={!uploadFile || uploading}
+                      className="shrink-0 rounded-[6px] bg-gradient-to-br from-[#00836f] to-[#006252] px-4 py-2 text-[13px] font-bold text-white disabled:opacity-50"
+                    >
+                      {uploading ? "上传中..." : "提交"}
+                    </button>
+                  </div>
+                  {uploadMsg && (
+                    <p className="mt-2 text-[12px] font-medium text-[#006252]">{uploadMsg}</p>
+                  )}
+                </div>
+              )}
+              {result.status === "已缴费" && (
+                <div className="mt-4 rounded-[7px] border border-[#d4e8e3] bg-[#e7f5f0] p-3 text-center">
+                  <p className="text-[13px] font-semibold text-[#006252]">✓ 缴费凭证已提交，等待审核</p>
                 </div>
               )}
             </div>
