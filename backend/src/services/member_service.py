@@ -76,6 +76,15 @@ class MemberService:
         await self.db.flush()
         return {"id": str(member_id), "status": "已删除"}
 
+    async def force_delete(self, member_id) -> dict:
+        member = await self.get_by_id(member_id)
+        if not member:
+            return {"error": "not_found"}
+        await self.db.delete(member)
+        self._audit_log("force_delete", member_id, {})
+        await self.db.flush()
+        return {"id": str(member_id), "status": "已删除"}
+
     async def auto_update_status(self) -> int:
         """自动更新会员状态：会费到期→过期"""
         now = datetime.now(timezone.utc)
@@ -153,6 +162,25 @@ class MemberService:
             await self.db.flush()
             self._audit_log("info_update", member.id, {"fields": ["real_name", "phone", "email"]})
             return {"application_id": str(app.id), "status": app.status, "message": "信息修改已生效"}
+
+    def _to_admin_dict(self, m: Member) -> dict:
+        return {
+            "id": str(m.id),
+            "username": m.username,
+            "id_number": m.id_number,
+            "real_name": m.real_name,
+            "phone": m.phone,
+            "email": m.email,
+            "tier": m.tier,
+            "annual_fee": m.annual_fee,
+            "is_active": m.is_active,
+            "created_at": m.created_at.isoformat() if m.created_at else None,
+            "updated_at": m.updated_at.isoformat() if m.updated_at else None,
+            "address": m.address,
+            "career_history": m.career_history,
+            "qualifications": m.qualifications,
+            "qualification_files": m.qualification_files,
+        }
 
     def _audit_log(self, action: str, member_id, details: dict):
         logger.info(f"AUDIT | {action} | member={member_id} | {details}")

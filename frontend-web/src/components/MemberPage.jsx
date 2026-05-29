@@ -12,6 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
   { label: '消息通知', badge: 3, icon: BellIcon },
   { label: '我的收藏', icon: BookmarkIcon },
   { label: '设置中心', icon: GearIcon },
+  { label: '会员管理', icon: UsersIcon, adminOnly: true },
 ];
 
 const actions = [  { label: '续费', icon: CardIcon },  ({ label: '更新资料', icon: IdIcon }),
@@ -200,6 +201,7 @@ function OutlineIcon({ children, className = 'h-6 w-6' }) {
 }
 
 function MemberSidebar({ onViewProfile }) {
+  const { user } = useAuth();
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] flex-col overflow-hidden bg-[linear-gradient(180deg,#00463d_0%,#005548_45%,#003f37_100%)] px-3 py-8 text-white shadow-[12px_0_30px_rgba(0,45,40,0.2)]">
       <div className="px-7">
@@ -212,7 +214,7 @@ function MemberSidebar({ onViewProfile }) {
       </div>
 
       <nav className="mt-9 space-y-2">
-        {sidebarItems.map((item) => {
+        {sidebarItems.filter(item => !item.adminOnly || (user?.role === 'root')).map((item) => {
           const Icon = item.icon;
           return (
             <button
@@ -222,7 +224,7 @@ function MemberSidebar({ onViewProfile }) {
               ].join(' ')}
               key={item.label}
               type="button"
-              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : undefined}
+              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : item.label === "会员管理" ? () => window.location.href = "/admin/members" : undefined}
             >
               <Icon />
               <span className="flex-1 text-left">{item.label}</span>
