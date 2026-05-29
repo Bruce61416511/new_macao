@@ -23,7 +23,11 @@ async function request(path, options = {}) {
     throw new Error("未登录");
   }
   const data = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(data?.detail || `请求失败 (${res.status})`);
+  if (!res.ok) {
+    const detail = data?.detail;
+    const msg = typeof detail === "object" && detail !== null ? detail.message || JSON.stringify(detail) : detail;
+    throw new Error(msg || `请求失败 (${res.status})`);
+  }
   return data;
 }
 
@@ -75,7 +79,11 @@ export async function uploadQualificationFile(file) {
     });
     if (!res.ok) {
       const data = await res.json().catch(() => null);
-      throw new Error(data?.detail || "上传失败");
+      const uploadDetail = data?.detail;
+      const uploadMsg = typeof uploadDetail === "object" && uploadDetail !== null
+        ? uploadDetail.message || JSON.stringify(uploadDetail)
+        : uploadDetail;
+      throw new Error(uploadMsg || "上传失败");
     }
     return res.json();
   } catch (err) {
@@ -86,4 +94,10 @@ export async function uploadQualificationFile(file) {
   } finally {
     clearTimeout(timeout);
   }
+}
+export async function submitApplication(data) {
+  return request("/applications", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 }

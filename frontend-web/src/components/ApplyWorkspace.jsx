@@ -3,6 +3,8 @@ import AIAssistantCard from "./apply/AIAssistantCard.jsx";
 import BasicInfoForm from "./apply/BasicInfoForm.jsx";
 import CareerForm from "./apply/CareerForm.jsx";
 import QualificationForm from "./apply/QualificationForm.jsx";
+import DeclarationForm from "./apply/DeclarationForm.jsx";
+import { submitApplication } from "../services/api.js";
 
 /* ── Icons ─────────────────────────────────── */
 
@@ -106,6 +108,7 @@ const INITIAL_FORM = {
   career_history: "",
   qualifications: "",
   qualification_files: "",
+  declaration_agreed: false,
 };
 
 /* ── Step Row ─────────────────────────────────── */
@@ -194,6 +197,9 @@ function StepForm({ stepIndex, formData, onFormChange, errors }) {
   if (stepIndex === 2) {
     return <QualificationForm data={formData} onChange={onFormChange} errors={errors} />;
   }
+  if (stepIndex === 3) {
+    return <DeclarationForm data={formData} onChange={onFormChange} errors={errors} />;
+  }
 
   return (
     <div className="flex h-64 items-center justify-center rounded-[9px] border border-dashed border-[#cfd9d7] bg-[#f8fbfb]">
@@ -209,6 +215,8 @@ export default function ApplyWorkspace() {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [saved, setSaved] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   function validateStep(stepIndex) {
     const errs = {};
@@ -237,6 +245,9 @@ export default function ApplyWorkspace() {
       })();
       if (files.length === 0) errs.qualification_files = "请至少上传一张资质文件";
     }
+    if (stepIndex === 3) {
+      if (!formData.declaration_agreed) errs.declaration_agreed = "请阅读并勾选声明与授权";
+    }
     return errs;
   }
 
@@ -257,8 +268,19 @@ export default function ApplyWorkspace() {
     setTimeout(() => setSaved(false), 2000);
   }
 
-  function handleSubmit() {
-    console.log("Submit:", formData);
+  async function handleSubmit() {
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      const { declaration_agreed, ...payload } = formData;
+      await submitApplication(payload);
+      setSaved(true);
+      alert("申请已成功提交！");
+    } catch (err) {
+      setSubmitError(err.message || "提交失败，请重试");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function parseFiles(raw) {
@@ -287,6 +309,10 @@ export default function ApplyWorkspace() {
         return { status: "danger", statusText: "未上传" };
       }
       return { status: "done", statusText: "已完成" };
+    }
+    if (index === 3) {
+      if (!formData.declaration_agreed) return { status: "danger", statusText: "未确认" };
+      return { status: "done", statusText: "已确认" };
     }
     return { status: index < activeStep ? "done" : "danger", statusText: index < activeStep ? "已完成" : "未填写" };
   }
@@ -347,6 +373,9 @@ export default function ApplyWorkspace() {
             <span className="font-bold text-[#006252]">5 分钟</span>
           </p>
 
+          {submitError && (
+            <p className="mb-4 text-center text-[14px] font-medium text-red-500">{submitError}</p>
+          )}
           <div className="mt-7 grid grid-cols-[164px_1fr_164px] gap-5">
             <button
               onClick={handleSaveDraft}
@@ -356,12 +385,11 @@ export default function ApplyWorkspace() {
               <NoteIcon />
               {saved ? "已保存 ✓" : "保存草稿"}
             </button>
-            <button
-              onClick={handleNext}
+            <button onClick={handleNext} disabled={submitting}
               className="flex h-[56px] items-center justify-center gap-5 rounded-[7px] bg-gradient-to-br from-[#00836f] to-[#006252] text-[22px] font-bold text-white shadow-[0_10px_20px_rgba(0,93,80,0.24)]"
               type="button"
             >
-              {activeStep === STEPS.length - 1 ? "提交申请" : "继续填写"}
+              {submitting ? "提交中..." : activeStep === STEPS.length - 1 ? "提交申请" : "继续填写"}
               <ArrowRightIcon />
             </button>
             <button
