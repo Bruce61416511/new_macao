@@ -82,6 +82,8 @@ export default function HeaderNav() {
                 '入會指南': '/guide',
                 '活動日曆': '/calendar',
                 '公告資訊': '/announcements',
+                '幫助中心': '/help',
+                '資源中心': '/resources',
               };
               const itemPath = itemHrefs[item] || "#";
               const isActive = itemPath !== "#" && currentPath === itemPath;

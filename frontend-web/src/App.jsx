@@ -15,6 +15,8 @@ import AssociationIntroPage from "./components/AssociationIntroPage.jsx";
 import MembershipGuidePage from "./components/MembershipGuidePage.jsx";
 import EventCalendarPage from "./components/EventCalendarPage.jsx";
 import AnnouncementsPage from "./components/AnnouncementsPage.jsx";
+import HelpCenterPage from "./components/HelpCenterPage.jsx";
+import ResourcesPage from "./components/ResourcesPage.jsx";
 import FinalReviewPage from "./components/FinalReviewPage.jsx";
 import PaymentApprovalPage from "./components/PaymentApprovalPage.jsx";
 
@@ -108,6 +110,8 @@ function AppRoutes() {
   if (path === "/guide") return <MembershipGuidePage />;
   if (path === "/calendar") return <EventCalendarPage />;
   if (path === "/announcements") return <AnnouncementsPage />;
+  if (path === "/help") return <HelpCenterPage />;
+  if (path === "/resources") return <ResourcesPage />;
 
   return <HomePage />;
 }
