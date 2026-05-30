@@ -53,7 +53,7 @@ export default function NotificationModal({ onClose, onReadCount }) {
       if (!res.ok) throw new Error("FAIL");
       fetchNotifications();
     } catch (e) {
-      setSendMsg('标记失败，请重试');
+      setSendMsg('標記失敗，請重試');
     }
   }
 
@@ -76,11 +76,11 @@ export default function NotificationModal({ onClose, onReadCount }) {
 
   async function handleSend() {
     if (!msgTitle.trim() || !msgContent.trim()) {
-      setSendMsg("请填写标题和内容");
+      setSendMsg("請填寫標題和內容");
       return;
     }
     if (selectedIds.size === 0) {
-      setSendMsg("请至少选择一个收件人");
+      setSendMsg("請至少選擇一個收件人");
       return;
     }
     setSending(true);
@@ -96,15 +96,15 @@ export default function NotificationModal({ onClose, onReadCount }) {
           type: "system"
         })
       });
-      if (!res.ok) throw new Error("发送失败");
+      if (!res.ok) throw new Error("發送失敗");
       const d = await res.json();
-      setSendMsg("已发送给 " + d.notification_count + " 位会员");
+      setSendMsg("已發送給 " + d.notification_count + " 位會員");
       setMsgTitle("");
       setMsgContent("");
       setSelectedIds(new Set());
       setSelectAll(false);
     } catch (e) {
-      setSendMsg(e.message || "发送失败");
+      setSendMsg(e.message || "發送失敗");
     } finally {
       setSending(false);
     }
@@ -118,7 +118,7 @@ export default function NotificationModal({ onClose, onReadCount }) {
             <h2 className="text-[18px] font-bold text-[#004f46]">消息中心</h2>
             {unreadCount > 0 && (
               <span className="rounded-full bg-red-500 px-2.5 py-0.5 text-[11px] font-bold text-white">
-                {unreadCount} 条未读
+                {unreadCount} 條未讀
               </span>
             )}
           </div>
@@ -135,7 +135,7 @@ export default function NotificationModal({ onClose, onReadCount }) {
                   onClick={function() { setTab("compose"); fetchRecipients(); }}
                   className={"px-3 py-1.5 text-[12px] font-semibold " + (tab === "compose" ? "bg-[#006252] text-white" : "bg-white text-[#6c777b]")}
                 >
-                  发送通知
+                  發送通知
                 </button>
               </div>
             )}
@@ -152,16 +152,16 @@ export default function NotificationModal({ onClose, onReadCount }) {
               {notifications.length > 0 && (
                 <div className="mb-4 flex justify-end">
                   <button onClick={markAllRead} className="text-[12px] text-[#00836f] hover:underline">
-                    全部标为已读
+                    全部標爲已讀
                   </button>
                 </div>
               )}
               {loading ? (
-                <p className="text-center text-[13px] text-[#8ba09c] py-10">加载中...</p>
+                <p className="text-center text-[13px] text-[#8ba09c] py-10">加載中...</p>
               ) : notifications.length === 0 ? (
                 <div className="text-center py-10">
                   <p className="text-[48px]">📬</p>
-                  <p className="mt-2 text-[14px] text-[#6c777b]">暂无消息</p>
+                  <p className="mt-2 text-[14px] text-[#6c777b]">暫無消息</p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -190,10 +190,10 @@ export default function NotificationModal({ onClose, onReadCount }) {
             <div className="p-6">
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[13px] font-semibold text-[#4a5c5e]">选择收件人</p>
+                  <p className="text-[13px] font-semibold text-[#4a5c5e]">選擇收件人</p>
                   <label className="flex items-center gap-1.5 text-[12px] text-[#6c777b] cursor-pointer">
                     <input type="checkbox" checked={selectAll} onChange={toggleSelectAll} className="accent-[#006252]" />
-                    全选 ({recipients.length})
+                    全選 ({recipients.length})
                   </label>
                 </div>
                 <div className="max-h-[200px] overflow-y-auto rounded-[8px] border border-[#dce6e4] p-2 grid grid-cols-2 gap-1">
@@ -208,32 +208,32 @@ export default function NotificationModal({ onClose, onReadCount }) {
                   })}
                 </div>
                 {selectedIds.size > 0 && (
-                  <p className="mt-1 text-[12px] text-[#00836f]">已选择: {selectedIds.size} 人</p>
+                  <p className="mt-1 text-[12px] text-[#00836f]">已選擇: {selectedIds.size} 人</p>
                 )}
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <label className="text-[13px] font-semibold text-[#4a5c5e] block mb-1">标题</label>
+                  <label className="text-[13px] font-semibold text-[#4a5c5e] block mb-1">標題</label>
                   <input
                     type="text"
                     className="w-full rounded-[8px] border border-[#dce6e4] bg-[#fdfcfa] px-3 py-2 text-[13px] outline-none focus:border-[#00836f]"
-                    placeholder="请输入通知标题"
+                    placeholder="請輸入通知標題"
                     value={msgTitle}
                     onChange={function(e) { setMsgTitle(e.target.value); }}
                   />
                 </div>
                 <div>
-                  <label className="text-[13px] font-semibold text-[#4a5c5e] block mb-1">内容</label>
+                  <label className="text-[13px] font-semibold text-[#4a5c5e] block mb-1">內容</label>
                   <textarea
                     className="w-full rounded-[8px] border border-[#dce6e4] bg-[#fdfcfa] px-3 py-2 text-[13px] outline-none focus:border-[#00836f] min-h-[120px] resize-none"
-                    placeholder="请输入通知内容"
+                    placeholder="請輸入通知內容"
                     value={msgContent}
                     onChange={function(e) { setMsgContent(e.target.value); }}
                   />
                 </div>
                 {sendMsg && (
-                  <p className={"text-[13px] font-medium " + (sendMsg.indexOf("失败") >= 0 ? "text-red-500" : "text-[#006252]")}>
+                  <p className={"text-[13px] font-medium " + (sendMsg.indexOf("失敗") >= 0 ? "text-red-500" : "text-[#006252]")}>
                     {sendMsg}
                   </p>
                 )}
@@ -242,7 +242,7 @@ export default function NotificationModal({ onClose, onReadCount }) {
                   disabled={sending}
                   className="w-full rounded-[10px] bg-gradient-to-r from-[#00836f] to-[#006252] py-2.5 text-[14px] font-bold text-white shadow-md shadow-[#006252]/15 hover:shadow-lg transition disabled:opacity-60"
                 >
-                  {sending ? "发送中..." : "发送通知"}
+                  {sending ? "發送中..." : "發送通知"}
                 </button>
               </div>
             </div>

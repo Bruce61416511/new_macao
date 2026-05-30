@@ -50,7 +50,7 @@ export default function MemberManagementPage() {
   async function handleSave() {
     const memberId = users.find(u => u.id === editTarget)?.member_id;
     if (!memberId) {
-      setMsg("该用户尚未创建会员记录，无法编辑");
+      setMsg("該用戶尚未創建會員記錄，無法編輯");
       return;
     }
     try {
@@ -61,7 +61,7 @@ export default function MemberManagementPage() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || "保存失败");
+        throw new Error(d.detail || "保存失敗");
       }
       setMsg("保存成功");
       setEditTarget(null);
@@ -85,9 +85,9 @@ export default function MemberManagementPage() {
       const res = await fetch(deleteUrl, { method: "DELETE", headers: authHeaders });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || "删除失败");
+        throw new Error(d.detail || "刪除失敗");
       }
-      setMsg("已删除");
+      setMsg("已刪除");
       fetchData();
     } catch (e) {
       setMsg(e.message);
@@ -95,14 +95,14 @@ export default function MemberManagementPage() {
   }
 
   const STATUS_ORDER = [
-    "待審核", "待审核",
-    "初審通过", "初审通过",
-    "初審不通过", "初审不通过",
-    "终審通过", "终审通过",
-    "终審不通过", "终审不通过",
-    "待缴费",
-    "已缴费",
-    "已入会",
+    "待審核", "待審覈",
+    "初審通過", "初審通過",
+    "初審不通過", "初審不通過",
+    "終審通過", "終審通過",
+    "終審不通過", "終審不通過",
+    "待繳費",
+    "已繳費",
+    "已入會",
   ];
 
   const sortedUsers = [...users].sort((a, b) => {
@@ -124,14 +124,14 @@ export default function MemberManagementPage() {
 
   function statusBadge(status) {
     const col = {
-      "待審核": "text-[#8b6914] bg-[#fef9e7]", "待审核": "text-[#8b6914] bg-[#fef9e7]",
-      "初審通过": "text-[#0d7d4a] bg-[#eafaf1]", "初审通过": "text-[#0d7d4a] bg-[#eafaf1]",
-      "初審不通过": "text-[#c0392b] bg-[#fdedec]", "初审不通过": "text-[#c0392b] bg-[#fdedec]",
-      "终審通过": "text-[#1a6fb5] bg-[#e8f4fd]", "终审通过": "text-[#1a6fb5] bg-[#e8f4fd]",
-      "终審不通过": "text-[#c0392b] bg-[#fdedec]", "终审不通过": "text-[#c0392b] bg-[#fdedec]",
-      "待缴费": "text-[#b7950b] bg-[#fef9e7]",
-      "已缴费": "text-[#7d3c98] bg-[#f4ecf7]",
-      "已入会": "text-[#0d7d4a] bg-[#eafaf1]",
+      "待審核": "text-[#8b6914] bg-[#fef9e7]", "待審覈": "text-[#8b6914] bg-[#fef9e7]",
+      "初審通過": "text-[#0d7d4a] bg-[#eafaf1]", "初審通過": "text-[#0d7d4a] bg-[#eafaf1]",
+      "初審不通過": "text-[#c0392b] bg-[#fdedec]", "初審不通過": "text-[#c0392b] bg-[#fdedec]",
+      "終審通過": "text-[#1a6fb5] bg-[#e8f4fd]", "終審通過": "text-[#1a6fb5] bg-[#e8f4fd]",
+      "終審不通過": "text-[#c0392b] bg-[#fdedec]", "終審不通過": "text-[#c0392b] bg-[#fdedec]",
+      "待繳費": "text-[#b7950b] bg-[#fef9e7]",
+      "已繳費": "text-[#7d3c98] bg-[#f4ecf7]",
+      "已入會": "text-[#0d7d4a] bg-[#eafaf1]",
     };
     const cls = col[status] || "text-[#6a7679] bg-[#f0f3f3]";
     return <span className={`inline-block rounded-[4px] px-2 py-0.5 text-[12px] font-bold ${cls}`}>{status}</span>;
@@ -148,9 +148,9 @@ export default function MemberManagementPage() {
       <div className="w-full mx-0 px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-[24px] font-bold text-[#142528]">会员管理</h1>
+            <h1 className="text-[24px] font-bold text-[#142528]">會員管理</h1>
             <p className="text-[14px] text-[#6a7679] mt-1">
-              共 <b className="text-[#142528]">{totalUsers}</b> 名用户，来自 applications 表
+              共 <b className="text-[#142528]">{totalUsers}</b> 名用戶，來自 applications 表
             </p>
           </div>
         </div>
@@ -163,25 +163,25 @@ export default function MemberManagementPage() {
         )}
 
         {loading ? (
-          <p className="text-center text-[#9ba8aa] py-10">加载中...</p>
+          <p className="text-center text-[#9ba8aa] py-10">加載中...</p>
         ) : sortedUsers.length === 0 ? (
-          <p className="text-center text-[#9ba8aa] py-10">暂无数据</p>
+          <p className="text-center text-[#9ba8aa] py-10">暫無數據</p>
         ) : (
           <div className="rounded-[10px] border border-[#dde7e5] bg-white overflow-hidden">
             <table className="w-full text-[14px] table-fixed">
               <thead>
                 <tr className="bg-[#f5f7f6] text-[#4a5c5e] text-[12px] font-semibold">
-                  <th className="px-4 py-3 text-left">用户名</th>
+                  <th className="px-4 py-3 text-left">用戶名</th>
                   <th className="px-4 py-3 text-left">姓名</th>
-                  <th className="pl-4 pr-4 py-3 text-left w-[150px]">身份证号</th>
-                  <th className="pl-4 pr-4 py-3 text-left w-[150px]">手机</th>
-                  <th className="px-4 py-3 text-left">等级</th>
-                  <th className="px-4 py-3 text-left">状态</th>
-                  <th className="px-4 py-3 text-left">提交时间</th>
-                  <th className="px-4 py-3 text-left">缴费凭证</th>
-                  <th className="px-4 py-3 text-left">从业经历</th>
-                  <th className="px-4 py-3 text-left">资质</th>
-                  <th className="px-4 py-3 text-left">资质文件</th>
+                  <th className="pl-4 pr-4 py-3 text-left w-[150px]">身份證號</th>
+                  <th className="pl-4 pr-4 py-3 text-left w-[150px]">手機</th>
+                  <th className="px-4 py-3 text-left">等級</th>
+                  <th className="px-4 py-3 text-left">狀態</th>
+                  <th className="px-4 py-3 text-left">提交時間</th>
+                  <th className="px-4 py-3 text-left">繳費憑證</th>
+                  <th className="px-4 py-3 text-left">從業經歷</th>
+                  <th className="px-4 py-3 text-left">資質</th>
+                  <th className="px-4 py-3 text-left">資質文件</th>
                   <th className="px-4 py-3 text-center w-[110px]">操作</th>
                 </tr>
               </thead>
@@ -213,8 +213,8 @@ export default function MemberManagementPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-3">
-                          <button onClick={() => openEdit(u)} className="text-[#006252] text-[13px] font-semibold hover:underline">编辑</button>
-                          <button onClick={() => handleDelete(u.id)} className="text-[#c53030] text-[13px] font-semibold hover:underline">删除</button>
+                          <button onClick={() => openEdit(u)} className="text-[#006252] text-[13px] font-semibold hover:underline">編輯</button>
+                          <button onClick={() => handleDelete(u.id)} className="text-[#c53030] text-[13px] font-semibold hover:underline">刪除</button>
                         </div>
                       </td>
                     </tr>
@@ -229,24 +229,24 @@ export default function MemberManagementPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setEditTarget(null)}>
             <div className="w-full max-w-[600px] max-h-[85vh] overflow-y-auto rounded-[12px] border border-[#dde7e5] bg-white p-6 shadow-[0_20px_50px_rgba(35,70,74,0.25)]" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-[18px] font-bold text-[#142528]">编辑会员</h2>
+                <h2 className="text-[18px] font-bold text-[#142528]">編輯會員</h2>
                 <button onClick={() => setEditTarget(null)} className="text-[20px] text-[#9ba8aa]">×</button>
               </div>
               <div className="space-y-3">
-                <Field label={"用户名"} value={editForm.username} onChange={v => updateField("username", v)} />
+                <Field label={"用戶名"} value={editForm.username} onChange={v => updateField("username", v)} />
                 <Field label={"姓名"} value={editForm.real_name} onChange={v => updateField("real_name", v)} />
-                <Field label={"手机"} value={editForm.phone} onChange={v => updateField("phone", v)} />
-                <Field label={"邮箱"} value={editForm.email} onChange={v => updateField("email", v)} />
-                <Field label={"等级"} value={editForm.tier} onChange={v => updateField("tier", v)} />
+                <Field label={"手機"} value={editForm.phone} onChange={v => updateField("phone", v)} />
+                <Field label={"郵箱"} value={editForm.email} onChange={v => updateField("email", v)} />
+                <Field label={"等級"} value={editForm.tier} onChange={v => updateField("tier", v)} />
                 <div>
-                  <label className="block mb-1 text-[13px] font-semibold text-[#27383a]">从业经历</label>
+                  <label className="block mb-1 text-[13px] font-semibold text-[#27383a]">從業經歷</label>
                   <textarea className="w-full rounded-[6px] border border-[#cfd9d7] bg-white px-3 py-2 text-[14px] h-20 resize-none" value={editForm.career_history} onChange={e => updateField("career_history", e.target.value)} />
                 </div>
                 <div>
-                  <label className="block mb-1 text-[13px] font-semibold text-[#27383a]">资质</label>
+                  <label className="block mb-1 text-[13px] font-semibold text-[#27383a]">資質</label>
                   <textarea className="w-full rounded-[6px] border border-[#cfd9d7] bg-white px-3 py-2 text-[14px] h-20 resize-none" value={editForm.qualifications} onChange={e => updateField("qualifications", e.target.value)} />
                 </div>
-                <Field label={"资质文件"} value={editForm.qualification_files} onChange={v => updateField("qualification_files", v)} />
+                <Field label={"資質文件"} value={editForm.qualification_files} onChange={v => updateField("qualification_files", v)} />
               </div>
               <div className="flex gap-3 justify-end mt-5 pt-3 border-t border-[#eef3f1]">
                 <button onClick={() => setEditTarget(null)} className="rounded-[6px] border border-[#cfd9d7] px-5 py-2 text-[14px] text-[#6a7679]">取消</button>

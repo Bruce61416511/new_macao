@@ -44,7 +44,7 @@ export default function UpdateProfileModal({ profile, onClose, onSaved }) {
       }
       set("qualification_files", JSON.stringify(newUrls));
     } catch (err) {
-      setError(err.message || "上传失败");
+      setError(err.message || "上傳失敗");
     } finally {
       setUploading(false);
     }
@@ -78,13 +78,13 @@ export default function UpdateProfileModal({ profile, onClose, onSaved }) {
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         const detail = data?.detail;
-        throw new Error(typeof detail === "object" ? detail.message || "保存失败" : detail || "保存失败");
+        throw new Error(typeof detail === "object" ? detail.message || "保存失敗" : detail || "保存失敗");
       }
       const data = await res.json();
       onSaved?.(data.member);
       onClose();
     } catch (err) {
-      setError(err.message || "保存失败");
+      setError(err.message || "保存失敗");
     } finally {
       setSaving(false);
     }
@@ -97,33 +97,33 @@ export default function UpdateProfileModal({ profile, onClose, onSaved }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-[18px] font-bold text-[#142528]">更新资料</h2>
+          <h2 className="text-[18px] font-bold text-[#142528]">更新資料</h2>
           <button onClick={onClose} className="text-[#9ba8aa] hover:text-[#57696d] text-[20px] leading-none" type="button">×</button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <Label>手机号码</Label>
+            <Label>手機號碼</Label>
             <input className={fieldClass()} value={form.phone} onChange={e => set("phone", e.target.value)} />
           </div>
           <div>
-            <Label>邮箱</Label>
+            <Label>郵箱</Label>
             <input className={fieldClass()} value={form.email} onChange={e => set("email", e.target.value)} />
           </div>
           <div>
-            <Label>通讯地址</Label>
+            <Label>通訊地址</Label>
             <input className={fieldClass()} value={form.address} onChange={e => set("address", e.target.value)} />
           </div>
           <div>
-            <Label>从业经历</Label>
+            <Label>從業經歷</Label>
             <textarea className={fieldClass()} rows={4} value={form.career_history} onChange={e => set("career_history", e.target.value)} />
           </div>
           <div>
-            <Label>资质说明</Label>
+            <Label>資質說明</Label>
             <textarea className={fieldClass()} rows={3} value={form.qualifications} onChange={e => set("qualifications", e.target.value)} />
           </div>
           <div>
-            <Label>资质文件</Label>
+            <Label>資質文件</Label>
             <div
               className="cursor-pointer rounded-[6px] border-2 border-dashed border-[#cfd9d7] bg-[#f8fbfb] px-4 py-4 text-center hover:border-[#006252] hover:bg-[#f0faf4] transition-colors"
               onClick={() => fileInputRef.current?.click()}
@@ -131,7 +131,7 @@ export default function UpdateProfileModal({ profile, onClose, onSaved }) {
               onDrop={e => { e.preventDefault(); handleUpload(e.dataTransfer.files); }}
             >
               <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" multiple className="hidden" onChange={e => handleUpload(e.target.files)} />
-              {uploading ? <p className="text-[13px] text-[#006252]">上传中...</p> : <p className="text-[13px] text-[#57696d]">点击或拖拽上传 JPG/PNG</p>}
+              {uploading ? <p className="text-[13px] text-[#006252]">上傳中...</p> : <p className="text-[13px] text-[#57696d]">點擊或拖拽上傳 JPG/PNG</p>}
             </div>
             {fileUrls.length > 0 && (
               <div className="mt-2 flex gap-2 flex-wrap">

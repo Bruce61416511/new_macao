@@ -16,8 +16,8 @@ export default function PaymentApprovalPage() {
   async function fetchData() {
     setLoading(true);
     try {
-      const res = await fetch(API + "?status=" + encodeURIComponent("已缴费") + "&page_size=100", { headers: authHeaders });
-      if (!res.ok) throw new Error("获取数据失败");
+      const res = await fetch(API + "?status=" + encodeURIComponent("已繳費") + "&page_size=100", { headers: authHeaders });
+      if (!res.ok) throw new Error("獲取數據失敗");
       const data = await res.json();
       setApplications(data.items || []);
     } catch (e) {
@@ -39,9 +39,9 @@ export default function PaymentApprovalPage() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error((d.detail && d.detail.message) || "操作失败");
+        throw new Error((d.detail && d.detail.message) || "操作失敗");
       }
-      setMsg("✔ 缴费审批通过，已入会");
+      setMsg("✔ 繳費審批通過，已入會");
       fetchData();
     } catch (e) {
       setMsg(e.message);
@@ -68,9 +68,9 @@ export default function PaymentApprovalPage() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error((d.detail && d.detail.message) || "操作失败");
+        throw new Error((d.detail && d.detail.message) || "操作失敗");
       }
-      setMsg("✔ 已驳回，会员需重新上传缴费凭证");
+      setMsg("✔ 已駁回，會員需重新上傳繳費憑證");
       fetchData();
     } catch (e) {
       setMsg(e.message);
@@ -89,29 +89,29 @@ export default function PaymentApprovalPage() {
     <main className="min-h-screen bg-[#f8fbf9] pl-[240px] text-[#004f46]">
       <div className="flex items-center justify-between border-b border-[#dbe6e4] bg-white px-8 py-5">
         <div>
-          <h1 className="text-[24px] font-bold">缴费审批</h1>
-          <p className="mt-0.5 text-[13px] text-[#8ba09c]">审核会员提交的缴费凭证附件</p>
+          <h1 className="text-[24px] font-bold">繳費審批</h1>
+          <p className="mt-0.5 text-[13px] text-[#8ba09c]">審覈會員提交的繳費憑證附件</p>
         </div>
         <span className="rounded-full bg-[#e7f5f0] px-4 py-1.5 text-[13px] font-semibold text-[#006252]">
-          {applications.length} 条待审批
+          {applications.length} 條待審批
         </span>
       </div>
 
       {msg && (
         <div className="mx-8 mt-4 rounded-[10px] bg-[#e7f5f0] px-4 py-3 text-[13px] font-medium text-[#006252]">
           {msg}
-          <button className="ml-3 text-[#00836f] underline" onClick={() => setMsg("")}>关闭</button>
+          <button className="ml-3 text-[#00836f] underline" onClick={() => setMsg("")}>關閉</button>
         </div>
       )}
 
       <div className="px-8 py-6">
         {loading ? (
-          <div className="flex items-center justify-center py-20 text-[#8ba09c]">加载中...</div>
+          <div className="flex items-center justify-center py-20 text-[#8ba09c]">加載中...</div>
         ) : applications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="text-[48px]">✔</div>
-            <p className="mt-3 text-[16px] font-medium text-[#6c777b]">暂无待审批的缴费</p>
-            <p className="mt-1 text-[13px] text-[#8ba09c]">所有缴费记录已处理完毕</p>
+            <p className="mt-3 text-[16px] font-medium text-[#6c777b]">暫無待審批的繳費</p>
+            <p className="mt-1 text-[13px] text-[#8ba09c]">所有繳費記錄已處理完畢</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -135,17 +135,17 @@ export default function PaymentApprovalPage() {
                     </div>
 
                     <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-1.5 text-[13px]">
-                      <p className="text-[#6c777b]">用户名<span className="font-medium text-[#2d383a] ml-1">{app.username}</span></p>
-                      <p className="text-[#6c777b]">身份证<span className="font-medium text-[#2d383a] ml-1">{maskIdNumber(app.id_number)}</span></p>
-                      <p className="text-[#6c777b]">手机<span className="font-medium text-[#2d383a] ml-1">{app.applicant_phone}</span></p>
-                      <p className="text-[#6c777b]">提交时间<span className="font-medium text-[#2d383a] ml-1">
+                      <p className="text-[#6c777b]">用戶名<span className="font-medium text-[#2d383a] ml-1">{app.username}</span></p>
+                      <p className="text-[#6c777b]">身份證<span className="font-medium text-[#2d383a] ml-1">{maskIdNumber(app.id_number)}</span></p>
+                      <p className="text-[#6c777b]">手機<span className="font-medium text-[#2d383a] ml-1">{app.applicant_phone}</span></p>
+                      <p className="text-[#6c777b]">提交時間<span className="font-medium text-[#2d383a] ml-1">
                         {app.submitted_at ? new Date(app.submitted_at).toLocaleString("zh-CN") : "-"}
                       </span></p>
                     </div>
 
                     {app.payment_proof_url && (
                       <div className="mt-4">
-                        <p className="text-[13px] font-semibold text-[#4a5c5e] mb-2">缴费凭证附件</p>
+                        <p className="text-[13px] font-semibold text-[#4a5c5e] mb-2">繳費憑證附件</p>
                         <a
                           href={app.payment_proof_url}
                           target="_blank"
@@ -158,7 +158,7 @@ export default function PaymentApprovalPage() {
                             <line x1="16" y1="13" x2="8" y2="13" />
                             <line x1="16" y1="17" x2="8" y2="17" />
                           </svg>
-                          查看缴费凭证
+                          查看繳費憑證
                         </a>
                       </div>
                     )}
@@ -170,14 +170,14 @@ export default function PaymentApprovalPage() {
                       disabled={processing === app.id}
                       className="rounded-xl bg-gradient-to-r from-[#00836f] to-[#006252] px-5 py-2.5 text-[13px] font-bold text-white shadow-md shadow-[#006252]/15 transition-all hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-60"
                     >
-                      {processing === app.id ? "处理中..." : "✔ 通过"}
+                      {processing === app.id ? "處理中..." : "✔ 通過"}
                     </button>
                     <button
                       onClick={() => openRejectModal(app.id, app.applicant_name)}
                       disabled={processing === app.id}
                       className="rounded-xl border-2 border-[#f0d0c0] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#a08070] transition-all hover:bg-red-50 hover:border-red-300 hover:text-red-500 disabled:opacity-60"
                     >
-                      驳回
+                      駁回
                     </button>
                   </div>
                 </div>
@@ -191,13 +191,13 @@ export default function PaymentApprovalPage() {
       {rejectModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-[16px] bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
-            <h2 className="text-[18px] font-bold text-[#004f46]">驳回缴费审批</h2>
+            <h2 className="text-[18px] font-bold text-[#004f46]">駁回繳費審批</h2>
             <p className="mt-2 text-[13px] text-[#6c777b]">
-              会员<span className="font-semibold text-[#2d383a]"> {rejectModal.appName} </span>的缴费凭证将被驳回，请填写驳回理由
+              會員<span className="font-semibold text-[#2d383a]"> {rejectModal.appName} </span>的繳費憑證將被駁回，請填寫駁回理由
             </p>
             <textarea
               className="mt-4 w-full rounded-[10px] border border-[#dce6e4] bg-[#fdfcfa] px-4 py-3 text-[13px] outline-none transition focus:border-[#c56a2a] min-h-[100px] resize-none"
-              placeholder="请输入驳回理由（必填）"
+              placeholder="請輸入駁回理由（必填）"
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               autoFocus
@@ -214,7 +214,7 @@ export default function PaymentApprovalPage() {
                 disabled={!rejectReason.trim()}
                 className="rounded-[10px] bg-[#c56a2a] px-5 py-2 text-[13px] font-bold text-white hover:bg-[#a05822] transition disabled:opacity-40"
               >
-                确认驳回
+                確認駁回
               </button>
             </div>
           </div>

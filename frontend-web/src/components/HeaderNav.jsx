@@ -1,22 +1,22 @@
 const menuItems = [
-  '首页',
-  '协会介绍',
-  '入会指南',
-  '活动日历',
-  '资源中心',
-  '公告资讯',
-  '帮助中心',
+  '首頁',
+  '協會介紹',
+  '入會指南',
+  '活動日曆',
+  '資源中心',
+  '公告資訊',
+  '幫助中心',
 ];
 
-const languages = ['繁中', '简中', 'Português', 'EN'];
+const languages = ['繁中', '簡中', 'Português', 'EN'];
 
 function LogoPlaceholder() {
   return (
-    <a className="block" href="#" aria-label="澳门直播协会 · 小扬同学">
+    <a className="block" href="#" aria-label="澳門直播協會 · 小揚同學">
       <img
         className="h-[64px] w-auto select-none object-contain"
         src="/logo-nav.png"
-        alt="澳门直播协会 · 小扬同学"
+        alt="澳門直播協會 · 小揚同學"
         draggable="false"
       />
     </a>
@@ -50,7 +50,7 @@ function LanguageSwitch() {
           <button
             className={[
               'px-[9px] transition-colors hover:text-[#004f46]',
-              language === '简中' ? 'font-semibold text-[#005d50]' : '',
+              language === '簡中' ? 'font-semibold text-[#005d50]' : '',
             ].join(' ')}
             type="button"
           >
@@ -72,7 +72,7 @@ export default function HeaderNav() {
             <LogoPlaceholder />
           </div>
 
-          <nav className="ml-[68px] hidden h-full items-center xl:flex" aria-label="主导航">
+          <nav className="ml-[68px] hidden h-full items-center xl:flex" aria-label="主導航">
             {menuItems.map((item, index) => (
               <NavLink active={index === 0} key={item}>
                 {item}
@@ -87,7 +87,7 @@ export default function HeaderNav() {
           <button
             className="ml-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-macau-line bg-white/80 text-macau-deep shadow-sm xl:hidden"
             type="button"
-            aria-label="打开菜单"
+            aria-label="打開菜單"
           >
             <span className="flex w-5 flex-col gap-1.5">
               <span className="h-0.5 rounded-full bg-current" />

@@ -1,17 +1,17 @@
 const menuItems = [
-  { label: '工作台', icon: MenuIcon },
-  { label: '申请管理', icon: FileListIcon, open: true },
-  { label: '申请列表', active: true, indent: true },
-  { label: '我的待办', badge: 5, indent: true },
-  { label: '补件管理', indent: true },
-  { label: '历史申请', indent: true },
-  { label: '会员管理', icon: UserIcon, open: true },
-  { label: '审核管理', icon: ReviewIcon, open: true },
-  { label: '规则与条款', icon: ClipboardIcon, open: true },
-  { label: '知识库', icon: KnowledgeIcon, open: true },
+  { label: '工作臺', icon: MenuIcon },
+  { label: '申請管理', icon: FileListIcon, open: true },
+  { label: '申請列表', active: true, indent: true },
+  { label: '我的待辦', badge: 5, indent: true },
+  { label: '補件管理', indent: true },
+  { label: '歷史申請', indent: true },
+  { label: '會員管理', icon: UserIcon, open: true },
+  { label: '審覈管理', icon: ReviewIcon, open: true },
+  { label: '規則與條款', icon: ClipboardIcon, open: true },
+  { label: '知識庫', icon: KnowledgeIcon, open: true },
   { label: 'AI 助手', icon: BotIcon, open: true },
-  { label: '报表中心', icon: ChartIcon, open: true },
-  { label: '系统管理', icon: GearIcon, open: true },
+  { label: '報表中心', icon: ChartIcon, open: true },
+  { label: '系統管理', icon: GearIcon, open: true },
 ];
 
 function BaseIcon({ children, className = 'h-5 w-5' }) {
@@ -129,19 +129,19 @@ function ReviewTopBar() {
         <div className="flex w-[278px] items-center gap-3 border-r border-white/35 pr-5">
           <img alt="" className="h-[58px] w-[58px] object-cover object-left" src="/apply-top-logo.png" />
           <div className="leading-tight">
-            <p className="font-serifCn text-[20px] font-semibold tracking-[0.06em]">澳门直播行业协会</p>
+            <p className="font-serifCn text-[20px] font-semibold tracking-[0.06em]">澳門直播行業協會</p>
             <p className="mt-1 text-[11px] font-semibold text-white/88">Macau Live Streaming Association</p>
           </div>
         </div>
         <h1 className="ml-6 flex-1 font-serifCn text-[32px] font-semibold tracking-[0.08em]">
-          审核驾驶舱 － 申请编号 A-2026-0518
+          審覈駕駛艙 － 申請編號 A-2026-0518
         </h1>
         <div className="flex items-center gap-5 text-[14px] font-semibold">
           <div className="flex items-center gap-3">
             <span className="grid h-10 w-10 place-items-center rounded-full border border-white/45 bg-white/12">
               <UserIcon />
             </span>
-            <span>陈俾文<br /><span className="text-[12px] font-medium text-white/75">合规审核专员</span></span>
+            <span>陳俾文<br /><span className="text-[12px] font-medium text-white/75">合規審覈專員</span></span>
           </div>
           <span className="h-8 w-px bg-white/35" />
           <span className="relative flex items-center gap-2">
@@ -185,13 +185,13 @@ function ReviewSidebar() {
       </nav>
 
       <div className="mx-3 mb-6 rounded-[10px] border border-white/16 bg-white/6 p-4 text-center">
-        <p className="text-[14px] font-bold">审核进度</p>
+        <p className="text-[14px] font-bold">審覈進度</p>
         <div className="mx-auto mt-4 grid h-[88px] w-[88px] place-items-center rounded-full border-[9px] border-[#78c9b7] bg-[#005448] text-white">
           <span className="text-[28px] font-bold">3/5</span>
         </div>
-        <p className="mt-2 text-[12px] text-white/75">当前节点</p>
-        <p className="text-[15px] font-bold">合规审核</p>
-        <button className="mt-4 h-[36px] w-full rounded-[6px] border border-white/22 text-[12px] font-semibold" type="button">查看流程图</button>
+        <p className="mt-2 text-[12px] text-white/75">當前節點</p>
+        <p className="text-[15px] font-bold">合規審覈</p>
+        <button className="mt-4 h-[36px] w-full rounded-[6px] border border-white/22 text-[12px] font-semibold" type="button">查看流程圖</button>
       </div>
     </aside>
   );
@@ -216,8 +216,8 @@ function AiSummaryPanel() {
             <BuildingIcon />
           </span>
           <div>
-            <p className="text-[14px] text-[#5d686a]">个人/机构类型</p>
-            <p className="mt-1 text-[26px] font-semibold text-[#1c2f32]">机构</p>
+            <p className="text-[14px] text-[#5d686a]">個人/機構類型</p>
+            <p className="mt-1 text-[26px] font-semibold text-[#1c2f32]">機構</p>
           </div>
         </div>
 
@@ -232,7 +232,7 @@ function AiSummaryPanel() {
               <div className="mt-3 h-2 rounded-full bg-[#d9dddc]">
                 <div className="h-full w-[82%] rounded-full bg-[linear-gradient(90deg,#16a085,#007965)]" />
               </div>
-              <p className="mt-2 text-[12px] text-[#667274]">已收集 23 / 28 项</p>
+              <p className="mt-2 text-[12px] text-[#667274]">已收集 23 / 28 項</p>
             </div>
           </div>
         </div>
@@ -242,8 +242,8 @@ function AiSummaryPanel() {
             <FolderWarnIcon />
           </span>
           <span className="flex-1">
-            <span className="block text-[15px] font-semibold text-[#9a620e]">需补件</span>
-            <span className="mt-1 block text-[17px] font-bold text-[#503614]">从业成果证明 1 份</span>
+            <span className="block text-[15px] font-semibold text-[#9a620e]">需補件</span>
+            <span className="mt-1 block text-[17px] font-bold text-[#503614]">從業成果證明 1 份</span>
           </span>
           <span className="text-[26px] text-[#9a620e]">›</span>
         </button>
@@ -265,13 +265,13 @@ function AiSummaryPanel() {
         <div className="rounded-[9px] border border-[#e0e5e3] bg-white p-3.5 shadow-[0_8px_18px_rgba(38,74,78,0.06)]">
           <div className="flex items-center gap-2 font-semibold text-[#006253]">
             <SparkIcon />
-            <span>AI 结论摘要</span>
+            <span>AI 結論摘要</span>
           </div>
           <p className="mt-2 text-[13px] leading-6 text-[#334548]">
-            申请机构基本符合协会入会要求，部分条款证据不足，建议要求补件以完善材料。
+            申請機構基本符合協會入會要求，部分條款證據不足，建議要求補件以完善材料。
           </p>
           <div className="mt-3 flex items-center justify-between text-[11px] text-[#7a8587]">
-            <span>生成时间：2026-05-18 10:26:58</span>
+            <span>生成時間：2026-05-18 10:26:58</span>
             <span className="rounded bg-[#ddf2e9] px-2 py-1 font-semibold text-[#00715f]">AI 生成</span>
           </div>
         </div>
@@ -282,30 +282,30 @@ function AiSummaryPanel() {
 
 const matrixRows = [
   {
-    clause: '条款 1.2',
-    desc: '合法存续要求',
-    status: '已满足',
+    clause: '條款 1.2',
+    desc: '合法存續要求',
+    status: '已滿足',
     statusType: 'ok',
-    evidence: ['营业资料.pdf', '说明函.docx'],
+    evidence: ['營業資料.pdf', '說明函.docx'],
     extra: '+1',
     confidence: '高置信',
     score: '91%',
   },
   {
-    clause: '条款 2.1',
-    desc: '从业经验要求',
-    status: '证据不足',
+    clause: '條款 2.1',
+    desc: '從業經驗要求',
+    status: '證據不足',
     statusType: 'warn',
-    evidence: ['从业成果证明（缺失）', '说明函.docx'],
+    evidence: ['從業成果證明（缺失）', '說明函.docx'],
     confidence: '中等置信',
     score: '48%',
   },
   {
-    clause: '条款 2.4',
-    desc: '合规经营要求',
-    status: '已满足',
+    clause: '條款 2.4',
+    desc: '合規經營要求',
+    status: '已滿足',
     statusType: 'ok',
-    evidence: ['资格证书.jpg', '说明函.docx'],
+    evidence: ['資格證書.jpg', '說明函.docx'],
     extra: '+2',
     confidence: '高置信',
     score: '88%',
@@ -337,13 +337,13 @@ function EvidenceTag({ warn, children }) {
 
 function ClauseMatrixPanel() {
   return (
-    <PanelShell title="条款矩阵">
+    <PanelShell title="條款矩陣">
       <div className="mt-5 overflow-hidden rounded-[10px] border border-[#dde5e3] bg-white shadow-[0_10px_24px_rgba(38,74,78,0.05)]">
         <div className="grid grid-cols-[1.05fr_1fr_1.45fr_0.8fr] border-b border-[#dde5e3] bg-[#fbfcfc] text-center text-[13px] font-semibold text-[#334548]">
-          <div className="px-2 py-3">条款</div>
-          <div className="border-l border-[#dde5e3] px-2 py-3">合规状态</div>
-          <div className="border-l border-[#dde5e3] px-2 py-3">证据（关键材料）</div>
-          <div className="border-l border-[#dde5e3] px-2 py-3">AI 评估</div>
+          <div className="px-2 py-3">條款</div>
+          <div className="border-l border-[#dde5e3] px-2 py-3">合規狀態</div>
+          <div className="border-l border-[#dde5e3] px-2 py-3">證據（關鍵材料）</div>
+          <div className="border-l border-[#dde5e3] px-2 py-3">AI 評估</div>
         </div>
 
         {matrixRows.map((row) => (
@@ -371,13 +371,13 @@ function ClauseMatrixPanel() {
       </div>
 
       <div className="mt-3 rounded-[7px] border border-[#f2d4a2] bg-[#fff8eb] px-3 py-2 text-[12px] leading-5 text-[#8b5a10]">
-        AI 建议：需补充从业成果证明（如项目合同、平台流水、合作证明等）以验证实际从业经验。
+        AI 建議：需補充從業成果證明（如項目合同、平臺流水、合作證明等）以驗證實際從業經驗。
       </div>
 
       <div className="mt-5 flex items-center gap-5 rounded-[8px] border border-[#e2e9e7] bg-white px-4 py-3 text-[12px] text-[#566466]">
-        <span>状态说明：</span>
-        <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded-full bg-[#16a06f] text-white"><MiniCheckIcon /></span>已满足</span>
-        <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded-full bg-[#f39a11] text-white"><WarningIcon /></span>证据不足</span>
+        <span>狀態說明：</span>
+        <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded-full bg-[#16a06f] text-white"><MiniCheckIcon /></span>已滿足</span>
+        <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded-full bg-[#f39a11] text-white"><WarningIcon /></span>證據不足</span>
         <span className="inline-flex items-center gap-1.5"><span className="grid h-4 w-4 place-items-center rounded-full bg-[#d84a43] text-white"><SmallCrossIcon /></span>不符合</span>
       </div>
     </PanelShell>
@@ -385,9 +385,9 @@ function ClauseMatrixPanel() {
 }
 
 const evidenceFiles = [
-  { name: '营业资料.pdf', type: 'PDF', size: '1.24 MB', time: '2026-05-18 10:12', badge: 'P', color: 'bg-[#d94135]' },
-  { name: '资格证书.jpg', type: 'JPG', size: '842 KB', time: '2026-05-18 10:12', badge: 'I', color: 'bg-[#57a947]' },
-  { name: '说明函.docx', type: 'DOCX', size: '156 KB', time: '2026-05-18 10:12', badge: 'W', color: 'bg-[#1f75bb]' },
+  { name: '營業資料.pdf', type: 'PDF', size: '1.24 MB', time: '2026-05-18 10:12', badge: 'P', color: 'bg-[#d94135]' },
+  { name: '資格證書.jpg', type: 'JPG', size: '842 KB', time: '2026-05-18 10:12', badge: 'I', color: 'bg-[#57a947]' },
+  { name: '說明函.docx', type: 'DOCX', size: '156 KB', time: '2026-05-18 10:12', badge: 'W', color: 'bg-[#1f75bb]' },
 ];
 
 function FileBadge({ color, label }) {
@@ -401,16 +401,16 @@ function FileBadge({ color, label }) {
 
 function EvidencePanel() {
   return (
-    <PanelShell title="证据与附件">
+    <PanelShell title="證據與附件">
       <div className="mt-5 overflow-hidden rounded-[10px] border border-[#dde5e3] bg-white shadow-[0_10px_24px_rgba(38,74,78,0.05)]">
         <div className="grid grid-cols-[1.65fr_0.5fr_0.58fr_0.95fr_54px] items-center border-b border-[#dde5e3] bg-[#fbfcfc] px-3 py-3 text-[12px] font-semibold text-[#566466]">
           <span>文件名</span>
-          <span>类型</span>
+          <span>類型</span>
           <span>大小</span>
-          <span>上传时间</span>
+          <span>上傳時間</span>
           <button className="flex items-center justify-end gap-0.5 text-[11px] leading-tight text-[#334548]" type="button">
             <DownloadIcon />
-            <span>全部下载</span>
+            <span>全部下載</span>
           </button>
         </div>
 
@@ -431,7 +431,7 @@ function EvidencePanel() {
         ))}
 
         <button className="flex h-12 w-full items-center justify-center gap-1 border-t border-[#e8eeec] text-[13px] font-semibold text-[#006253]" type="button">
-          查看全部 12 个附件
+          查看全部 12 個附件
           <span className="text-[18px] leading-none">⌄</span>
         </button>
       </div>
@@ -441,19 +441,19 @@ function EvidencePanel() {
           <span className="grid h-11 w-11 place-items-center rounded-full bg-[#cfeee7] text-[#008466]">
             <SearchDocIcon />
           </span>
-          <h3 className="text-[18px] font-bold text-[#006253]">关键证据片段</h3>
+          <h3 className="text-[18px] font-bold text-[#006253]">關鍵證據片段</h3>
         </div>
 
         <div className="mt-3 rounded-[8px] border border-[#c7e3df] bg-white/86 p-4 text-[13px] leading-7 text-[#314447]">
-          <p className="font-semibold text-[#006253]">说明函.docx（第 2 页）</p>
+          <p className="font-semibold text-[#006253]">說明函.docx（第 2 頁）</p>
           <p className="mt-2">
-            “本公司自 2023 年起在澳门从事直播相关业务，主要与本地品牌及中小企业合作，提供直播策划、主播经纪及内容运营服务。
+            “本公司自 2023 年起在澳門從事直播相關業務，主要與本地品牌及中小企業合作，提供直播策劃、主播經紀及內容運營服務。
           </p>
           <p className="mt-1">
-            截至 2026 年 4 月，累计执行直播项目 68 场，累计观看人次超过 210 万，合作客户包括澳门本地文旅、零售及会展等领域。”
+            截至 2026 年 4 月，累計執行直播項目 68 場，累計觀看人次超過 210 萬，合作客戶包括澳門本地文旅、零售及會展等領域。”
           </p>
           <div className="mt-4 flex items-center justify-between border-t border-[#d8e9e6] pt-3 text-[12px] text-[#7a8587]">
-            <span>—— 摘录时间：2026-05-18 10:13</span>
+            <span>—— 摘錄時間：2026-05-18 10:13</span>
             <button className="rounded-[5px] border border-[#aedbd4] bg-white px-3 py-1.5 font-semibold text-[#00715f]" type="button">定位原文</button>
           </div>
         </div>
@@ -463,18 +463,18 @@ function EvidencePanel() {
 }
 
 const auditSteps = [
-  { title: '提交申请', time: '2026-05-18 10:24', note: '申请人', done: true },
-  { title: '形式审查通过', time: '2026-05-18 10:35', note: '系统自动', done: true },
-  { title: '分派审核', time: '2026-05-18 10:36', note: '系统', done: true },
-  { title: '合规审核中', time: '2026-05-18 10:40', note: '陈俾文', current: true },
-  { title: '理监事会评审', note: '待处理' },
-  { title: '结果公示', note: '待处理' },
-  { title: '完成', note: '待处理' },
+  { title: '提交申請', time: '2026-05-18 10:24', note: '申請人', done: true },
+  { title: '形式審查通過', time: '2026-05-18 10:35', note: '系統自動', done: true },
+  { title: '分派審覈', time: '2026-05-18 10:36', note: '系統', done: true },
+  { title: '合規審覈中', time: '2026-05-18 10:40', note: '陳俾文', current: true },
+  { title: '理監事會評審', note: '待處理' },
+  { title: '結果公示', note: '待處理' },
+  { title: '完成', note: '待處理' },
 ];
 
 function AuditTimelinePanel() {
   return (
-    <PanelShell title="审核审计轨迹">
+    <PanelShell title="審覈審計軌跡">
       <div className="mt-7 px-1">
         <div className="relative">
           <div className="absolute bottom-6 left-[15px] top-3 w-px bg-[#dfe7e5]" />
@@ -519,7 +519,7 @@ function PlaceholderPanel({ title }) {
   return (
     <PanelShell title={title}>
       <div className="mt-6 rounded-[10px] border border-dashed border-[#b9d2ce] bg-[#f5fbfa] p-8 text-center text-[14px] font-semibold text-[#6d7c7f]">
-        {title}内容区待复刻
+        {title}內容區待復刻
       </div>
     </PanelShell>
   );
@@ -544,15 +544,15 @@ function ReviewBottomBar() {
       <div className="grid grid-cols-[1fr_1fr_1fr_180px] gap-4">
         <button className="flex h-[62px] items-center justify-center gap-5 rounded-[7px] bg-gradient-to-br from-[#00836f] to-[#006252] text-[20px] font-bold text-white shadow-[0_8px_18px_rgba(0,93,80,0.22)]" type="button">
           <CheckIcon />
-          <span>通过进入理监事会<br /><span className="text-[12px] font-medium">确认符合要求，提交理监事会评审</span></span>
+          <span>通過進入理監事會<br /><span className="text-[12px] font-medium">確認符合要求，提交理監事會評審</span></span>
         </button>
         <button className="flex h-[62px] items-center justify-center gap-5 rounded-[7px] bg-gradient-to-br from-[#f6a11a] to-[#e98b00] text-[20px] font-bold text-white shadow-[0_8px_18px_rgba(231,139,0,0.22)]" type="button">
           <DocumentAddIcon />
-          <span>要求补件<br /><span className="text-[12px] font-medium">向申请人发起补件要求</span></span>
+          <span>要求補件<br /><span className="text-[12px] font-medium">向申請人發起補件要求</span></span>
         </button>
         <button className="flex h-[62px] items-center justify-center gap-5 rounded-[7px] bg-gradient-to-br from-[#d7453f] to-[#b92727] text-[20px] font-bold text-white shadow-[0_8px_18px_rgba(185,39,39,0.22)]" type="button">
           <CrossIcon />
-          <span>不符合明确条款<br /><span className="text-[12px] font-medium">驳回申请并说明不符合条款</span></span>
+          <span>不符合明確條款<br /><span className="text-[12px] font-medium">駁回申請並說明不符合條款</span></span>
         </button>
         <button className="h-[62px] rounded-[7px] border border-[#d4dfdd] bg-white text-[18px] font-bold text-[#334548]" type="button">更多操作 ›</button>
       </div>

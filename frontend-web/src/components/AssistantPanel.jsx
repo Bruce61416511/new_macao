@@ -97,25 +97,25 @@ export default function AssistantPanel() {
   return (
     <section className="mx-auto mt-[12px] flex max-w-[1196px] overflow-hidden rounded-[10px] border border-white/70 bg-white/72 text-[#064f47] shadow-[0_18px_38px_rgba(38,74,78,0.18)] backdrop-blur-xl">
       <aside className="hidden w-[244px] shrink-0 border-r border-white/55 bg-white/58 px-[20px] py-[25px] backdrop-blur-xl md:block">
-        {/* 头像 + 在线状态 */}
+        {/* 頭像 + 在線狀態 */}
         <div className="flex flex-col items-center">
           <div className="relative">
             <AvatarBadge large />
             <span className="absolute bottom-1 right-1 h-[14px] w-[14px] rounded-full border-2 border-white bg-[#2ecc71] shadow-[0_2px_6px_rgba(46,204,113,0.4)]" />
           </div>
-          <h2 className="mt-4 text-[22px] font-bold leading-none tracking-normal text-[#004f46]">小扬同学</h2>
+          <h2 className="mt-4 text-[22px] font-bold leading-none tracking-normal text-[#004f46]">小揚同學</h2>
           <div className="mt-1.5 flex items-center gap-1.5">
             <span className="inline-block h-[7px] w-[7px] rounded-full bg-[#2ecc71]" />
-            <span className="text-[13px] font-medium text-[#4a9e8e]">在线</span>
+            <span className="text-[13px] font-medium text-[#4a9e8e]">在線</span>
           </div>
         </div>
 
-        {/* 简介 */}
+        {/* 簡介 */}
         <p className="mt-4 text-center text-[15px] leading-relaxed whitespace-nowrap text-[#6c777b]">
-          你的专属 AI 助理
+          你的專屬 AI 助理
         </p>
 
-        {/* 分割线 */}
+        {/* 分割線 */}
         <div className="mx-auto mt-5 h-px w-[60px] rounded-full bg-gradient-to-r from-transparent via-[#b6d8d2] to-transparent" />
 
 
@@ -127,7 +127,7 @@ export default function AssistantPanel() {
             <div className="relative rounded-[8px] bg-[#e7f2ef] px-[24px] py-[16px] text-[18px] font-semibold leading-none tracking-normal text-[#004f46]">
               <span className="absolute right-[-7px] top-1/2 h-4 w-4 -translate-y-1/2 rotate-45 bg-[#e7f2ef]" />
               <span className="relative">
-              我是 MCN 负责人，想了解如何入会
+              我是 MCN 負責人，想了解如何入會
               </span>
             </div>
             <div className="grid h-[60px] w-[60px] place-items-center rounded-full bg-gradient-to-br from-[#12816f] to-[#006252] text-white shadow-[0_8px_16px_rgba(0,93,80,0.22)]">
@@ -140,7 +140,7 @@ export default function AssistantPanel() {
           <AvatarBadge />
           <div className="relative rounded-[9px] border border-[#d9e2e1] bg-white px-[29px] py-[22px] shadow-[0_4px_10px_rgba(18,45,46,0.08)]">
             <span className="absolute left-[-9px] top-[18px] h-4 w-4 rotate-45 border-b border-l border-[#d9e2e1] bg-white" />
-            <p className="relative text-[18px] font-medium leading-none text-[#1d2f31]">我先确认两点：你是个人申请还是机构申请？</p>
+            <p className="relative text-[18px] font-medium leading-none text-[#1d2f31]">我先確認兩點：你是個人申請還是機構申請？</p>
             <p className="relative mt-5 text-[13px] font-medium leading-none text-[#9aa3a6]">10:24</p>
           </div>
         </div>
@@ -148,24 +148,24 @@ export default function AssistantPanel() {
         <div className="mt-[26px] flex justify-center gap-2">
           <button className="flex h-[54px] w-[136px] items-center justify-center gap-3 rounded-full border border-[#3c9b8e] bg-white text-[17px] font-semibold text-[#005d50]" type="button">
             <UserIcon className="h-[25px] w-[25px]" />
-            个人
+            個人
           </button>
           <button className="flex h-[54px] w-[164px] items-center justify-center gap-3 rounded-full border border-[#3c9b8e] bg-white text-[17px] font-semibold text-[#005d50]" type="button">
             <BuildingIcon className="h-[27px] w-[27px]" />
-            机构
+            機構
           </button>
         </div>
 
         <div className="mx-auto mt-[29px] flex h-[88px] max-w-[862px] items-center rounded-[14px] border border-[#d9e2e1] bg-white px-[33px] shadow-[0_4px_12px_rgba(32,61,65,0.08)]">
-          <span className="flex-1 text-[16px] font-medium text-[#9aa3a6]">请输入你的问题...</span>
-          <button className="grid h-[47px] w-[47px] place-items-center rounded-full bg-gradient-to-br from-[#118370] to-[#006252] text-white shadow-[0_7px_14px_rgba(0,93,80,0.22)]" type="button" aria-label="发送">
+          <span className="flex-1 text-[16px] font-medium text-[#9aa3a6]">請輸入你的問題...</span>
+          <button className="grid h-[47px] w-[47px] place-items-center rounded-full bg-gradient-to-br from-[#118370] to-[#006252] text-white shadow-[0_7px_14px_rgba(0,93,80,0.22)]" type="button" aria-label="發送">
             <SendIcon />
           </button>
         </div>
 
         <p className="mt-[13px] flex items-center justify-center gap-2 text-[12px] font-medium text-[#7c898b]">
           <LockIcon />
-          内容由 AI 生成，仅供参考，请以协会官方信息为准。
+          內容由 AI 生成，僅供參考，請以協會官方信息爲準。
         </p>
       </div>
     </section>

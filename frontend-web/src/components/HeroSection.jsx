@@ -135,7 +135,7 @@ function TrustCard() {
     <aside className="absolute right-[-202px] top-[103px] hidden h-[181px] w-[222px] rounded-[14px] border border-white/80 bg-white/90 px-5 py-[27px] text-[#004f46] shadow-[0_12px_26px_rgba(55,89,92,0.18)] backdrop-blur-xl 2xl:block">
       <div className="flex items-center justify-center gap-3">
         <ShieldIcon />
-        <div className="text-[16px] font-semibold leading-none">依据已启用:</div>
+        <div className="text-[16px] font-semibold leading-none">依據已啓用:</div>
       </div>
       <div className="mt-[18px] space-y-4 text-center text-[15px] leading-none">
         <p className="whitespace-nowrap">
@@ -143,7 +143,7 @@ function TrustCard() {
           <span className="ml-2 text-[#5b6b6c]">v2026.05</span>
         </p>
         <p className="whitespace-nowrap">
-          <span className="font-semibold">会费表</span>
+          <span className="font-semibold">會費表</span>
           <span className="ml-2 text-[#5b6b6c]">v2026.03</span>
         </p>
       </div>
@@ -157,12 +157,12 @@ export default function HeroSection() {
   const { user } = useAuth();
 
   const quickActions = [
-    { label: '会员登录', icon: UserIcon, href: user ? '/member' : '/login' },
-    { label: '申请入会', tone: 'primary', icon: DocumentIcon },
-    { label: '进度查询', icon: SearchCircleIcon, href: '/track' },
-    { label: '会员权益', icon: DiamondIcon },
-    { label: '活动报名', icon: CalendarIcon, href: '/events' },
-    { label: '重置密码', icon: KeyIcon },
+    { label: '會員登錄', icon: UserIcon, href: user ? '/member' : '/login' },
+    { label: '申請入會', tone: 'primary', icon: DocumentIcon },
+    { label: '進度查詢', icon: SearchCircleIcon, href: '/track' },
+    { label: '會員權益', icon: DiamondIcon },
+    { label: '活動報名', icon: CalendarIcon, href: '/events' },
+    { label: '重置密碼', icon: KeyIcon },
   ];
 
   return (
@@ -172,7 +172,7 @@ export default function HeroSection() {
         <div className="relative flex h-full flex-col items-center xl:flex-row">
           <div className="flex h-[300px] w-full shrink-0 items-center justify-center xl:h-full xl:w-[250px]">
             <img
-              alt="AI 助手莲花灯"
+              alt="AI 助手蓮花燈"
               className="h-[295px] w-auto select-none object-contain xl:h-[342px]"
               draggable="false"
               src="/lotus-assistant.png"
@@ -180,18 +180,18 @@ export default function HeroSection() {
           </div>
 
           <div className="w-full pb-2 text-center xl:ml-[26px] xl:pb-0 xl:text-left">
-            <p className="font-serifCn text-[34px] leading-[1.08] tracking-normal xl:text-[32px]"><span className="font-bold">小扬同学</span> - 澳门直播协会</p>
-            <p className="mt-3 font-serifCn text-[34px] leading-[1.08] tracking-normal xl:text-[32px]">时刻在线，为您效劳</p>
+            <p className="font-serifCn text-[34px] leading-[1.08] tracking-normal xl:text-[32px]"><span className="font-bold">小揚同學</span> - 澳門直播協會</p>
+            <p className="mt-3 font-serifCn text-[34px] leading-[1.08] tracking-normal xl:text-[32px]">時刻在線，爲您效勞</p>
             <p className="mt-7 text-[20px] font-semibold leading-none tracking-normal text-[#005d50] xl:text-[20px]">
-              入会指导 ｜ 申请协助 ｜ 进度查询 ｜ 活动报名
+              入會指導 ｜ 申請協助 ｜ 進度查詢 ｜ 活動報名
             </p>
 
             <div className="mt-[26px] grid grid-cols-2 justify-items-center gap-4 sm:flex xl:gap-[14px]">
               {quickActions.map((action) => {
-                if (action.label === "会员权益") {
+                if (action.label === "會員權益") {
                   return <ActionButton action={{...action, onClick: () => setShowBenefits(true)}} key={action.label} />;
                 }
-                if (action.label === "重置密码") {
+                if (action.label === "重置密碼") {
                   return <ActionButton action={{...action, onClick: () => setShowResetPassword(true)}} key={action.label} />;
                 }
                 return <ActionButton action={action} key={action.label} />;

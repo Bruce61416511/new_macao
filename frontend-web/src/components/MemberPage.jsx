@@ -6,46 +6,46 @@ import BenefitsModal from "./BenefitsModal.jsx";
 import { useAuth } from "../contexts/AuthContext";
 import NotificationModal from "./NotificationModal.jsx";
 const sidebarItems = [
-  { label: '会员中心', active: true, icon: HomeIcon },
-  { label: '资料中心', icon: FolderIcon },
-  { label: '我的权益', icon: ShieldIcon },
-  { label: '协会活动', icon: CalendarIcon },
-  { label: '培训课程', icon: BookIcon },
+  { label: '會員中心', active: true, icon: HomeIcon },
+  { label: '資料中心', icon: FolderIcon },
+  { label: '我的權益', icon: ShieldIcon },
+  { label: '協會活動', icon: CalendarIcon },
+  { label: '培訓課程', icon: BookIcon },
   { label: '消息通知', badge: null, icon: BellIcon },
-  { label: '会员终审', icon: CheckBadgeIcon, adminOnly: true },
-  { label: '缴费审批', icon: CardIcon, adminOnly: true },
-  { label: '会员管理', icon: UsersIcon, adminOnly: true },
+  { label: '會員終審', icon: CheckBadgeIcon, adminOnly: true },
+  { label: '繳費審批', icon: CardIcon, adminOnly: true },
+  { label: '會員管理', icon: UsersIcon, adminOnly: true },
   { label: '章程管理', icon: BookmarkIcon, adminOnly: true },
 ];
 
-const actions = [  { label: '续费', icon: CardIcon },  ({ label: '更新资料', icon: IdIcon }),
+const actions = [  { label: '續費', icon: CardIcon },  ({ label: '更新資料', icon: IdIcon }),
 ];
 
 const updates = [
-  { title: '已报名：行业沙龙', desc: '数字化转型与中小企业长沙龙', date: '2025-05-20', icon: CalendarIcon },
-  { title: '待处理：资料更新确认', desc: '请确认并提交最新的企业资料', date: '2025-05-18', icon: FileTextIcon },
-  { title: '等级建议：再参与 1 次协会活动，可达下一等级', desc: '当前成长值 80 / 100', progress: true, icon: TrendIcon },
+  { title: '已報名：行業沙龍', desc: '數字化轉型與中小企業長沙龍', date: '2025-05-20', icon: CalendarIcon },
+  { title: '待處理：資料更新確認', desc: '請確認並提交最新的企業資料', date: '2025-05-18', icon: FileTextIcon },
+  { title: '等級建議：再參與 1 次協會活動，可達下一等級', desc: '當前成長值 80 / 100', progress: true, icon: TrendIcon },
 ];
 
 const credentials = [
-  { title: '澳门特区政府', desc: '注册社团', icon: SealIcon },
-  { title: '非营利性社团', desc: '登记证明', icon: MedalIcon },
-  { title: '年度审计报告', desc: '已公示', icon: ReportIcon },
-  { title: '个人资料保护', desc: '合规认证', icon: LockBadgeIcon },
+  { title: '澳門特區政府', desc: '註冊社團', icon: SealIcon },
+  { title: '非營利性社團', desc: '登記證明', icon: MedalIcon },
+  { title: '年度審計報告', desc: '已公示', icon: ReportIcon },
+  { title: '個人資料保護', desc: '合規認證', icon: LockBadgeIcon },
 ];
 
 const services = [
-  { label: '商务对接', icon: HandshakeIcon },
-  { label: '政策咨询', icon: MessageIcon },
+  { label: '商務對接', icon: HandshakeIcon },
+  { label: '政策諮詢', icon: MessageIcon },
   { label: '法律支援', icon: ScaleIcon },
-  { label: '品牌推广', icon: ChartIcon },
+  { label: '品牌推廣', icon: ChartIcon },
 ];
 
 const recommendations = [
-  { tag: '活动', title: '跨境电商交流会', date: '2025-06-05 14:30', image: '/activity-card-1.webp' },
-  { tag: '培训', title: '财税合规实务培训', date: '2025-06-10 09:30', image: '/activity-card-2.webp' },
-  { tag: '活动', title: '会员交流晚宴', date: '2025-06-18 18:30', image: '/activity-card-3.webp' },
-  { tag: '培训', title: 'AI商业应用工作坊', date: '2025-06-25 14:00', image: '/activity-card-4.webp' },
+  { tag: '活動', title: '跨境電商交流會', date: '2025-06-05 14:30', image: '/activity-card-1.webp' },
+  { tag: '培訓', title: '財稅合規實務培訓', date: '2025-06-10 09:30', image: '/activity-card-2.webp' },
+  { tag: '活動', title: '會員交流晚宴', date: '2025-06-18 18:30', image: '/activity-card-3.webp' },
+  { tag: '培訓', title: 'AI商業應用工作坊', date: '2025-06-25 14:00', image: '/activity-card-4.webp' },
 ];
 
 function LotusLogo({ className = 'h-12 w-12' }) {
@@ -213,7 +213,7 @@ function MemberSidebar({ onViewProfile, onShowBenefits, unreadCount, onOpenNotif
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] flex-col overflow-hidden bg-[linear-gradient(180deg,#00463d_0%,#005548_45%,#003f37_100%)] px-3 py-8 text-white shadow-[12px_0_30px_rgba(0,45,40,0.2)]">
       <div className="px-7">
         <img
-          alt="澳门直播协会 小扬同学"
+          alt="澳門直播協會 小揚同學"
           className="h-auto w-[160px] select-none object-contain"
           draggable="false"
           src="/member-sidebar-logo.png"
@@ -232,7 +232,7 @@ function MemberSidebar({ onViewProfile, onShowBenefits, unreadCount, onOpenNotif
               ].join(' ')}
               key={item.label}
               type="button"
-              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : item.label === "会员终审" ? () => window.location.href = "/admin/final-review" : item.label === "缴费审批" ? () => window.location.href = "/admin/payment-approval" : item.label === "会员管理" ? () => window.location.href = "/admin/members" : item.label === "章程管理" ? () => window.location.href = "/admin/constitution" : item.label === "消息通知" ? () => onOpenNotifications() : item.label === "我的权益" ? () => onShowBenefits() : undefined}
+              onClick={item.label === "資料中心" ? onViewProfile : item.label === "協會活動" ? () => window.location.href = "/events" : item.label === "會員終審" ? () => window.location.href = "/admin/final-review" : item.label === "繳費審批" ? () => window.location.href = "/admin/payment-approval" : item.label === "會員管理" ? () => window.location.href = "/admin/members" : item.label === "章程管理" ? () => window.location.href = "/admin/constitution" : item.label === "消息通知" ? () => onOpenNotifications() : item.label === "我的權益" ? () => onShowBenefits() : undefined}
             >
               <Icon />
               <span className="flex-1 text-left">{item.label}</span>
@@ -270,14 +270,14 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
 
     return (
       <header className="sticky top-0 z-30 flex h-[96px] items-center justify-between bg-white/72 px-11 backdrop-blur-xl">
-        <h1 className="font-serifCn text-[34px] font-semibold leading-none text-[#00473f]">会员中心 － 小扬同学与你同行</h1>
+        <h1 className="font-serifCn text-[34px] font-semibold leading-none text-[#00473f]">會員中心 － 小揚同學與你同行</h1>
         <div className="flex items-center gap-8 text-[#285c55]">
           <div className="flex items-center gap-2 text-[14px] font-semibold">
             <ShieldCheckOutlineIcon />
-            权威认证 · 值得信赖
+            權威認證 · 值得信賴
           </div>
           <div className="flex items-center gap-5 text-[14px] font-semibold">
-            <span className="rounded-full bg-[#006252] px-4 py-2 text-white">简体</span>
+            <span className="rounded-full bg-[#006252] px-4 py-2 text-white">簡體</span>
             <span>繁體</span>
             <span>EN</span>
             <span>PT</span>
@@ -289,7 +289,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
               type="button"
             >
               <div className="h-10 w-10 rounded-full bg-[url('/lotus-assistant.png')] bg-cover bg-center" />
-              <span className="text-[15px] font-bold">{user?.username ?? "小扬同学"}⌄</span>
+              <span className="text-[15px] font-bold">{user?.username ?? "小揚同學"}⌄</span>
             </button>
 
             {dropdownOpen && (
@@ -297,33 +297,33 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
                 <div className="flex items-center gap-3 pb-3 border-b border-[#e5eceb]">
                   <div className="h-10 w-10 rounded-full bg-[url('/lotus-assistant.png')] bg-cover bg-center shrink-0" />
                   <div>
-                    <p className="text-[15px] font-bold">{profile?.real_name || user?.username || "小扬同学"}</p>
-                    <p className="text-[12px] text-[#6a7679]">{profile?.tier || "会员"}</p>
+                    <p className="text-[15px] font-bold">{profile?.real_name || user?.username || "小揚同學"}</p>
+                    <p className="text-[12px] text-[#6a7679]">{profile?.tier || "會員"}</p>
                   </div>
                 </div>
                 <div className="mt-3 space-y-2 text-[13px]">
                   <div className="flex justify-between">
-                    <span className="text-[#6a7679]">用户名</span>
+                    <span className="text-[#6a7679]">用戶名</span>
                     <span className="font-medium">{profile?.username || "-"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6a7679]">手机号</span>
+                    <span className="text-[#6a7679]">手機號</span>
                     <span className="font-medium">{profile?.phone || "-"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6a7679]">邮箱</span>
+                    <span className="text-[#6a7679]">郵箱</span>
                     <span className="font-medium">{profile?.email || "-"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6a7679]">会员级别</span>
+                    <span className="text-[#6a7679]">會員級別</span>
                     <span className="font-medium">{profile?.tier || "-"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6a7679]">年费</span>
-                    <span className="font-medium">{profile?.annual_fee ? `${profile.annual_fee} 澳门元` : "-"}</span>
+                    <span className="text-[#6a7679]">年費</span>
+                    <span className="font-medium">{profile?.annual_fee ? `${profile.annual_fee} 澳門元` : "-"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6a7679]">注册时间</span>
+                    <span className="text-[#6a7679]">註冊時間</span>
                     <span className="font-medium">{profile?.created_at ? new Date(profile.created_at).toLocaleDateString("zh-CN") : "-"}</span>
                   </div>
                 </div>
@@ -332,7 +332,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
                   onClick={onLogout}
                   type="button"
                 >
-                  退出登录
+                  退出登錄
                 </button>
               </div>
             )}
@@ -343,7 +343,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
   }
   function MemberHero({ profile, onUpdateProfile }) {
   const { user } = useAuth();
-  const memberNo = profile?.id ? `MMA-${profile.id.replace(/-/g, "").slice(-8).toUpperCase()}` : "加载中...";
+  const memberNo = profile?.id ? `MMA-${profile.id.replace(/-/g, "").slice(-8).toUpperCase()}` : "加載中...";
   const yearEnd = `${new Date().getFullYear()}-12-31`;
   const [monthlyEvents, setMonthlyEvents] = useState(0);
   const [myMonthlyCount, setMyMonthlyCount] = useState(0);
@@ -368,14 +368,14 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
       setMyMonthlyCount(myCount);
     }).catch(() => {});
   }, []);
-  const statusText = profile?.is_active ? (profile?.tier || "正式会员") : "已停用";
+  const statusText = profile?.is_active ? (profile?.tier || "正式會員") : "已停用";
 
   return (
     <section className="relative overflow-hidden rounded-[14px] bg-[#004f46] text-white shadow-[0_18px_36px_rgba(0,45,40,0.2)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_34%_38%,rgba(255,255,255,0.08),transparent_30%),linear-gradient(90deg,#004f46_0%,#005347_54%,rgba(0,83,71,0.2)_70%,rgba(0,83,71,0)_100%)]" />
       <div className="absolute bottom-[-18%] right-[-2%] top-[-18%] w-[68%] origin-center -rotate-[7deg] overflow-hidden border-l-[3px] border-[#d7b86a] [border-bottom-left-radius:88%_128%] [border-top-left-radius:98%_128%]">
         <img
-          alt="大三巴牌坊与澳门建筑"
+          alt="大三巴牌坊與澳門建築"
           className="h-full w-full rotate-[7deg] scale-[1.14] select-none object-cover object-center"
           draggable="false"
           src="/member-hero-building.webp"
@@ -390,28 +390,28 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-serifCn text-[35px] font-semibold leading-none">{profile?.real_name || user?.username || "小扬同学"}</h2>
+              <h2 className="font-serifCn text-[35px] font-semibold leading-none">{profile?.real_name || user?.username || "小揚同學"}</h2>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f1dba4] px-4 py-2 text-[14px] font-bold text-[#795915]">
                 <CrownIcon />
                 {statusText}
               </span>
             </div>
-            <p className="mt-4 text-[15px] font-medium text-white/85">会员编号：{memberNo}</p>
+            <p className="mt-4 text-[15px] font-medium text-white/85">會員編號：{memberNo}</p>
           </div>
         </div>
 
         <div className="mt-8 space-y-4 text-[16px] font-semibold text-white/94">
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><CheckCircleIcon /></span>
-            当前状态：{statusText}
+            當前狀態：{statusText}
           </p>
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><CalendarIcon /></span>
-            会费到期：{profile?.annual_fee === 0 ? "永久生效" : profile?.is_active ? yearEnd : "-"}
+            會費到期：{profile?.annual_fee === 0 ? "永久生效" : profile?.is_active ? yearEnd : "-"}
           </p>
           <p className="flex items-center gap-3">
             <span className="text-[#9ddfcd]"><GiftIcon /></span>
-            当前可用活动：{user?.role === "root" ? "-" : (monthlyEvents > 0 ? `${monthlyEvents} 场可报名` : "暂无")}{user?.role !== "root" && myMonthlyCount > 0 ? `，已报名 ${myMonthlyCount} 场` : ""}
+            當前可用活動：{user?.role === "root" ? "-" : (monthlyEvents > 0 ? `${monthlyEvents} 場可報名` : "暫無")}{user?.role !== "root" && myMonthlyCount > 0 ? `，已報名 ${myMonthlyCount} 場` : ""}
           </p>
         </div>
 
@@ -419,7 +419,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
           {actions.map((action) => {
             const Icon = action.icon;
             return (
-              <button className="flex h-[40px] items-center justify-between rounded-[6px] bg-white px-4 text-[14px] font-bold text-[#004f46] shadow-[0_4px_10px_rgba(0,28,25,0.12)]" key={action.label} type="button" onClick={action.label === "更新资料" ? onUpdateProfile : action.onClick}>
+              <button className="flex h-[40px] items-center justify-between rounded-[6px] bg-white px-4 text-[14px] font-bold text-[#004f46] shadow-[0_4px_10px_rgba(0,28,25,0.12)]" key={action.label} type="button" onClick={action.label === "更新資料" ? onUpdateProfile : action.onClick}>
                 <span className="flex items-center gap-2">
                   <span className="grid h-7 w-7 place-items-center rounded-[6px] text-[#006252] bg-[#eef7f5]"><Icon /></span>
                   {action.label}
@@ -437,7 +437,7 @@ function RecentUpdates() {
   return (
     <section className="rounded-[12px] border border-[#dbe6e4] bg-white/82 p-4 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-[18px] font-bold text-[#004f46]">近期动态</h2>
+        <h2 className="text-[18px] font-bold text-[#004f46]">近期動態</h2>
         <a className="text-[13px] font-semibold text-[#647477]" href="#">查看全部 ›</a>
       </div>
       <div className="mt-3 overflow-hidden rounded-[9px] border border-[#dce6e4] bg-white/70">
@@ -463,12 +463,12 @@ function RecentUpdates() {
 function AssistantMini() {
   return (
     <section className="rounded-[12px] border border-[#dbe6e4] bg-white/82 p-5 text-center shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
-      <h2 className="text-left text-[18px] font-bold text-[#004f46]">智能小荷 · 您的会员助手</h2>
+      <h2 className="text-left text-[18px] font-bold text-[#004f46]">智能小荷 · 您的會員助手</h2>
       <div className="mx-auto mt-5 grid h-[140px] w-[140px] place-items-center rounded-full bg-[#dff3ef] shadow-[inset_0_0_30px_rgba(0,98,82,0.16)]">
         <LotusLogo className="h-[90px] w-[90px] text-white drop-shadow-[0_8px_16px_rgba(0,98,82,0.22)]" />
       </div>
-      <div className="mx-auto mt-3 w-fit rounded-[10px] bg-[#eef7f5] px-5 py-3 text-[13px] font-medium text-[#476468]">我可以帮你整理续费材料或报名活动</div>
-      <button className="mt-4 rounded-full border border-[#006252] px-8 py-2 text-[14px] font-bold text-[#006252]" type="button">立即咨询</button>
+      <div className="mx-auto mt-3 w-fit rounded-[10px] bg-[#eef7f5] px-5 py-3 text-[13px] font-medium text-[#476468]">我可以幫你整理續費材料或報名活動</div>
+      <button className="mt-4 rounded-full border border-[#006252] px-8 py-2 text-[14px] font-bold text-[#006252]" type="button">立即諮詢</button>
     </section>
   );
 }
@@ -477,7 +477,7 @@ function TrustCard() {
   return (
     <section className="rounded-[12px] border border-[#dbe6e4] bg-white/82 p-4 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
       <div className="flex items-center justify-between">
-        <h2 className="text-[18px] font-bold text-[#004f46]">信任与资质</h2>
+        <h2 className="text-[18px] font-bold text-[#004f46]">信任與資質</h2>
         <a className="text-[13px] font-semibold text-[#647477]" href="#">查看全部 ›</a>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-2">
@@ -498,7 +498,7 @@ function TrustCard() {
 function ServicesCard() {
   return (
     <section className="rounded-[12px] border border-[#dbe6e4] bg-white/82 p-4 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
-      <h2 className="text-[18px] font-bold text-[#004f46]">专属服务</h2>
+      <h2 className="text-[18px] font-bold text-[#004f46]">專屬服務</h2>
       <div className="mt-5 grid grid-cols-4 gap-3 text-center">
         {services.map((service) => {
           const Icon = service.icon;
@@ -518,8 +518,8 @@ function Recommendations() {
   return (
     <section className="flex-1 rounded-[12px] border border-[#dbe6e4] bg-white/82 p-4 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
       <div className="flex items-center justify-between">
-        <h2 className="text-[18px] font-bold text-[#004f46]">为您推荐</h2>
-        <a className="text-[13px] font-semibold text-[#006252]" href="#">换一批</a>
+        <h2 className="text-[18px] font-bold text-[#004f46]">爲您推薦</h2>
+        <a className="text-[13px] font-semibold text-[#006252]" href="#">換一批</a>
       </div>
       <div className="mt-4 grid grid-cols-4 gap-4">
         {recommendations.map((item, index) => (
@@ -554,8 +554,8 @@ function ContactCard() {
 
   return (
     <section className="relative flex-1 overflow-hidden rounded-[12px] border border-[#dbe6e4] bg-white/82 p-5 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
-      <h2 className="text-[18px] font-bold text-[#004f46]">有疑问？联系专属服务团队</h2>
-      <p className="mt-3 text-[13px] text-[#637477]">服务时间：周一至周五 09:00 - 18:00</p>
+      <h2 className="text-[18px] font-bold text-[#004f46]">有疑問？聯繫專屬服務團隊</h2>
+      <p className="mt-3 text-[13px] text-[#637477]">服務時間：週一至週五 09:00 - 18:00</p>
       <div className="relative z-10 mt-4 space-y-2 text-[13px] font-medium text-[#53676a]">
         {contacts.map((contact) => {
           const Icon = contact.icon;

@@ -18,7 +18,7 @@ export default function LoginPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!username.trim() || !password) {
-      setError("请输入用户名和密码");
+      setError("請輸入用戶名和密碼");
       return;
     }
     setSubmitting(true);
@@ -26,7 +26,7 @@ export default function LoginPage() {
     try {
       await login(username.trim(), password);
     } catch (err) {
-      setError(err.message || "登录失败");
+      setError(err.message || "登錄失敗");
     }
     setSubmitting(false);
   }
@@ -37,28 +37,28 @@ export default function LoginPage() {
         <div className="mx-auto mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-gradient-to-br from-[#00836f] to-[#006252] text-[36px] shadow-[0_8px_24px_rgba(0,93,80,0.25)]">
           🺧
         </div>
-        <h1 className="font-serifCn text-[28px] font-bold text-[#004f46]">小扬同学</h1>
-        <p className="mt-1 text-[13px] text-[#6c777b]">澳门直播协会 · 会员登录</p>
+        <h1 className="font-serifCn text-[28px] font-bold text-[#004f46]">小揚同學</h1>
+        <p className="mt-1 text-[13px] text-[#6c777b]">澳門直播協會 · 會員登錄</p>
       </div>
 
       <div className="w-full max-w-[380px] rounded-[16px] border border-[#dce6e4] bg-white p-6 shadow-[0_2px_20px_rgba(44,36,32,0.06)]">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="mb-1 block text-[13px] font-medium text-[#6b5e58]">用户名</label>
+            <label className="mb-1 block text-[13px] font-medium text-[#6b5e58]">用戶名</label>
             <input
               className="w-full rounded-[10px] border border-[#dce6e4] bg-[#fdfcfa] px-4 py-2.5 text-[14px] outline-none transition focus:border-[#00836f] focus:bg-white"
-              placeholder="请输入用户名"
+              placeholder="請輸入用戶名"
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="mb-4">
-            <label className="mb-1 block text-[13px] font-medium text-[#6b5e58]">密码</label>
+            <label className="mb-1 block text-[13px] font-medium text-[#6b5e58]">密碼</label>
             <input
               className="w-full rounded-[10px] border border-[#dce6e4] bg-[#fdfcfa] px-4 py-2.5 text-[14px] outline-none transition focus:border-[#00836f] focus:bg-white"
               type="password"
-              placeholder="请输入密码"
+              placeholder="請輸入密碼"
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -70,7 +70,7 @@ export default function LoginPage() {
             type="submit"
             disabled={submitting}
           >
-            {submitting ? "登录中..." : "登 录"}
+            {submitting ? "登錄中..." : "登 錄"}
           </button>
 
           {error && (
@@ -82,7 +82,7 @@ export default function LoginPage() {
       </div>
 
       <p className="mt-4 text-[13px] text-[#6b5e58]">
-        还没有账号？<a className="font-medium text-[#00836f] hover:underline" href="/apply">申请入会</a>
+        還沒有賬號？<a className="font-medium text-[#00836f] hover:underline" href="/apply">申請入會</a>
       </p>
     </div>
   );

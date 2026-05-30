@@ -14,36 +14,36 @@
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-[18px] font-bold text-[#142528]">当前资料</h2>
+          <h2 className="text-[18px] font-bold text-[#142528]">當前資料</h2>
           <button onClick={onClose} className="text-[#9ba8aa] hover:text-[#57696d] text-[20px] leading-none" type="button">×</button>
         </div>
 
         <div className="space-y-3 text-[14px]">
-          <Row label="用户名" value={profile?.username} />
-          <Row label="真实姓名" value={profile?.real_name} />
-          <Row label="手机号" value={profile?.phone} />
-          <Row label="邮箱" value={profile?.email || "-"} />
-          <Row label="会员级别" value={profile?.tier || "-"} />
-          <Row label="年费" value={profile?.annual_fee ? `${profile.annual_fee} 澳门元` : "-"} />
-          <Row label="通讯地址" value={profile?.address || "-"} />
-          <Row label="注册时间" value={profile?.created_at ? new Date(profile.created_at).toLocaleDateString("zh-CN") : "-"} />
+          <Row label="用戶名" value={profile?.username} />
+          <Row label="真實姓名" value={profile?.real_name} />
+          <Row label="手機號" value={profile?.phone} />
+          <Row label="郵箱" value={profile?.email || "-"} />
+          <Row label="會員級別" value={profile?.tier || "-"} />
+          <Row label="年費" value={profile?.annual_fee ? `${profile.annual_fee} 澳門元` : "-"} />
+          <Row label="通訊地址" value={profile?.address || "-"} />
+          <Row label="註冊時間" value={profile?.created_at ? new Date(profile.created_at).toLocaleDateString("zh-CN") : "-"} />
 
           <div className="pt-2 border-t border-[#e5eceb]">
-            <span className="text-[#6a7679] text-[13px]">从业经历</span>
+            <span className="text-[#6a7679] text-[13px]">從業經歷</span>
             <p className="mt-1 text-[#1b292b] font-medium whitespace-pre-wrap">{profile?.career_history || "-"}</p>
           </div>
 
           <div className="pt-2 border-t border-[#e5eceb]">
-            <span className="text-[#6a7679] text-[13px]">资质说明</span>
+            <span className="text-[#6a7679] text-[13px]">資質說明</span>
             <p className="mt-1 text-[#1b292b] font-medium whitespace-pre-wrap">{profile?.qualifications || "-"}</p>
           </div>
 
           {fileUrls.length > 0 && (
             <div className="pt-2 border-t border-[#e5eceb]">
-              <span className="text-[#6a7679] text-[13px]">资质文件</span>
+              <span className="text-[#6a7679] text-[13px]">資質文件</span>
               <div className="mt-2 grid grid-cols-3 gap-2">
                 {fileUrls.map((url, i) => (
-                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block cursor-pointer group"><img src={url} alt={`资质 ${i + 1}`} className="w-full h-28 object-cover rounded-[4px] border border-[#dde7e5] group-hover:opacity-80 transition-opacity" /></a>
+                  <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="block cursor-pointer group"><img src={url} alt={`資質 ${i + 1}`} className="w-full h-28 object-cover rounded-[4px] border border-[#dde7e5] group-hover:opacity-80 transition-opacity" /></a>
                 ))}
               </div>
             </div>

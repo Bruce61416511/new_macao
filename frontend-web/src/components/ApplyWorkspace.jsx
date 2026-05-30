@@ -90,10 +90,10 @@ function ChevronIcon() {
 /* ── Config ─────────────────────────────────── */
 
 const STEPS = [
-  { title: "基本信息", desc: "完善机构/个人基本信息", icon: UserIcon, color: "bg-[#006252]" },
-  { title: "从业经历", desc: "填写从业背景与主要方向", icon: BriefcaseIcon, color: "bg-[#087765]" },
-  { title: "资质文件", desc: "上传相关资质或证明材料", icon: FolderIcon, color: "bg-[#279b79]" },
-  { title: "声明与授权", desc: "阅读并确认声明与授权书", icon: ShieldCheckIcon, color: "bg-[#3db29b]" },
+  { title: "基本信息", desc: "完善機構/個人基本信息", icon: UserIcon, color: "bg-[#006252]" },
+  { title: "從業經歷", desc: "填寫從業背景與主要方向", icon: BriefcaseIcon, color: "bg-[#087765]" },
+  { title: "資質文件", desc: "上傳相關資質或證明材料", icon: FolderIcon, color: "bg-[#279b79]" },
+  { title: "聲明與授權", desc: "閱讀並確認聲明與授權書", icon: ShieldCheckIcon, color: "bg-[#3db29b]" },
 ];
 
 const INITIAL_FORM = {
@@ -125,7 +125,7 @@ function StatusBadge({ step, active }) {
   if (active) {
     bg = "bg-[#e7f5f0]";
     textColor = "text-[#006252]";
-    label = "填写中";
+    label = "填寫中";
   } else if (isDone) {
     bg = "bg-[#e7f5f0]";
     textColor = "text-[#006252]";
@@ -203,7 +203,7 @@ function StepForm({ stepIndex, formData, onFormChange, errors }) {
 
   return (
     <div className="flex h-64 items-center justify-center rounded-[9px] border border-dashed border-[#cfd9d7] bg-[#f8fbfb]">
-      <p className="text-[16px] font-medium text-[#9ba8aa]">此步骤表单即将上线</p>
+      <p className="text-[16px] font-medium text-[#9ba8aa]">此步驟表單即將上線</p>
     </div>
   );
 }
@@ -221,19 +221,19 @@ export default function ApplyWorkspace({ onProgressChange }) {
   function validateStep(stepIndex) {
     const errs = {};
     if (stepIndex === 0) {
-      if (!formData.username || formData.username.length < 2) errs.username = "用户名至少 2 位字母或数字";
-      else if (!/^[a-zA-Z0-9]+$/.test(formData.username)) errs.username = "用户名只能包含字母和数字";
-      if (!formData.password || formData.password.length < 6) errs.password = "密码至少 6 位";
-      if (!formData.applicant_name) errs.applicant_name = "请输入姓名";
-      if (!formData.id_number || formData.id_number.length < 15) errs.id_number = "请输入有效证件号码";
-      if (!formData.applicant_phone || formData.applicant_phone.length < 5) errs.applicant_phone = "请输入联系电话";
+      if (!formData.username || formData.username.length < 2) errs.username = "用戶名至少 2 位字母或數字";
+      else if (!/^[a-zA-Z0-9]+$/.test(formData.username)) errs.username = "用戶名只能包含字母和數字";
+      if (!formData.password || formData.password.length < 6) errs.password = "密碼至少 6 位";
+      if (!formData.applicant_name) errs.applicant_name = "請輸入姓名";
+      if (!formData.id_number || formData.id_number.length < 15) errs.id_number = "請輸入有效證件號碼";
+      if (!formData.applicant_phone || formData.applicant_phone.length < 5) errs.applicant_phone = "請輸入聯繫電話";
       if (formData.applicant_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.applicant_email)) {
-        errs.applicant_email = "邮箱格式不正确";
+        errs.applicant_email = "郵箱格式不正確";
       }
     }
     if (stepIndex === 1) {
       if (!formData.career_history || formData.career_history.trim().length < 10) {
-        errs.career_history = "请至少填写10个字的从业经历";
+        errs.career_history = "請至少填寫10個字的從業經歷";
       }
     }
     if (stepIndex === 2) {
@@ -243,10 +243,10 @@ export default function ApplyWorkspace({ onProgressChange }) {
           return raw ? (typeof raw === "string" ? JSON.parse(raw) : raw) : [];
         } catch { return []; }
       })();
-      if (files.length === 0) errs.qualification_files = "请至少上传一张资质文件";
+      if (files.length === 0) errs.qualification_files = "請至少上傳一張資質文件";
     }
     if (stepIndex === 3) {
-      if (!formData.declaration_agreed) errs.declaration_agreed = "请阅读并勾选声明与授权";
+      if (!formData.declaration_agreed) errs.declaration_agreed = "請閱讀並勾選聲明與授權";
     }
     return errs;
   }
@@ -274,10 +274,10 @@ export default function ApplyWorkspace({ onProgressChange }) {
     try {
       const { declaration_agreed, ...payload } = formData;
       await submitApplication(payload);
-      alert("申请已成功提交！");
+      alert("申請已成功提交！");
       window.location.href = "/";
     } catch (err) {
-      setSubmitError(err.message || "提交失败，请重试");
+      setSubmitError(err.message || "提交失敗，請重試");
     } finally {
       setSubmitting(false);
     }
@@ -293,28 +293,28 @@ export default function ApplyWorkspace({ onProgressChange }) {
   function getStepStatus(index) {
     if (index === 0) {
       const hasData = formData.username || formData.applicant_name || formData.id_number;
-      if (!hasData) return { status: "danger", statusText: "未填写" };
+      if (!hasData) return { status: "danger", statusText: "未填寫" };
       const errs = validateStep(0);
       if (Object.keys(errs).length > 0) return { status: "warn", statusText: "待完善" };
       return { status: "done", statusText: "已完成" };
     }
     if (index === 1) {
       if (!formData.career_history || formData.career_history.trim().length < 10) {
-        return { status: "danger", statusText: "未填写" };
+        return { status: "danger", statusText: "未填寫" };
       }
       return { status: "done", statusText: "已完成" };
     }
     if (index === 2) {
       if (parseFiles(formData.qualification_files).length === 0) {
-        return { status: "danger", statusText: "未上传" };
+        return { status: "danger", statusText: "未上傳" };
       }
       return { status: "done", statusText: "已完成" };
     }
     if (index === 3) {
-      if (!formData.declaration_agreed) return { status: "danger", statusText: "未确认" };
-      return { status: "done", statusText: "已确认" };
+      if (!formData.declaration_agreed) return { status: "danger", statusText: "未確認" };
+      return { status: "done", statusText: "已確認" };
     }
-    return { status: index < activeStep ? "done" : "danger", statusText: index < activeStep ? "已完成" : "未填写" };
+    return { status: index < activeStep ? "done" : "danger", statusText: index < activeStep ? "已完成" : "未填寫" };
   }
 
   const stepsWithStatus = STEPS.map((s, i) => ({ ...s, ...getStepStatus(i) }));
@@ -332,15 +332,15 @@ export default function ApplyWorkspace({ onProgressChange }) {
       <div className="flex h-full flex-col gap-4">
         <section className="flex-1 rounded-[14px] border border-[#dde7e5] bg-white/88 px-[30px] py-[28px] shadow-[0_16px_34px_rgba(35,70,74,0.13)] backdrop-blur-xl">
           <div className="flex items-start justify-between">
-            <h2 className="text-[30px] font-bold leading-none text-[#142528]">结构化申请卡</h2>
+            <h2 className="text-[30px] font-bold leading-none text-[#142528]">結構化申請卡</h2>
             <span className="rounded-[7px] border border-[#cfd9d7] bg-white px-4 py-2 text-[13px] font-medium text-[#68777a]">
-              申请编号：APP-20250527-00123
+              申請編號：APP-20250527-00123
             </span>
           </div>
 
           <div className="mt-9">
             <div className="flex items-end justify-between">
-              <span className="text-[16px] font-semibold text-[#1b292b]">当前进度</span>
+              <span className="text-[16px] font-semibold text-[#1b292b]">當前進度</span>
               <span className="text-[38px] font-bold leading-none text-[#006252]">{pct}%</span>
             </div>
             <ProgressBar pct={pct} />
@@ -362,7 +362,7 @@ export default function ApplyWorkspace({ onProgressChange }) {
 
           <div className="mt-7">
             <h3 className="mb-5 text-[22px] font-bold text-[#142528]">
-              步骤 {activeStep + 1}：{STEPS[activeStep].title}
+              步驟 {activeStep + 1}：{STEPS[activeStep].title}
             </h3>
             <StepForm
               stepIndex={activeStep}
@@ -374,8 +374,8 @@ export default function ApplyWorkspace({ onProgressChange }) {
 
           <p className="mt-6 flex items-center gap-2 text-[14px] font-medium text-[#667477]">
             <ClockIcon />
-            可随时保存草稿，预计还需
-            <span className="font-bold text-[#006252]">5 分钟</span>
+            可隨時保存草稿，預計還需
+            <span className="font-bold text-[#006252]">5 分鐘</span>
           </p>
 
           {submitError && (
@@ -394,7 +394,7 @@ export default function ApplyWorkspace({ onProgressChange }) {
               className="flex h-[56px] items-center justify-center gap-5 rounded-[7px] bg-gradient-to-br from-[#00836f] to-[#006252] text-[22px] font-bold text-white shadow-[0_10px_20px_rgba(0,93,80,0.24)]"
               type="button"
             >
-              {submitting ? "提交中..." : activeStep === STEPS.length - 1 ? "提交申请" : "继续填写"}
+              {submitting ? "提交中..." : activeStep === STEPS.length - 1 ? "提交申請" : "繼續填寫"}
               <ArrowRightIcon />
             </button>
             <button
@@ -402,7 +402,7 @@ export default function ApplyWorkspace({ onProgressChange }) {
               type="button"
             >
               <HeadsetIcon />
-              转人工咨询
+              轉人工諮詢
             </button>
           </div>
         </section>

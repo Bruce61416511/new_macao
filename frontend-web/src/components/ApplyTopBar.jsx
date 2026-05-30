@@ -32,35 +32,35 @@ export default function ApplyTopBar({ progress = 0 }) {
     <header className="sticky top-0 z-50 h-[78px] w-full rounded-b-[10px] bg-[linear-gradient(110deg,#003d36_0%,#005548_45%,#00483f_100%)] px-[42px] text-white shadow-[0_12px_30px_rgba(0,45,40,0.24)]">
       <div className="mx-auto grid h-full max-w-[1450px] grid-cols-[360px_1fr_360px] items-center">
         <div className="flex items-center">
-          <a className="flex h-[58px] items-center" href="/" aria-label="返回首页">
+          <a className="flex h-[58px] items-center" href="/" aria-label="返回首頁">
             <img
-              alt="小洋同学 澳门直播协会"
+              alt="小洋同學 澳門直播協會"
               className="h-[50px] w-auto select-none object-contain"
               draggable="false"
               src="/apply-top-logo.png"
             />
           </a>
           <span className="ml-[34px] h-[31px] w-px bg-white/65" />
-          <nav className="ml-[28px] flex items-center gap-2 text-[15px] font-medium text-white/92" aria-label="当前位置">
+          <nav className="ml-[28px] flex items-center gap-2 text-[15px] font-medium text-white/92" aria-label="當前位置">
             <HomeIcon />
             <span className="text-white/70">›</span>
-            <span>申请入会</span>
+            <span>申請入會</span>
           </nav>
         </div>
 
         <h1 className="text-center font-serifCn text-[31px] font-semibold leading-none tracking-[0.08em] text-white">
-          申请入会 · 进度 {progress}%
+          申請入會 · 進度 {progress}%
         </h1>
 
         <div className="flex items-center justify-end gap-[24px] text-[15px] font-medium">
           <a className="flex items-center gap-2 text-white/92 transition hover:text-white" href="#">
             <HelpIcon />
-            帮助中心
+            幫助中心
           </a>
           <span className="h-[31px] w-px bg-white/65" />
           <button className="flex items-center gap-3 text-white" type="button">
             <UserAvatar />
-            <span className="text-[16px] font-semibold">陈先生</span>
+            <span className="text-[16px] font-semibold">陳先生</span>
             <span className="text-white/85">⌄</span>
           </button>
         </div>
