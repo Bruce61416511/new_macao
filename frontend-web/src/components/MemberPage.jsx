@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { getMyProfile } from "../services/api.js";
 import UpdateProfileModal from "./UpdateProfileModal.jsx";
 import ProfileViewModal from "./ProfileViewModal.jsx";
@@ -21,11 +21,7 @@ const sidebarItems = [
 const actions = [  { label: '續費', icon: CardIcon },  ({ label: '更新資料', icon: IdIcon }),
 ];
 
-const updates = [
-  { title: '已報名：行業沙龍', desc: '數字化轉型與中小企業長沙龍', date: '2025-05-20', icon: CalendarIcon },
-  { title: '待處理：資料更新確認', desc: '請確認並提交最新的企業資料', date: '2025-05-18', icon: FileTextIcon },
-  { title: '等級建議：再參與 1 次協會活動，可達下一等級', desc: '當前成長值 80 / 100', progress: true, icon: TrendIcon },
-];
+
 
 const credentials = [
   { title: '澳門特區政府', desc: '註冊社團', icon: SealIcon },
@@ -432,7 +428,13 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
     </section>
   );
 }
-function RecentUpdates() {
+function RecentUpdates({ items }) {
+  const FEED_ICONS = {
+    event: CalendarIcon,
+    payment: CardIcon,
+    announcement: BellIcon,
+  };
+
   return (
     <section className="rounded-[12px] border border-[#dbe6e4] bg-white/82 p-4 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
       <div className="flex items-center justify-between px-1">
@@ -440,20 +442,24 @@ function RecentUpdates() {
         <a className="text-[13px] font-semibold text-[#647477]" href="#">查看全部 ›</a>
       </div>
       <div className="mt-3 overflow-hidden rounded-[9px] border border-[#dce6e4] bg-white/70">
-        {updates.map((item) => {
-          const Icon = item.icon;
-          return (
-            <article className="grid grid-cols-[42px_1fr_auto] items-center border-b border-[#e3ebe9] px-4 py-4 last:border-b-0" key={item.title}>
-              <IconShell><Icon /></IconShell>
-              <div>
-                <p className="text-[15px] font-bold text-[#203335]">{item.title}</p>
-                <p className="mt-1 text-[12px] font-medium text-[#6d7c7f]">{item.desc}</p>
-                {item.progress ? <div className="mt-3 h-2 max-w-[310px] rounded-full bg-[#e4e7e6]"><div className="h-full w-4/5 rounded-full bg-[#006252]" /></div> : null}
-              </div>
-              <span className="text-[12px] font-medium text-[#7d8a8d]">{item.date || '80%'}</span>
-            </article>
-          );
-        })}
+        {items.length === 0 ? (
+          <div className="px-4 py-8 text-center text-[13px] text-[#8ba09c]">暫無近期動態</div>
+        ) : (
+          items.map((item) => {
+            const Icon = FEED_ICONS[item.type] || FileTextIcon;
+            const displayDate = item.date ? new Date(item.date).toLocaleDateString("zh-CN") : "";
+            return (
+              <article className="grid grid-cols-[42px_1fr_auto] items-center border-b border-[#e3ebe9] px-4 py-4 last:border-b-0" key={item.title + item.date}>
+                <IconShell className={item.type === "payment" ? "text-[#ad7b00]" : ""}><Icon /></IconShell>
+                <div>
+                  <p className="text-[15px] font-bold text-[#203335]">{item.title}</p>
+                  <p className="mt-1 text-[12px] font-medium text-[#6d7c7f]">{item.description}</p>
+                </div>
+                <span className="text-[12px] font-medium text-[#7d8a8d]">{displayDate}</span>
+              </article>
+            );
+          })
+        )}
       </div>
     </section>
   );
@@ -586,12 +592,18 @@ export default function MemberPage() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [feedItems, setFeedItems] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     getMyProfile().then(data => setProfile(data.member)).catch(() => {});
+    const token2 = sessionStorage.getItem("token");
+    if (token2) {
+      fetch("/v1/members/me/feed", { headers: { Authorization: "Bearer " + token2 } })
+        .then(r => r.json()).then(d => setFeedItems(d.items || [])).catch(() => {});
+    }
     const token = sessionStorage.getItem("token");
     if (token) {
       fetch("/v1/notifications", { headers: { Authorization: "Bearer " + token } })
@@ -624,7 +636,7 @@ export default function MemberPage() {
         <div className="mt-4 grid grid-cols-[1fr_380px] items-stretch gap-4">
           <div className="flex h-full flex-col gap-4">
             <div className="grid grid-cols-[1fr_344px] gap-4">
-              <RecentUpdates />
+              <RecentUpdates items={feedItems} />
               <AssistantMini />
             </div>
             <Recommendations />

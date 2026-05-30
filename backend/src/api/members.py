@@ -32,6 +32,79 @@ class StaffMemberUpdate(BaseModel):
     is_active: bool | None = None
 
 
+from ..services.event_service import EventService
+from ..services.announcement_service import AnnouncementService
+
+
+@router.get("/me/feed", response_model=dict)
+async def get_my_feed(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """聚合近期動態：已報名活動 + 繳費提醒 + 公告資訊，取最近 4 條"""
+    if user is None:
+        raise HTTPException(status_code=401, detail="請先登錄")
+    
+    member_id = uuid.UUID(user["sub"])
+    member_svc = MemberService(db)
+    member = await member_svc.get_by_id(member_id)
+    if not member:
+        raise HTTPException(status_code=404, detail="會員不存在")
+    
+    feed_items = []
+
+    # 1. 已報名活動（优先级最高）
+    event_svc = EventService(db)
+    try:
+        regs = await event_svc.my_registrations(member_id)
+        for item in (regs.get("items") or []):
+            feed_items.append({
+                "type": "event",
+                "title": "已報名：" + item.get("title", ""),
+                "description": item.get("event_date", "")[:10] + " " + (item.get("location", "") or ""),
+                "date": item.get("event_date", ""),
+                "link": "/events",
+            })
+    except Exception:
+        pass
+
+    # 2. 繳費提醒
+    app_svc = ApplicationService(db)
+    try:
+        apps = await app_svc.list_applications(id_number=member.id_number, page=1, page_size=5)
+        for app in (apps.get("items") or []):
+            status = app.get("status", "")
+            if status == "待繳費":
+                feed_items.append({
+                    "type": "payment",
+                    "title": "待繳費：請提交繳費憑證",
+                    "description": "申請已通過終審，請盡快完成繳費",
+                    "date": app.get("submitted_at", ""),
+                    "link": "/member",
+                })
+                break  # 只提醒一次
+    except Exception:
+        pass
+
+    # 3. 公告資訊
+    ann_svc = AnnouncementService(db)
+    try:
+        anns = await ann_svc.list_announcements(page=1, page_size=4)
+        for ann in (anns.get("items") or []):
+            if not ann.get("published", True):
+                continue
+            feed_items.append({
+                "type": "announcement",
+                "title": ann.get("title", ""),
+                "description": (ann.get("content") or "")[:80] + ("…" if ann.get("content") and len(ann.get("content", "")) > 80 else ""),
+                "date": ann.get("created_at", ""),
+                "link": "/announcements",
+            })
+    except Exception:
+        pass
+
+    # 按日期倒序，取前 4 条
+    feed_items.sort(key=lambda x: x.get("date", ""), reverse=True)
+    feed_items = feed_items[:4]
+
+    return {"items": feed_items}
 @router.get("/me", response_model=dict)
 async def get_my_profile(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if user is None:
