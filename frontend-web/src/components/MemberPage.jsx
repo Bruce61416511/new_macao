@@ -37,12 +37,6 @@ const services = [
   { label: '品牌推廣', icon: ChartIcon },
 ];
 
-const recommendations = [
-  { tag: '活動', title: '跨境電商交流會', date: '2025-06-05 14:30', image: '/activity-card-1.webp' },
-  { tag: '活動', title: '會員交流晚宴', date: '2025-06-18 18:30', image: '/activity-card-3.webp' },
-  { tag: '培訓', title: '財稅合規實務培訓', date: '2025-06-10 09:30', image: '/activity-card-2.webp' },
-  { tag: '培訓', title: 'AI商業應用工作坊', date: '2025-06-25 14:00', image: '/activity-card-4.webp' },
-];
 
 function LotusLogo({ className = 'h-12 w-12' }) {
   return (
@@ -519,32 +513,44 @@ function ServicesCard() {
   );
 }
 
-function Recommendations() {
+function Recommendations({ events }) {
+  const cards = (events || []).map((e, i) => ({
+    tag: e.registration_status || "活動",
+    title: e.title || "",
+    date: e.event_date ? new Date(e.event_date).toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit" }) + " " + new Date(e.event_date).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }) : "",
+    image: ["/activity-card-1.webp", "/activity-card-3.webp", "/activity-card-2.webp", "/activity-card-4.webp"][i % 4],
+    link: "/events",
+  }));
+
   return (
     <section className="flex-1 rounded-[12px] border border-[#dbe6e4] bg-white/82 p-4 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
       <div className="flex items-center justify-between">
         <h2 className="text-[18px] font-bold text-[#004f46]">爲您推薦</h2>
-        <a className="text-[13px] font-semibold text-[#006252]" href="#">換一批</a>
+        <a className="text-[13px] font-semibold text-[#006252]" href="/events">查看更多 ›</a>
       </div>
       <div className="mt-4 grid grid-cols-4 gap-4">
-        {recommendations.map((item, index) => (
-          <article className="overflow-hidden rounded-[8px] bg-white shadow-sm" key={item.title}>
-            <div className="relative h-[82px] overflow-hidden">
-              <img
-                alt=""
-                className="h-full w-full select-none object-cover"
-                draggable="false"
-                src={item.image}
-              />
-              <span className="absolute left-2 top-2 rounded bg-[#2b8d75] px-2 py-1 text-[12px] font-bold text-white">{item.tag}</span>
-              <div className={`absolute inset-0 ${index % 2 ? 'bg-[#ffffff]/45' : 'bg-[#004f46]/18'}`} />
-            </div>
-            <div className="px-2 py-2">
-              <p className="text-[13px] font-bold text-[#203335]">{item.title}</p>
-              <p className="mt-1 text-[12px] text-[#657477]">{item.date}</p>
-            </div>
-          </article>
-        ))}
+        {cards.length === 0 ? (
+          <div className="col-span-4 py-8 text-center text-[13px] text-[#8ba09c]">暫無即將舉辦的活動</div>
+        ) : (
+          cards.map((item, index) => (
+            <article className="overflow-hidden rounded-[8px] bg-white shadow-sm" key={item.title + index}>
+              <div className="relative h-[82px] overflow-hidden">
+                <img
+                  alt=""
+                  className="h-full w-full select-none object-cover"
+                  draggable="false"
+                  src={item.image}
+                />
+                <span className="absolute left-2 top-2 rounded bg-[#2b8d75] px-2 py-1 text-[12px] font-bold text-white">{item.tag}</span>
+                <div className="absolute inset-0" />
+              </div>
+              <div className="px-2 py-2">
+                <p className="text-[13px] font-bold text-[#203335]">{item.title}</p>
+                <p className="mt-1 text-[12px] text-[#657477]">{item.date}</p>
+              </div>
+            </article>
+          ))
+        )}
       </div>
     </section>
   );
@@ -593,7 +599,8 @@ export default function MemberPage() {
   const [showBenefits, setShowBenefits] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [feedItems, setFeedItems] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
+
+  const [upcomingEvents, setUpcomingEvents] = useState([]);  const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
 
@@ -603,6 +610,8 @@ export default function MemberPage() {
     if (token2) {
       fetch("/v1/members/me/feed", { headers: { Authorization: "Bearer " + token2 } })
         .then(r => r.json()).then(d => setFeedItems(d.items || [])).catch(() => {});
+    fetch("/v1/events?status=" + encodeURIComponent("開放") + "&page_size=4", { headers: token2 ? { Authorization: "Bearer " + token2 } : {} })
+      .then(r => r.json()).then(d => setUpcomingEvents((d.items || []).slice(0, 4))).catch(() => {});
     }
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -639,7 +648,7 @@ export default function MemberPage() {
               <RecentUpdates items={feedItems} />
               <AssistantMini />
             </div>
-            <Recommendations />
+            <Recommendations events={upcomingEvents}  />
           </div>
           <div className="flex h-full flex-col gap-4">
             <TrustCard />
