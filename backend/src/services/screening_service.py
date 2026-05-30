@@ -159,9 +159,9 @@ class ScreeningService:
 
     async def perform_screening(self, application: Application, result: str, reason: str) -> Application:
         if result == "pass":
-            application.status = "初審通过"
+            application.status = "初審通過"
         else:
-            application.status = "初審不通过"
+            application.status = "初審不通過"
         application.screening_result = reason
         application.screening_by = "AI系统"
         await self.db.flush()

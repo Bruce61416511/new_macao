@@ -14,16 +14,16 @@ class ApplicationService:
     """入会申请服务：CRUD + 状态流转 + 重复检测 + 驳回重申请"""
 
     VALID_TRANSITIONS = {
-        "待審核": ["初審通过", "初審不通过"],
-        "初審通过": ["终審通过", "终審不通过"],
-        "终審通过": ["待缴费"],
-        "待缴费": ["已缴费", "已过期"],
-        "已缴费": ["已入会", "待缴费"],
-        "初審不通过": ["待審核"],
-        "终審不通过": ["待審核"],
+        "待審核": ["初審通過", "初審不通過"],
+        "初審通過": ["縈審通過", "縈審不通過"],
+        "縈審通過": ["待繳費"],
+        "待繳費": ["已繳費", "已過期"],
+        "已繳費": ["已入會", "待繳費"],
+        "初審不通過": ["待審核"],
+        "縈審不通過": ["待審核"],
     }
 
-    RESUBMIT_COOLDOWN = {"初審不通过": timedelta(0), "终審不通过": timedelta(days=30)}
+    RESUBMIT_COOLDOWN = {"初審不通過": timedelta(0), "縈審不通過": timedelta(days=30)}
 
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -78,7 +78,7 @@ class ApplicationService:
         if extra:
             for k, v in extra.items():
                 setattr(app, k, v)
-        if new_status == "待缴费":
+        if new_status == "待繳費":
             app.payment_proof_url = None
             app.payment_due_date = datetime.now(timezone.utc) + timedelta(days=7)
         await self.db.flush()
@@ -86,7 +86,7 @@ class ApplicationService:
 
     async def verify_payment_and_create_member(self, app_id: uuid.UUID, verifier_id: uuid.UUID) -> dict:
         app = await self.get_application(app_id)
-        if app.status not in ("已缴费", "待缴费"):
+        if app.status not in ("已繳費", "待繳費"):
             raise HTTPException(status_code=400, detail={"error": "invalid_status", "message": "当前状态不允许操作"})
         app.payment_verified_by = verifier_id
         app.payment_verified_at = datetime.now(timezone.utc)
@@ -100,9 +100,9 @@ class ApplicationService:
                 member.annual_fee = {"普通会员": 500, "普通会员": 500, "高级会员": 1000}.get(app.requested_tier, 500)
                 member.is_active = True
                 member.updated_at = datetime.now(timezone.utc)
-                app.status = "已入会"
+                app.status = "已入會"
                 await self.db.flush()
-                return {"application_id": str(app.id), "member_id": str(member.id), "status": "已入会"}
+                return {"application_id": str(app.id), "member_id": str(member.id), "status": "已入會"}
 
         # New member flow: create member record
         member = Member(
@@ -118,14 +118,14 @@ class ApplicationService:
         self.db.add(member)
         await self.db.flush()
         app.member_id = member.id
-        app.status = "已入会"
+        app.status = "已入會"
         await self.db.flush()
-        return {"application_id": str(app.id), "member_id": str(member.id), "status": "已入会"}
+        return {"application_id": str(app.id), "member_id": str(member.id), "status": "已入會"}
 
     async def resubmit(self, app_id: uuid.UUID, updated_data: dict) -> Application:
         """驳回重申请：检查冷却期，保留原数据，修改后重新提交"""
         old_app = await self.get_application(app_id)
-        if old_app.status not in ("初審不通过", "终審不通过"):
+        if old_app.status not in ("初審不通過", "縈審不通過"):
             raise HTTPException(status_code=400, detail={"error": "not_rejected", "message": "只有被驳回的申请才能重申请"})
 
         cooldown = self.RESUBMIT_COOLDOWN.get(old_app.status, timedelta(0))

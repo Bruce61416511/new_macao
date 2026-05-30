@@ -46,13 +46,13 @@ export default function EventCenterPage({ role }) {
         const data = await evRes.json();
         const items = data.items || [];
         items.sort((a, b) => {
-          const aOpen = a.registration_status === "开放";
-          const bOpen = b.registration_status === "开放";
+          const aOpen = a.registration_status === "開放";
+          const bOpen = b.registration_status === "開放";
           if (aOpen && !bOpen) return -1;
           if (!aOpen && bOpen) return 1;
           return new Date(a.event_date) - new Date(b.event_date);
         });
-        setEvents(isRoot ? items : items.filter(e => e.registration_status === "开放"));
+        setEvents(isRoot ? items : items.filter(e => e.registration_status === "開放"));
       }
       if (myRes && myRes.ok) {
         const myData = await myRes.json();
@@ -107,8 +107,8 @@ export default function EventCenterPage({ role }) {
     } catch (e) { setMsg(e.message); }
   }
 
-  const openEvents = events.filter(e => e.registration_status === "开放");
-  const closedEvents = events.filter(e => e.registration_status !== "开放");
+  const openEvents = events.filter(e => e.registration_status === "開放");
+  const closedEvents = events.filter(e => e.registration_status !== "開放");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f2f8f5] via-[#f8fbf9] to-[#f0f5f3] pl-[240px]">
@@ -137,7 +137,7 @@ export default function EventCenterPage({ role }) {
               {isRoot ? "📋 活動管理" : "📅 可報名活動"}
             </h2>
             <p className="mt-1 text-[13px] text-[#8ba09c]">
-              {events.length === 0 ? "暫未發佈活動" : `共 ${events.length} 場活動 · ${openEvents.length} 場开放中`}
+              {events.length === 0 ? "暫未發佈活動" : `共 ${events.length} 場活動 · ${openEvents.length} 場開放中`}
             </p>
           </div>
           {isRoot && (
@@ -188,7 +188,7 @@ export default function EventCenterPage({ role }) {
           <div className="mb-10">
             <div className="mb-5 flex items-center gap-3">
               <div className="h-1 w-7 rounded-full bg-gradient-to-r from-[#00836f] to-[#006252]" />
-              <h3 className="text-[16px] font-bold text-[#00473f] tracking-tight">开放報名</h3>
+              <h3 className="text-[16px] font-bold text-[#00473f] tracking-tight">開放報名</h3>
               <span className="rounded-full bg-[#e7f5f0] px-2.5 py-0.5 text-[11px] font-bold text-[#006252]">{openEvents.length}</span>
             </div>
             <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
@@ -288,13 +288,13 @@ export default function EventCenterPage({ role }) {
 function EventCard({ event, isRoot, isLoggedIn, isRegistered, animating, onRegister, onCancel, onDelete }) {
   return (
     <div className={`group relative overflow-hidden rounded-2xl border bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-      event.registration_status === "开放"
+      event.registration_status === "開放"
         ? "border-[#d0e8df] hover:border-[#a0d4c0] hover:shadow-[#006252]/8"
         : "border-[#e8e0d8]"
     } ${animating ? "animate-[cardPulse_0.6s_ease]" : ""}`}>
       {/* Left accent bar */}
       <div className={`absolute left-0 top-0 h-full w-1.5 ${
-        event.registration_status === "开放"
+        event.registration_status === "開放"
           ? "bg-gradient-to-b from-[#00836f] to-[#00473f]"
           : "bg-gradient-to-b from-[#c5a890] to-[#9a8070]"
       }`} />
@@ -303,7 +303,7 @@ function EventCard({ event, isRoot, isLoggedIn, isRegistered, animating, onRegis
         {/* Icon area */}
         <div className="flex w-[100px] shrink-0 items-center justify-center bg-gradient-to-br from-[#f8fbf9] to-[#eef7f3]">
           <div className={`flex h-14 w-14 items-center justify-center rounded-2xl text-3xl transition-transform duration-300 group-hover:scale-110 ${
-            event.registration_status === "开放" ? "bg-white shadow-md shadow-[#006252]/8" : "bg-[#faf7f4]"
+            event.registration_status === "開放" ? "bg-white shadow-md shadow-[#006252]/8" : "bg-[#faf7f4]"
           }`}>
             {getEventIcon(event.title)}
           </div>
@@ -318,7 +318,7 @@ function EventCard({ event, isRoot, isLoggedIn, isRegistered, animating, onRegis
                   {event.title}
                 </h3>
                 <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wide ${
-                  event.registration_status === "开放"
+                  event.registration_status === "開放"
                     ? "bg-[#e7f5f0] text-[#006252]"
                     : "bg-[#fef7f2] text-[#a08070]"
                 }`}>
@@ -378,7 +378,7 @@ function EventCard({ event, isRoot, isLoggedIn, isRegistered, animating, onRegis
                 >
                   取消報名
                 </button>
-              ) : event.registration_status === "开放" ? (
+              ) : event.registration_status === "開放" ? (
                 <button
                   onClick={() => onRegister(event.id)}
                   className="rounded-xl bg-gradient-to-r from-[#00836f] to-[#006252] px-5 py-2.5 text-[13px] font-bold text-white shadow-md shadow-[#006252]/15 transition-all hover:shadow-lg hover:shadow-[#006252]/25 hover:-translate-y-0.5 active:translate-y-0"

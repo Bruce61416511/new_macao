@@ -158,7 +158,7 @@ class MemberService:
             app.status = "终審通过"
             app.final_review_result = "信息变更-等级变更"
             await self.db.flush()
-            app.status = "待缴费"
+            app.status = "待繳費"
             app.payment_due_date = datetime.now(timezone.utc) + timedelta(days=7)
             await self.db.flush()
             self._audit_log("tier_change_pending", member.id, {"from": member.tier, "to": requested_tier})
@@ -172,7 +172,7 @@ class MemberService:
             app.status = "终審通过"
             app.final_review_result = "信息变更-自动通过"
             await self.db.flush()
-            app.status = "已入会"
+            app.status = "已入會"
             await self.db.flush()
             self._audit_log("info_update", member.id, {"fields": ["real_name", "phone", "email"]})
             return {"application_id": str(app.id), "status": app.status, "message": "信息修改已生效"}

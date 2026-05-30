@@ -36,7 +36,7 @@ class EventService:
         events = result.scalars().all()
         items = []
         for e in events:
-            count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == e.id, EventRegistration.status == "已报名"))
+            count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == e.id, EventRegistration.status == "已報名"))
             reg_count = count_result.scalar() or 0
             items.append({**self._to_dict(e), "registrations_count": reg_count})
         return {"items": items, "total": len(events), "page": page}
@@ -58,33 +58,33 @@ class EventService:
         )
         reg = existing.scalar_one_or_none()
         if reg:
-            if reg.status == "已报名":
-                raise HTTPException(status_code=409, detail="您已报名该活动")
-            reg.status = "已报名"
-            if event.registration_status == "已满":
-                event.registration_status = "开放"
+            if reg.status == "已報名":
+                raise HTTPException(status_code=409, detail="您已報名该活动")
+            reg.status = "已報名"
+            if event.registration_status == "已滿":
+                event.registration_status = "開放"
             await self.db.flush()
-            return {"registration_id": str(reg.id), "status": "已报名"}
+            return {"registration_id": str(reg.id), "status": "已報名"}
 
-        if event.registration_status != "开放":
+        if event.registration_status != "開放":
             raise HTTPException(status_code=400, detail="活动报名已截止")
 
         if event.max_participants:
-            count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == event_id, EventRegistration.status == "已报名"))
+            count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == event_id, EventRegistration.status == "已報名"))
             if count_result.scalar() >= event.max_participants:
-                raise HTTPException(status_code=400, detail="活动名额已满")
+                raise HTTPException(status_code=400, detail="活动名额已滿")
 
         reg = EventRegistration(event_id=event_id, member_id=member_id)
         self.db.add(reg)
         await self.db.flush()
 
         if event.max_participants:
-            count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == event_id, EventRegistration.status == "已报名"))
+            count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == event_id, EventRegistration.status == "已報名"))
             if count_result.scalar() >= event.max_participants:
-                event.registration_status = "已满"
+                event.registration_status = "已滿"
                 await self.db.flush()
 
-        return {"registration_id": str(reg.id), "status": "已报名"}
+        return {"registration_id": str(reg.id), "status": "已報名"}
 
     async def my_registrations(self, member_id: uuid.UUID) -> dict:
         # Join with Event to exclude cancelled/closed events
@@ -93,7 +93,7 @@ class EventService:
                 Event, EventRegistration.event_id == Event.id
             ).where(
                 EventRegistration.member_id == member_id,
-                EventRegistration.status == "已报名",
+                EventRegistration.status == "已報名",
                 Event.registration_status != "截止"
             )
         )
@@ -103,29 +103,29 @@ class EventService:
         events = [row[1] for row in rows]
         items = []
         for e in events:
-            count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == e.id, EventRegistration.status == "已报名"))
+            count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == e.id, EventRegistration.status == "已報名"))
             reg_count = count_result.scalar() or 0
             items.append({**self._to_dict(e), "registrations_count": reg_count})
         return {"items": items}
 
     async def cancel_registration(self, event_id: uuid.UUID, member_id: uuid.UUID) -> dict:
         result = await self.db.execute(
-            select(EventRegistration).where(EventRegistration.event_id == event_id, EventRegistration.member_id == member_id, EventRegistration.status == "已报名")
+            select(EventRegistration).where(EventRegistration.event_id == event_id, EventRegistration.member_id == member_id, EventRegistration.status == "已報名")
         )
         reg = result.scalar_one_or_none()
         if not reg:
             raise HTTPException(status_code=404, detail="未找到报名记录")
         reg.status = "已取消"
         event = await self.get(event_id)
-        if event.registration_status == "已满":
-            event.registration_status = "开放"
+        if event.registration_status == "已滿":
+            event.registration_status = "開放"
         await self.db.flush()
         return {"status": "已取消"}
 
     def _to_dict(self, e: Event) -> dict:
         status = e.registration_status
         # Automatically mark past events as closed
-        if status == "开放" and e.event_date and e.event_date.replace(tzinfo=None) < datetime.utcnow():
+        if status == "開放" and e.event_date and e.event_date.replace(tzinfo=None) < datetime.utcnow():
             status = "截止"
         return {
             "id": str(e.id),

@@ -355,7 +355,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
       fetch("/v1/events/my", { headers: user ? { Authorization: `Bearer ${sessionStorage.getItem("token")}` } : {} }).then(r => r.ok ? r.json() : { items: [] })
     ]).then(([evData, myData]) => {
       const count = (evData.items || []).filter(e => {
-        if (e.registration_status !== "开放") return false;
+        if (e.registration_status !== "開放") return false;
         const d = new Date(e.event_date);
         return d >= now;
       }).length;

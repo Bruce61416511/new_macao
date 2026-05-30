@@ -75,7 +75,7 @@ async def check_duplicate(
     id_number: str | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
 ):
-    """检查用户名或身份证号是否已被占用（含申请记录和已入会会员）"""
+    """检查用户名或身份证号是否已被占用（含申请记录和已入會会员）"""
     result = {"username_exists": False, "id_number_exists": False}
 
     if username:
@@ -170,16 +170,16 @@ async def final_review(app_id: str, body: FinalReviewRequest, user: dict = Depen
                     member.annual_fee = {"普通会员": 500, "高级会员": 1000}.get(app.requested_tier, member.annual_fee)
                     member.updated_at = datetime.now(timezone.utc)
                     await db.flush()
-                    await app_svc.transition_status(app.id, "待缴费")
+                    await app_svc.transition_status(app.id, "待繳費")
                     app = await app_svc.get_application(uuid.UUID(app_id))
                 else:
                     member.is_active = False
                     member.updated_at = datetime.now(timezone.utc)
                     await db.flush()
-                    await app_svc.transition_status(app.id, "待缴费")
+                    await app_svc.transition_status(app.id, "待繳費")
                     app = await app_svc.get_application(uuid.UUID(app_id))
         else:
-            await app_svc.transition_status(app.id, "待缴费")
+            await app_svc.transition_status(app.id, "待繳費")
             app = await app_svc.get_application(uuid.UUID(app_id))
     else:
         if app.member_id:
@@ -203,7 +203,7 @@ async def upload_payment_proof(app_id: str, file: UploadFile = File(...), db: As
     content = await file.read()
     filepath.write_bytes(content)
     app.payment_proof_url = f"/uploads/payment/{filename}"
-    await app_svc.transition_status(app.id, "已缴费", {"payment_proof_url": app.payment_proof_url})
+    await app_svc.transition_status(app.id, "已繳費", {"payment_proof_url": app.payment_proof_url})
     await db.flush()
     return {"status": app.status, "payment_proof_url": app.payment_proof_url}
 
@@ -220,8 +220,8 @@ async def verify_payment(app_id: str, body: VerifyPaymentRequest | None = None, 
     if action == "reject":
         app = await app_svc.get_application(uuid.UUID(app_id))
         reject_reason = body.reject_reason if body else ""
-        await app_svc.transition_status(app.id, "待缴费", {"payment_rejected": True, "payment_reject_reason": reject_reason})
-        return {"application_id": str(app.id), "status": "待缴费", "reject_reason": reject_reason}
+        await app_svc.transition_status(app.id, "待繳費", {"payment_rejected": True, "payment_reject_reason": reject_reason})
+        return {"application_id": str(app.id), "status": "待繳費", "reject_reason": reject_reason}
     result = await app_svc.verify_payment_and_create_member(uuid.UUID(app_id), uuid.uuid4())
     return result
 

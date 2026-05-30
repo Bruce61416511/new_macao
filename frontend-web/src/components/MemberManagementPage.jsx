@@ -80,7 +80,7 @@ export default function MemberManagementPage() {
     } else {
       deleteUrl = `/v1/admin/members/applications/${userId}`;
     }
-    if (!confirm("????????????????")) return;
+    if (!confirm("確定刪除該用戶？")) return;
     try {
       const res = await fetch(deleteUrl, { method: "DELETE", headers: authHeaders });
       if (!res.ok) {
@@ -95,17 +95,24 @@ export default function MemberManagementPage() {
   }
 
   const STATUS_ORDER = [
-    "待審核", "待審覈",
-    "初審通過", "初審通過",
-    "初審不通過", "初審不通過",
-    "終審通過", "終審通過",
-    "終審不通過", "終審不通過",
-    "待繳費",
-    "已繳費",
     "已入會",
-  ];
+    "縈審通過",
+    "縈審不通過",
+    "縈審通過",
+    "縈審不通過",
+    "已入會",
+    "已入會",
+    "已入會",
+    ];
 
-  const sortedUsers = [...users].sort((a, b) => {
+  
+
+  const STATUS_LABEL = {
+    "已入會": "已入會",
+    "縈審通過": "縈審通過",
+    "縈審不通過": "縈審不通過",
+  };
+const sortedUsers = [...users].sort((a, b) => {
     const ai = STATUS_ORDER.indexOf(a.status);
     const bi = STATUS_ORDER.indexOf(b.status);
     return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);

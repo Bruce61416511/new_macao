@@ -31,7 +31,7 @@ async def escalate_payment_timeout(db: AsyncSession) -> dict:
     day7 = now - timedelta(days=7)
 
     result = await db.execute(
-        select(Application).where(Application.status == "待缴费", Application.updated_at < day7)
+        select(Application).where(Application.status == "待繳費", Application.updated_at < day7)
     )
     week_overdue = result.scalars().all()
     for app in week_overdue:
@@ -39,7 +39,7 @@ async def escalate_payment_timeout(db: AsyncSession) -> dict:
         logger.warning(f"[PAYMENT-ESCALATION] App {app.id} unpaid >7d, escalated to admin, marked expired")
 
     result = await db.execute(
-        select(Application).where(Application.status == "待缴费", Application.updated_at < day3, Application.updated_at >= day7)
+        select(Application).where(Application.status == "待繳費", Application.updated_at < day3, Application.updated_at >= day7)
     )
     day3_overdue = result.scalars().all()
     for app in day3_overdue:

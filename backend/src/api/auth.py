@@ -39,7 +39,7 @@ async def login(req: LoginRequest, db = Depends(get_db)):
         app = app_result.scalar_one_or_none()
         if app and app.status in ("初審不通过", "終審不通过"):
             raise HTTPException(status_code=403, detail="申请已被驳回")
-        if app and app.status == "待缴费":
+        if app and app.status == "待繳費":
             raise HTTPException(status_code=403, detail="请先完成缴费")
         raise HTTPException(status_code=401, detail="用户名或密码错误")
     if not verify_password(req.password, member.password_hash):
@@ -55,8 +55,8 @@ async def login(req: LoginRequest, db = Depends(get_db)):
             ).order_by(Application.submitted_at.desc()).limit(1)
         )
         latest_app = app_result.scalar_one_or_none()
-        if latest_app and latest_app.status != "已入会":
-            status_msg = {"待缴费": "请先完成缴费", "終審不通过": "申请已被驳回", "初審不通过": "申请已被驳回"}.get(latest_app.status, "账号状态异常")
+        if latest_app and latest_app.status != "已入會":
+            status_msg = {"待繳費": "请先完成缴费", "終審不通过": "申请已被驳回", "初審不通过": "申请已被驳回"}.get(latest_app.status, "账号状态异常")
             raise HTTPException(status_code=403, detail=status_msg)
         if not member.is_active:
             raise HTTPException(status_code=403, detail="该账号当前不在籍无法登录")

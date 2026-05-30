@@ -21,7 +21,7 @@ class Event(Base):
     max_participants: Mapped[int | None] = mapped_column(Integer, nullable=True)
     registration_status: Mapped[str] = mapped_column(
         String(20),
-        default="开放", nullable=False, index=True
+        default="開放", nullable=False, index=True
     )
     created_by: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("members.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -37,5 +37,5 @@ class EventRegistration(Base):
     registered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     status: Mapped[str] = mapped_column(
         String(20),
-        default="已报名", nullable=False
+        default="已報名", nullable=False
     )
