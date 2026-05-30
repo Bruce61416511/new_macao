@@ -37,13 +37,13 @@ async def login(req: LoginRequest, db = Depends(get_db)):
             select(Application).where(Application.username == req.username)
         )
         app = app_result.scalar_one_or_none()
-        if app and app.status in ("初審不通过", "終審不通过"):
-            raise HTTPException(status_code=403, detail="申请已被驳回")
+        if app and app.status in ("初審不通過", "終審不通過"):
+            raise HTTPException(status_code=403, detail="申請已被駁回")
         if app and app.status == "待繳費":
-            raise HTTPException(status_code=403, detail="请先完成缴费")
-        raise HTTPException(status_code=401, detail="用户名或密码错误")
+            raise HTTPException(status_code=403, detail="請先完成繳費")
+        raise HTTPException(status_code=401, detail="用戶名或密碼錯誤")
     if not verify_password(req.password, member.password_hash):
-        raise HTTPException(status_code=401, detail="用户名或密码错误")
+        raise HTTPException(status_code=401, detail="用戶名或密碼錯誤")
     tier_to_role = {"理事": "root"}
     role = tier_to_role.get(member.tier, member.tier)
     if role != "root":
@@ -56,10 +56,10 @@ async def login(req: LoginRequest, db = Depends(get_db)):
         )
         latest_app = app_result.scalar_one_or_none()
         if latest_app and latest_app.status != "已入會":
-            status_msg = {"待繳費": "请先完成缴费", "終審不通过": "申请已被驳回", "初審不通过": "申请已被驳回"}.get(latest_app.status, "账号状态异常")
+            status_msg = {"待繳費": "請先完成繳費", "終審不通過": "申請已被駁回", "初審不通過": "申請已被駁回"}.get(latest_app.status, "賬號狀態異常")
             raise HTTPException(status_code=403, detail=status_msg)
         if not member.is_active:
-            raise HTTPException(status_code=403, detail="该账号当前不在籍无法登录")
+            raise HTTPException(status_code=403, detail="該賬號當前不在籍無法登錄")
     token = create_access_token(data={"sub": str(member.id), "username": member.username, "role": role})
     return TokenResponse(access_token=token)
 
@@ -73,7 +73,7 @@ async def wx_login(req: WxLoginRequest):
         resp = await client.get(url, params=params)
         data = resp.json()
     if "errcode" in data and data["errcode"] != 0:
-        raise HTTPException(status_code=400, detail=f"微信登录失败: {data.get("errmsg", "unknown")}")
+        raise HTTPException(status_code=400, detail=f"微信登錄失敗: {data.get("errmsg", "unknown")}")
     openid = data.get("openid")
     token = create_access_token(data={"sub": openid})
     return TokenResponse(access_token=token)
@@ -83,7 +83,7 @@ async def wx_login(req: WxLoginRequest):
 async def verify_auth(token: str):
     payload = verify_token(token)
     if payload is None:
-        raise HTTPException(status_code=401, detail="无效的令牌")
+        raise HTTPException(status_code=401, detail="無效的令牌")
     return {"valid": True, "openid": payload.get("sub")}
 
 
@@ -97,11 +97,11 @@ async def reset_password(req: ResetPasswordRequest, db = Depends(get_db)):
     result = await db.execute(select(Member).where(Member.id_number == req.id_number))
     member = result.scalar_one_or_none()
     if not member:
-        raise HTTPException(status_code=404, detail="未找到该身份证对应的用户")
+        raise HTTPException(status_code=404, detail="未找到該身份證對應的用戶")
     if member.tier == "理事":
-        raise HTTPException(status_code=403, detail="管理员账号不支持此方式重置密码请联系系统管理员")
+        raise HTTPException(status_code=403, detail="管理員賬號不支持此方式重置密碼請聯繫系統管理員")
     if not member.is_active:
-        raise HTTPException(status_code=403, detail="该账号当前不在籍无法重置密码")
+        raise HTTPException(status_code=403, detail="該賬號當前不在籍無法重置密碼")
     member.password_hash = hash_password(req.new_password)
     await db.commit()
-    return {"message": "密码重置成功"}
+    return {"message": "密碼重置成功"}

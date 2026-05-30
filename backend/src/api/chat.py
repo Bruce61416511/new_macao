@@ -75,9 +75,9 @@ async def create_faq(body: FAQCreate, db: AsyncSession = Depends(get_db)):
 
 @router.post("/chat/human-handoff", response_model=dict)
 async def human_handoff(body: ChatMessage, db: AsyncSession = Depends(get_db)):
-    """转人工客服"""
+    """轉人工客服"""
     svc = ChatService(db)
     if svc._filter_sensitive(body.message):
-        raise HTTPException(status_code=400, detail="该内容无法处理")
-    return {"status": "transferred", "message": "已转接人工客服，请稍候。"}
+        raise HTTPException(status_code=400, detail="該內容無法處理")
+    return {"status": "transferred", "message": "已轉接人工客服，請稍候。"}
 

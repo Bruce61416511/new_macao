@@ -1,6 +1,6 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 
-const chips = ["文化教育", "科技与互联网", "专业服务", "商贸及零售", "其它领域"];
+const chips = ["文化教育", "科技與互聯網", "專業服務", "商貿及零售", "其他領域"];
 
 function SparkleIcon() {
   return (
@@ -36,8 +36,8 @@ export default function AIAssistantCard() {
       <div className="flex items-center gap-4">
         <LotusAvatar />
         <div>
-          <p className="text-[20px] font-bold text-[#005d50]">小扬助手</p>
-          <p className="mt-1 text-[13px] font-medium text-[#68777a]">AI 辅助填写，随时问我</p>
+          <p className="text-[20px] font-bold text-[#005d50]">小揚助手</p>
+          <p className="mt-1 text-[13px] font-medium text-[#68777a]">AI 輔助填寫，隨時問我</p>
         </div>
       </div>
 
@@ -45,13 +45,13 @@ export default function AIAssistantCard() {
         <div className="flex items-center gap-3 rounded-[9px] bg-[#f0faf4] px-5 py-4">
           <span className="text-[#009978]"><SparkleIcon /></span>
           <p className="text-[15px] font-bold leading-snug text-[#1b292b]">
-            欢迎来到申请页面！<br />请按左侧步骤完成信息填写。
+            歡迎來到申請頁面！<br />請按左側步驟完成資訊填寫。
           </p>
         </div>
       </div>
 
       <div className="mt-5">
-        <p className="text-[13px] font-semibold text-[#6a7679]">快速选择领域</p>
+        <p className="text-[13px] font-semibold text-[#6a7679]">快速選擇領域</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {chips.map((chip) => (
             <button
@@ -74,13 +74,13 @@ export default function AIAssistantCard() {
         <div className="flex items-start gap-3 rounded-[9px] bg-[#f5f7f6] px-5 py-4">
           <span className="mt-0.5 text-[#6f7d80]"><SoundIcon /></span>
           <p className="text-[13px] font-medium leading-relaxed text-[#57696d]">
-            也可通过语音输入，我会帮你整理成结构化内容。
+            也可通過語音輸入，我會幫你整理成結構化內容。
           </p>
         </div>
       </div>
 
       <p className="mt-auto pt-6 text-[12px] font-medium text-[#9ba8aa]">
-        小扬 AI 助手生成内容仅供参考，请以实际提交信息为准。
+        小揚 AI 助手生成內容僅供參考，請以實際提交資訊為準。
       </p>
     </div>
   );

@@ -1,9 +1,9 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { checkDuplicate } from "../../services/api.js";
 
 const TIER_OPTIONS = [
-  { value: "普通会员", label: "普通会员", desc: "适合个人从业者，年费 500 澳门元" },
-  { value: "高级会员", label: "高级会员", desc: "适合机构/企业，年费 1000 澳门元" },
+  { value: "普通會員", label: "普通會員", desc: "適合個人從業者，年費 500 澳門元" },
+  { value: "高級會員", label: "高級會員", desc: "適合機構/企業，年費 1000 澳門元" },
 ];
 
 function fieldClass(hasError) {
@@ -59,8 +59,8 @@ export default function BasicInfoForm({ data, onChange, errors }) {
         }
         const result = await checkDuplicate(u, id);
         const next = {};
-        if (result.username_exists) next.username = "该用户名已被占用，请更换";
-        if (result.id_number_exists) next.id_number = "该证件号码已被注册，请检查";
+        if (result.username_exists) next.username = "該用戶名稱已被佔用，請更換";
+        if (result.id_number_exists) next.id_number = "該證件號碼已被註冊，請檢查";
         setConflicts(next);
       } catch {
         // Silently ignore network errors
@@ -76,11 +76,11 @@ export default function BasicInfoForm({ data, onChange, errors }) {
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-5">
         <div>
-          <Label required>用户名</Label>
+          <Label required>用戶名</Label>
           <ConflictWarning>{conflicts.username}</ConflictWarning>
           <input
             className={fieldClass(errors?.username || conflicts.username)}
-            placeholder="字母或数字，2-50 位"
+            placeholder="字母或數字，2-50 位"
             autoComplete="off"
             value={data.username || ""}
             onChange={(e) => set("username", e.target.value)}
@@ -88,11 +88,11 @@ export default function BasicInfoForm({ data, onChange, errors }) {
           <ErrorText>{errors?.username}</ErrorText>
         </div>
         <div>
-          <Label required>密码</Label>
+          <Label required>密碼</Label>
           <input
             className={fieldClass(errors?.password)}
             type="password"
-            placeholder="设置登录密码"
+            placeholder="設置登錄密碼"
             autoComplete="new-password"
             value={data.password || ""}
             onChange={(e) => set("password", e.target.value)}
@@ -103,10 +103,10 @@ export default function BasicInfoForm({ data, onChange, errors }) {
 
       <div className="grid grid-cols-2 gap-5">
         <div>
-          <Label required>申请人姓名</Label>
+          <Label required>申請人姓名</Label>
           <input
             className={fieldClass(errors?.applicant_name)}
-            placeholder="真实姓名"
+            placeholder="真實姓名"
             autoComplete="off"
             value={data.applicant_name || ""}
             onChange={(e) => set("applicant_name", e.target.value)}
@@ -114,11 +114,11 @@ export default function BasicInfoForm({ data, onChange, errors }) {
           <ErrorText>{errors?.applicant_name}</ErrorText>
         </div>
         <div>
-          <Label required>证件号码</Label>
+          <Label required>證件號碼</Label>
           <ConflictWarning>{conflicts.id_number}</ConflictWarning>
           <input
             className={fieldClass(errors?.id_number || conflicts.id_number)}
-            placeholder="身份证 / 护照号码，15-18 位"
+            placeholder="身份證 / 護照號碼，15-18 位"
             autoComplete="off"
             value={data.id_number || ""}
             onChange={(e) => set("id_number", e.target.value)}
@@ -128,10 +128,10 @@ export default function BasicInfoForm({ data, onChange, errors }) {
       </div>
 
       <div>
-        <Label required>联系电话</Label>
+        <Label required>聯繫電話</Label>
         <input
           className={fieldClass(errors?.applicant_phone)}
-          placeholder="可联系到本人的手机号码"
+          placeholder="可聯繫到本人的手機號碼"
           autoComplete="off"
           value={data.applicant_phone || ""}
           onChange={(e) => set("applicant_phone", e.target.value)}
@@ -141,10 +141,10 @@ export default function BasicInfoForm({ data, onChange, errors }) {
 
       <div className="grid grid-cols-2 gap-5">
         <div>
-          <Label>电子邮箱</Label>
+          <Label>電子郵箱</Label>
           <input
             className={fieldClass(errors?.applicant_email)}
-            placeholder="选填"
+            placeholder="選填"
             autoComplete="off"
             value={data.applicant_email || ""}
             onChange={(e) => set("applicant_email", e.target.value)}
@@ -152,13 +152,13 @@ export default function BasicInfoForm({ data, onChange, errors }) {
           <ErrorText>{errors?.applicant_email}</ErrorText>
         </div>
         <div>
-          <Label>申请会员级别</Label>
+          <Label>申請會員級別</Label>
           <select
             className={fieldClass(false)}
             value={data.requested_tier || ""}
             onChange={(e) => set("requested_tier", e.target.value)}
           >
-            <option value="">请选择</option>
+            <option value="">請選擇</option>
             {TIER_OPTIONS.map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
@@ -167,10 +167,10 @@ export default function BasicInfoForm({ data, onChange, errors }) {
       </div>
 
       <div>
-        <Label>通讯地址</Label>
+        <Label>通訊地址</Label>
         <input
           className={fieldClass(false)}
-          placeholder="选填"
+          placeholder="選填"
           autoComplete="off"
           value={data.applicant_address || ""}
           onChange={(e) => set("applicant_address", e.target.value)}

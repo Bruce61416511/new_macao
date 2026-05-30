@@ -18,7 +18,7 @@ from .api.notifications import router as notifications_router
 
 setup_logging()
 
-app = FastAPI(title="小扬同学 API", version="0.1.0")
+app = FastAPI(title="小揚同學 API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,17 +37,17 @@ app.include_router(admin_members_router)
 app.include_router(events_router)
 app.include_router(notifications_router)
 
-# 托管旧前端静态页面
+# 託管舊前端靜態頁面
 frontend_path = Path(__file__).parent.parent.parent / "frontend-web" / "src" / "pages"
 if frontend_path.exists():
     app.mount("/pages", StaticFiles(directory=str(frontend_path), html=True), name="frontend")
 
-# 托管上传文件（缴费凭证等）
+# 託管上傳文件（繳費憑證等）
 uploads_path = Path(__file__).parent.parent / "uploads"
 if uploads_path.exists():
     app.mount("/uploads", StaticFiles(directory=str(uploads_path)), name="uploads")
 
-# 托管新前端构建产物 (React SPA)
+# 託管新前端構建產物 (React SPA)
 new_frontend_dist = Path(__file__).parent.parent.parent / "frontend-web-new" / "dist"
 if new_frontend_dist.exists():
     app.mount("/assets", StaticFiles(directory=str(new_frontend_dist / "assets")), name="spa-assets")

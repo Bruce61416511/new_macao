@@ -1,4 +1,4 @@
-﻿"""种子数据：首次部署创建 root 理事"""
+﻿"""種子數據：首次部署創建 root 理事"""
 import asyncio
 import sys
 import os
@@ -29,7 +29,7 @@ async def seed_root():
         )
         db.add(root)
         await db.commit()
-        print("已创建 root 理事")
+        print("已創建 root 理事")
 
 
 if __name__ == "__main__":

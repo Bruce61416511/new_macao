@@ -1,4 +1,4 @@
-﻿function HomeIcon() {
+function HomeIcon() {
   return (
     <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
       <path d="m4 11 8-7 8 7v8a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H5.5A1.5 1.5 0 0 1 4 19z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
@@ -34,7 +34,7 @@ export default function ApplyTopBar({ progress = 0 }) {
         <div className="flex items-center">
           <a className="flex h-[58px] items-center" href="/" aria-label="返回首頁">
             <img
-              alt="小洋同學 澳門直播協會"
+              alt="小揚同學 澳門直播協會"
               className="h-[50px] w-auto select-none object-contain"
               draggable="false"
               src="/apply-top-logo.png"

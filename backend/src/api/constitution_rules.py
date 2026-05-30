@@ -59,7 +59,7 @@ async def update_rule(rule_id: str, body: RuleUpdate, db: AsyncSession = Depends
     result = await db.execute(select(ConstitutionRule).where(ConstitutionRule.id == uuid.UUID(rule_id), ConstitutionRule.expired_at.is_(None)))
     rule = result.scalar_one_or_none()
     if not rule:
-        raise HTTPException(status_code=404, detail="规则不存在")
+        raise HTTPException(status_code=404, detail="規則不存在")
     rule.expired_at = datetime.now(timezone.utc)
     new_rule = ConstitutionRule(rule_type=rule.rule_type, rule_key=rule.rule_key, rule_value=body.rule_value or rule.rule_value, description=body.description or rule.description, version=rule.version + 1, effective_at=datetime.now(timezone.utc))
     db.add(new_rule)
@@ -72,7 +72,7 @@ async def delete_rule(rule_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(ConstitutionRule).where(ConstitutionRule.id == uuid.UUID(rule_id)))
     rule = result.scalar_one_or_none()
     if not rule:
-        raise HTTPException(status_code=404, detail="规则不存在")
+        raise HTTPException(status_code=404, detail="規則不存在")
     rule.expired_at = datetime.now(timezone.utc)
     await db.flush()
     return {"id": str(rule.id), "expired_at": rule.expired_at.isoformat()}

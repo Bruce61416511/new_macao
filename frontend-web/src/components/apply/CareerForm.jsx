@@ -1,4 +1,4 @@
-﻿function fieldClass(hasError) {
+function fieldClass(hasError) {
   return [
     "w-full rounded-[7px] border bg-white/90 px-4 py-3 text-[15px] font-medium text-[#1b292b]",
     "placeholder:text-[#a0acaf] focus:outline-none focus:ring-2 focus:ring-[#006252]/30",
@@ -27,10 +27,10 @@ export default function CareerForm({ data, onChange, errors }) {
   return (
     <div className="space-y-6">
       <div>
-        <Label required>从业经历</Label>
+        <Label required>從業經歷</Label>
         <textarea
           className={fieldClass(errors?.career_history)}
-          placeholder="请描述您的从业背景、主要方向和相关经验，例如：曾任职机构、负责领域、从业年限等"
+          placeholder="請描述您的從業背景、主要方向和相關經驗，例如：曾任職機構、負責領域、從業年限等"
           rows={8}
           value={data.career_history || ""}
           onChange={(e) => set("career_history", e.target.value)}

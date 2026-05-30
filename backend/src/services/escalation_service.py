@@ -11,21 +11,21 @@ logger = logging.getLogger(__name__)
 
 
 async def escalate_timeout_applications(db: AsyncSession) -> int:
-    """终審24h超时 → 标记已过期"""
+    """終審24h超時 → 標記已過期"""
     cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
     result = await db.execute(
-        select(Application).where(Application.status == "终審通过", Application.updated_at < cutoff)
+        select(Application).where(Application.status == "終審通過", Application.updated_at < cutoff)
     )
     overdue = result.scalars().all()
     for app in overdue:
-        app.status = "已过期"
-        logger.warning(f"[ESCALATION] App {app.id} stuck in 终審通过 >24h, marked expired")
+        app.status = "已過期"
+        logger.warning(f"[ESCALATION] App {app.id} stuck in 終審通過 >24h, marked expired")
     await db.flush()
     return len(overdue)
 
 
 async def escalate_payment_timeout(db: AsyncSession) -> dict:
-    """缴费超时升级：3天催办root，7天升级行政同事"""
+    """繳費超時升級：3天催辦root，7天升級行政同事"""
     now = datetime.now(timezone.utc)
     day3 = now - timedelta(days=3)
     day7 = now - timedelta(days=7)
@@ -35,7 +35,7 @@ async def escalate_payment_timeout(db: AsyncSession) -> dict:
     )
     week_overdue = result.scalars().all()
     for app in week_overdue:
-        app.status = "已过期"
+        app.status = "已過期"
         logger.warning(f"[PAYMENT-ESCALATION] App {app.id} unpaid >7d, escalated to admin, marked expired")
 
     result = await db.execute(
@@ -50,7 +50,7 @@ async def escalate_payment_timeout(db: AsyncSession) -> dict:
 
 
 async def run_escalation_loop(db_factory, interval_seconds: int = 3600):
-    """后台循环：每小时检查"""
+    """後臺循環：每小時檢查"""
     while True:
         try:
             async with db_factory() as db:

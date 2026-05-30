@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class MemberService:
-    """会员服务：查询、更新、删除、審计"""
+    """會員服務：查詢、更新、刪除、審計"""
 
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -74,7 +74,7 @@ class MemberService:
         await self.db.delete(member)
         self._audit_log("hard_delete", member_id, {})
         await self.db.flush()
-        return {"id": str(member_id), "status": "已删除"}
+        return {"id": str(member_id), "status": "已刪除"}
 
     async def force_delete(self, member_id) -> dict:
         member = await self.get_by_id(member_id)
@@ -86,7 +86,7 @@ class MemberService:
             if app:
                 await self.db.delete(app)
                 await self.db.flush()
-                return {"id": str(member_id), "status": "已删除", "note": "仅删除了关联申请记录"}
+                return {"id": str(member_id), "status": "已刪除", "note": "僅刪除了關聯申請記錄"}
             return {"error": "not_found"}
         from ..models.application import Application
         from sqlalchemy import select as sa_select
@@ -97,10 +97,10 @@ class MemberService:
         await self.db.delete(member)
         self._audit_log("force_delete", member_id, {})
         await self.db.flush()
-        return {"id": str(member_id), "status": "已删除"}
+        return {"id": str(member_id), "status": "已刪除"}
 
     async def auto_update_status(self) -> int:
-        """自动更新会员状态：会费到期→过期"""
+        """自動更新會員狀態：會費到期→過期"""
         now = datetime.now(timezone.utc)
         result = await self.db.execute(select(Member).where(Member.is_active.is_(True)))
         members = result.scalars().all()
@@ -114,7 +114,7 @@ class MemberService:
     async def export_csv(self) -> str:
         result = await self.db.execute(select(Member))
         members = result.scalars().all()
-        header = "ID,姓名,手机,邮箱,等级,年费,状态,入会日期\n"
+        header = "ID,姓名,手機,郵箱,等級,年費,狀態,入會日期\n"
         rows = [f"{m.id},{m.real_name},{m.phone},{m.email or ''},{m.tier},{m.annual_fee},{'在籍' if m.is_active else '停用'},{m.created_at}" for m in members]
         return header + "\n".join(rows)
 
@@ -146,31 +146,31 @@ class MemberService:
         await self.db.flush()
 
         # Info updates skip AI screening - member already approved
-        app.status = "初審通过"
-        app.screening_result = "会员信息变更-免審"
-        app.screening_by = "系统自动"
+        app.status = "初審通過"
+        app.screening_result = "會員信息變更-免審"
+        app.screening_by = "系統自動"
         await self.db.flush()
 
         if tier_changed:
             # tier change: suspend member until payment verified
             member.is_active = False
             member.updated_at = datetime.now(timezone.utc)
-            app.status = "终審通过"
-            app.final_review_result = "信息变更-等级变更"
+            app.status = "終審通過"
+            app.final_review_result = "信息變更-等級變更"
             await self.db.flush()
             app.status = "待繳費"
             app.payment_due_date = datetime.now(timezone.utc) + timedelta(days=7)
             await self.db.flush()
             self._audit_log("tier_change_pending", member.id, {"from": member.tier, "to": requested_tier})
-            return {"application_id": str(app.id), "status": app.status, "message": "等级变更需缴纳年费，会员状态已暂停"}
+            return {"application_id": str(app.id), "status": app.status, "message": "等級變更需繳納年費，會員狀態已暫停"}
         else:
             # no tier change: update member directly
             member.real_name = app.applicant_name
             member.phone = app.applicant_phone
             member.email = app.applicant_email
             member.updated_at = datetime.now(timezone.utc)
-            app.status = "终審通过"
-            app.final_review_result = "信息变更-自动通过"
+            app.status = "終審通過"
+            app.final_review_result = "信息變更-自動通過"
             await self.db.flush()
             app.status = "已入會"
             await self.db.flush()

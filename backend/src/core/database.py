@@ -7,7 +7,7 @@ from .config import get_settings
 
 settings = get_settings()
 
-# 优先用 PostgreSQL；如果连接失败自动降级到 SQLite
+# 優先用 PostgreSQL；如果連接失敗自動降級到 SQLite
 DB_URL = settings.database_url
 
 _USE_SQLITE = False

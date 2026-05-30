@@ -1,11 +1,11 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 
 const STATUS_MAP = {
   "待審覈": { label: "待審覈", color: "text-[#ad7b00]", bg: "bg-[#fff8e9]", desc: "您的申請已提交，正在等待審覈" },
   "初審通過": { label: "初審通過", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "初審已通過，等待終審" },
   "初審不通過": { label: "初審不通過", color: "text-[#c53030]", bg: "bg-[#fef0f0]", desc: "初審未通過，可修改後重新提交" },
   "終審通過": { label: "終審通過", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "終審已通過，請完成繳費" },
-  "終審不通過": { label: "終審不通過", color: "text-[#c53030]", bg: "bg-[#fef0f0]", desc: "終審未通過，30天后可重新申請" },
+  "終審不通過": { label: "終審不通過", color: "text-[#c53030]", bg: "bg-[#fef0f0]", desc: "終審未通過，30天後可重新申請" },
   "待繳費": { label: "待繳費", color: "text-[#ad7b00]", bg: "bg-[#fff8e9]", desc: "審覈已通過，請儘快完成繳費" },
   "已繳費": { label: "已繳費", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "繳費已提交，等待確認" },
   "已入會": { label: "已入會", color: "text-[#006252]", bg: "bg-[#e7f5f0]", desc: "恭喜！您已是正式會員" },

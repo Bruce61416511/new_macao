@@ -1,4 +1,4 @@
-﻿import { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { uploadQualificationFile } from "../../services/api.js";
 
 function fieldClass(hasError) {
@@ -69,7 +69,7 @@ export default function QualificationForm({ data, onChange, errors }) {
           const result = await uploadQualificationFile(file);
           newUrls.push(result.url);
         } catch (err) {
-          setUploadError((err && err.message) || "上传失败，请重试");
+          setUploadError((err && err.message) || "上傳失敗，請重試");
         }
       }
       set("qualification_files", JSON.stringify(newUrls));
@@ -86,8 +86,8 @@ export default function QualificationForm({ data, onChange, errors }) {
   return (
     <div className="space-y-6">
       <div>
-        <Label required>资质文件</Label>
-        <p className="mb-3 text-[13px] text-[#6a7679]">支持 JPG、PNG 格式，单文件不超过 5MB</p>
+        <Label required>資質文件</Label>
+        <p className="mb-3 text-[13px] text-[#6a7679]">支援 JPG、PNG 格式，單檔案不超過 5MB</p>
 
         {/* Upload area */}
         <div
@@ -109,13 +109,13 @@ export default function QualificationForm({ data, onChange, errors }) {
             onClick={(e) => { e.target.value = ""; }}
           />
           {uploading ? (
-            <p className="text-[14px] font-medium text-[#006252]">上传中...</p>
+            <p className="text-[14px] font-medium text-[#006252]">上傳中...</p>
           ) : uploadError ? (
             <p className="text-[14px] font-medium text-red-500">{uploadError}</p>
           ) : (
             <>
               <UploadIcon />
-              <p className="mt-2 text-[14px] font-medium text-[#57696d]">点击或拖拽文件到此处上传</p>
+              <p className="mt-2 text-[14px] font-medium text-[#57696d]">點擊或拖曳檔案到此處上傳</p>
               <p className="mt-1 text-[12px] text-[#9ba8aa]">JPG / PNG 格式</p>
             </>
           )}
@@ -128,7 +128,7 @@ export default function QualificationForm({ data, onChange, errors }) {
               <div key={index} className="group relative overflow-hidden rounded-[7px] border border-[#dde7e5] bg-white">
                 <img
                   src={url}
-                  alt={`资质文件 ${index + 1}`}
+                  alt={`資質文件 ${index + 1}`}
                   className="h-32 w-full object-cover"
                 />
                 <button
@@ -147,10 +147,10 @@ export default function QualificationForm({ data, onChange, errors }) {
       </div>
 
       <div>
-        <Label>资质说明</Label>
+        <Label>資質說明</Label>
         <textarea
           className={fieldClass(false)}
-          placeholder="请描述您的专业资质，如持有的证书、培训经历、行业认证等"
+          placeholder="請描述您的專業資質，如持有的證書、培訓經歷、行業認證等"
           rows={4}
           value={data.qualifications || ""}
           onChange={(e) => set("qualifications", e.target.value)}

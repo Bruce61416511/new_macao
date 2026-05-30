@@ -9,34 +9,34 @@ from ..models.constitution_rules import ConstitutionRule
 from ..ai.deepseek_client import chat
 
 
-# rule_key -> Application 字段映射，用于前置空值检查
+# rule_key -> Application 字段映射，用於前置空值檢查
 RULE_FIELD_MAP = {
     "address_region": "applicant_address",
-    "从业经历": "career_history",
+    "從業經歷": "career_history",
     "qualification": "qualifications",
 }
 
 
 class ScreeningService:
-    """AI 语义驱动的自动化初審服务"""
+    """AI 語義驅動的自動化初審服務"""
 
     def __init__(self, db: AsyncSession):
         self.db = db
 
     async def evaluate(self, application: Application) -> dict:
-        """根据现行章程规则，调用大模型逐条评估申请"""
+        """根據現行章程規則，調用大模型逐條評估申請"""
         rules_result = await self.db.execute(
             select(ConstitutionRule).where(
-                ConstitutionRule.rule_type.in_(["入会条件", "筛选标准"]),
+                ConstitutionRule.rule_type.in_(["入會條件", "篩選標準"]),
                 ConstitutionRule.expired_at.is_(None)
             )
         )
         rules = rules_result.scalars().all()
 
         if not rules:
-            return {"passed": True, "reasons": ["无生效规则，自动通过"]}
+            return {"passed": True, "reasons": ["無生效規則，自動通過"]}
 
-        # 前置检查：空值直接拒绝，不浪费 AI 调用
+        # 前置檢查：空值直接拒絕，不浪費 AI 調用
         pre_reasons = []
         ai_rules = []
         for rule in rules:
@@ -44,23 +44,23 @@ class ScreeningService:
             if field:
                 val = getattr(application, field, None)
                 if not val or not str(val).strip():
-                    pre_reasons.append(f"[{rule.rule_key}] ✗ {rule.description}（字段未填写）")
+                    pre_reasons.append(f"[{rule.rule_key}] ✗ {rule.description}（字段未填寫）")
                     continue
-            # min_age 特殊处理：年龄可计算才送 AI
+            # min_age 特殊處理：年齡可計算才送 AI
             if rule.rule_key == "min_age":
                 age = self._calc_age(application.id_number)
                 if age is None:
-                    pre_reasons.append(f"[{rule.rule_key}] ✗ {rule.description}（身份证号无效，无法计算年龄）")
+                    pre_reasons.append(f"[{rule.rule_key}] ✗ {rule.description}（身份證號無效，無法計算年齡）")
                     continue
             ai_rules.append(rule)
 
-        # 如果全部被前置拦截，直接返回
+        # 如果全部被前置攔截，直接返回
         if not ai_rules:
             if pre_reasons:
                 return {"passed": False, "reasons": pre_reasons}
-            return {"passed": True, "reasons": ["无生效规则，自动通过"]}
+            return {"passed": True, "reasons": ["無生效規則，自動通過"]}
 
-        # AI 判断剩余规则
+        # AI 判斷剩餘規則
         prompt = self._build_prompt(application, ai_rules)
         try:
             raw = await chat(
@@ -70,15 +70,15 @@ class ScreeningService:
             )
             ai_result = self._parse_result(raw, ai_rules)
         except Exception as e:
-            # AI 异常时，前置结果仍有效
+            # AI 異常時，前置結果仍有效
             if pre_reasons:
                 return {"passed": False, "reasons": pre_reasons}
             return {
                 "passed": True,
-                "reasons": [f"AI 審核暂不可用，转人工处理 ({str(e)[:100]})"]
+                "reasons": [f"AI 審核暫不可用，轉人工處理 ({str(e)[:100]})"]
             }
 
-        # 合并前置结果和 AI 结果
+        # 合併前置結果和 AI 結果
         reasons = pre_reasons + ai_result["reasons"]
         passed = ai_result["passed"] and len(pre_reasons) == 0
         return {"passed": passed, "reasons": reasons}
@@ -101,26 +101,26 @@ class ScreeningService:
 
     def _build_prompt(self, app: Application, rules) -> str:
         age = self._calc_age(app.id_number)
-        age_info = f"{age}岁" if age is not None else "未知"
-        addr = app.applicant_address or "未填写"
-        career = app.career_history or "未填写"
+        age_info = f"{age}歲" if age is not None else "未知"
+        addr = app.applicant_address or "未填寫"
+        career = app.career_history or "未填寫"
 
         questions = []
         for r in rules:
             rk = r.rule_key
             desc = r.description
             if rk == "min_age":
-                questions.append(f"[{rk}] 申请人年龄{age_info}，要求：{desc}。{age_info}是否满足该要求？")
+                questions.append(f"[{rk}] 申請人年齡{age_info}，要求：{desc}。{age_info}是否滿足該要求？")
             elif rk == "address_region":
-                questions.append(f"[{rk}] 地址={addr}，要求={desc}。满足？")
-            elif "从业" in rk or "经历" in rk:
-                questions.append(f"[{rk}] 经历={career}，要求={desc}。满足？")
+                questions.append(f"[{rk}] 地址={addr}，要求={desc}。滿足？")
+            elif "從業" in rk or "經歷" in rk:
+                questions.append(f"[{rk}] 經歷={career}，要求={desc}。滿足？")
             else:
-                questions.append(f"[{rk}] 要求={desc}。满足？")
+                questions.append(f"[{rk}] 要求={desc}。滿足？")
 
         questions_text = "\n".join(questions)
 
-        return f"""逐条回答是或否，禁止说"不确定"。\n注意：地址检查中，香港、澳门、台湾均视为中国境内地区。\n\n申请人：{app.applicant_name}，年龄{age_info}\n\n{questions_text}\n\n只返回JSON：{{"results":[{{"rule_key":"...","passed":true/false,"reason":"理由"}}],"overall_passed":true/false}}"""
+        return f"""逐條回答是或否，禁止說"不確定"。\n注意：地址檢查中，香港、澳門、臺灣均視爲中國境內地區。\n\n申請人：{app.applicant_name}，年齡{age_info}\n\n{questions_text}\n\n只返回JSON：{{"results":[{{"rule_key":"...","passed":true/false,"reason":"理由"}}],"overall_passed":true/false}}"""
 
     def _parse_result(self, raw: str, rules) -> dict:
         raw = raw.strip()
@@ -136,7 +136,7 @@ class ScreeningService:
             if start >= 0 and end > start:
                 data = json.loads(raw[start:end+1])
             else:
-                return {"passed": True, "reasons": ["AI 返回格式异常，转人工处理"]}
+                return {"passed": True, "reasons": ["AI 返回格式異常，轉人工處理"]}
 
         results = data.get("results", [])
         reasons = []
@@ -145,7 +145,7 @@ class ScreeningService:
         seen_keys = {r.get("rule_key") for r in results}
         for rule in rules:
             if rule.rule_key not in seen_keys:
-                results.append({"rule_key": rule.rule_key, "passed": True, "reason": "（未评估，默认通过）"})
+                results.append({"rule_key": rule.rule_key, "passed": True, "reason": "（未評估，默認通過）"})
 
         for r in results:
             if not r.get("passed", True):
@@ -163,6 +163,6 @@ class ScreeningService:
         else:
             application.status = "初審不通過"
         application.screening_result = reason
-        application.screening_by = "AI系统"
+        application.screening_by = "AI系統"
         await self.db.flush()
         return application

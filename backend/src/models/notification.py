@@ -21,7 +21,7 @@ class Notification(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     send_status: Mapped[str] = mapped_column(
         String(20),
-        default="待发送", nullable=False
+        default="待發送", nullable=False
     )
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

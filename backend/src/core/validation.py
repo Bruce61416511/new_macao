@@ -11,31 +11,31 @@ XSS_PATTERN = re.compile(r"<script|javascript:|on\w+=|&#", re.IGNORECASE)
 
 def validate_phone(phone: str) -> str:
     if not PHONE_PATTERN.match(phone):
-        raise HTTPException(status_code=400, detail="手机号格式不正确")
+        raise HTTPException(status_code=400, detail="手機號格式不正確")
     return phone
 
 
 def validate_email(email: str | None) -> str | None:
     if email and not EMAIL_PATTERN.match(email):
-        raise HTTPException(status_code=400, detail="邮箱格式不正确")
+        raise HTTPException(status_code=400, detail="郵箱格式不正確")
     return email
 
 
 def validate_id_number(id_number: str) -> str:
     if not ID_NUMBER_PATTERN.match(id_number):
-        raise HTTPException(status_code=400, detail="证件号码格式不正确")
+        raise HTTPException(status_code=400, detail="證件號碼格式不正確")
     return id_number
 
 
 def sanitize_xss(text: str) -> str:
     if XSS_PATTERN.search(text):
-        raise HTTPException(status_code=400, detail="输入包含非法内容")
+        raise HTTPException(status_code=400, detail="輸入包含非法內容")
     return text
 
 
 def validate_upload_size(size: int) -> int:
     if size > MAX_UPLOAD_SIZE:
-        raise HTTPException(status_code=400, detail=f"文件大小超过 {MAX_UPLOAD_SIZE // 1024 // 1024}MB 限制")
+        raise HTTPException(status_code=400, detail=f"文件大小超過 {MAX_UPLOAD_SIZE // 1024 // 1024}MB 限制")
     return size
 
 

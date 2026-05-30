@@ -52,16 +52,16 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         return None
     payload = verify_token(credentials.credentials)
     if payload is None:
-        raise HTTPException(status_code=401, detail="无效的令牌")
+        raise HTTPException(status_code=401, detail="無效的令牌")
     return payload
 
 
 def require_role(*roles: str):
     async def role_checker(user: Optional[dict] = Depends(get_current_user)) -> dict:
         if user is None:
-            raise HTTPException(status_code=401, detail="请先登录")
+            raise HTTPException(status_code=401, detail="請先登錄")
         if user.get("role") not in roles:
-            raise HTTPException(status_code=403, detail="权限不足")
+            raise HTTPException(status_code=403, detail="權限不足")
         return user
     return role_checker
 

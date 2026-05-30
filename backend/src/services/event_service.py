@@ -9,7 +9,7 @@ from ..models.event import Event, EventRegistration
 
 
 class EventService:
-    """活动服务：CRUD + 报名 + 取消 + 人数上限"""
+    """活動服務：CRUD + 報名 + 取消 + 人數上限"""
 
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -24,7 +24,7 @@ class EventService:
         result = await self.db.execute(select(Event).where(Event.id == event_id))
         event = result.scalar_one_or_none()
         if not event:
-            raise HTTPException(status_code=404, detail="活动不存在")
+            raise HTTPException(status_code=404, detail="活動不存在")
         return event
 
     async def list_events(self, status: str | None = None, page: int = 1, page_size: int = 10) -> dict:
@@ -59,7 +59,7 @@ class EventService:
         reg = existing.scalar_one_or_none()
         if reg:
             if reg.status == "已報名":
-                raise HTTPException(status_code=409, detail="您已報名该活动")
+                raise HTTPException(status_code=409, detail="您已報名該活動")
             reg.status = "已報名"
             if event.registration_status == "已滿":
                 event.registration_status = "開放"
@@ -67,12 +67,12 @@ class EventService:
             return {"registration_id": str(reg.id), "status": "已報名"}
 
         if event.registration_status != "開放":
-            raise HTTPException(status_code=400, detail="活动报名已截止")
+            raise HTTPException(status_code=400, detail="活動報名已截止")
 
         if event.max_participants:
             count_result = await self.db.execute(select(func.count()).select_from(EventRegistration).where(EventRegistration.event_id == event_id, EventRegistration.status == "已報名"))
             if count_result.scalar() >= event.max_participants:
-                raise HTTPException(status_code=400, detail="活动名额已滿")
+                raise HTTPException(status_code=400, detail="活動名額已滿")
 
         reg = EventRegistration(event_id=event_id, member_id=member_id)
         self.db.add(reg)
@@ -114,7 +114,7 @@ class EventService:
         )
         reg = result.scalar_one_or_none()
         if not reg:
-            raise HTTPException(status_code=404, detail="未找到报名记录")
+            raise HTTPException(status_code=404, detail="未找到報名記錄")
         reg.status = "已取消"
         event = await self.get(event_id)
         if event.registration_status == "已滿":

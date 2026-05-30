@@ -11,7 +11,7 @@ router = APIRouter(prefix="/v1/notifications", tags=["notifications"])
 
 class NotificationSend(BaseModel):
     member_ids: list[str]
-    type: str = "绯荤粺鏇存柊"
+    type: str = "????"
     title: str
     content: str
 

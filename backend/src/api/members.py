@@ -35,22 +35,22 @@ class StaffMemberUpdate(BaseModel):
 @router.get("/me", response_model=dict)
 async def get_my_profile(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if user is None:
-        raise HTTPException(status_code=401, detail="请先登录")
+        raise HTTPException(status_code=401, detail="請先登錄")
     svc = MemberService(db)
     member = await svc.get_by_id(uuid.UUID(user.get("sub")))
     if not member:
-        raise HTTPException(status_code=404, detail="会员不存在")
+        raise HTTPException(status_code=404, detail="會員不存在")
     return {"member": svc._to_dict(member)}
 
 
 @router.patch("/me", response_model=dict)
 async def update_my_profile(body: MemberUpdate, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if user is None:
-        raise HTTPException(status_code=401, detail="请先登录")
+        raise HTTPException(status_code=401, detail="請先登錄")
     svc = MemberService(db)
     member = await svc.get_by_id(uuid.UUID(user.get("sub")))
     if not member:
-        raise HTTPException(status_code=404, detail="会员不存在")
+        raise HTTPException(status_code=404, detail="會員不存在")
     member = await svc.update_member(member, body.model_dump(exclude_none=True))
     return {"member": svc._to_dict(member)}
 
@@ -58,11 +58,11 @@ async def update_my_profile(body: MemberUpdate, user: dict = Depends(get_current
 @router.get("/me/tier", response_model=dict)
 async def get_my_tier(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if user is None:
-        raise HTTPException(status_code=401, detail="请先登录")
+        raise HTTPException(status_code=401, detail="請先登錄")
     svc = MemberService(db)
     member = await svc.get_by_id(uuid.UUID(user.get("sub")))
     if not member:
-        raise HTTPException(status_code=404, detail="会员不存在")
+        raise HTTPException(status_code=404, detail="會員不存在")
     return {"tier": member.tier, "annual_fee": member.annual_fee}
 
 
@@ -88,7 +88,7 @@ async def get_member(
     svc = MemberService(db)
     member = await svc.get_by_id(uuid.UUID(member_id))
     if not member:
-        raise HTTPException(status_code=404, detail="会员不存在")
+        raise HTTPException(status_code=404, detail="會員不存在")
     return {"member": svc._to_dict(member)}
 
 
@@ -102,7 +102,7 @@ async def update_member_by_staff(
     svc = MemberService(db)
     member = await svc.get_by_id(uuid.UUID(member_id))
     if not member:
-        raise HTTPException(status_code=404, detail="会员不存在")
+        raise HTTPException(status_code=404, detail="會員不存在")
     member = await svc.update_by_staff(member, body.model_dump(exclude_none=True))
     return {"member": svc._to_dict(member)}
 
@@ -116,7 +116,7 @@ async def delete_member(
     svc = MemberService(db)
     result = await svc.hard_delete(uuid.UUID(member_id))
     if result.get("error"):
-        detail = "不能删除在籍会员" if result["error"] == "cannot_delete_active" else "会员不存在"
+        detail = "不能刪除在籍會員" if result["error"] == "cannot_delete_active" else "會員不存在"
         raise HTTPException(status_code=400, detail=detail)
     return result
 
@@ -143,13 +143,13 @@ class MemberInfoUpdateRequest(BaseModel):
 @router.post("/me/update-info", status_code=201, response_model=dict)
 async def update_member_info(body: MemberInfoUpdateRequest, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if user is None:
-        raise HTTPException(status_code=401, detail=请先登录)
+        raise HTTPException(status_code=401, detail=請先登錄)
     svc = MemberService(db)
     member = await svc.get_by_id(uuid.UUID(user.get("sub")))
     if not member:
-        raise HTTPException(status_code=404, detail=会员不存在)
+        raise HTTPException(status_code=404, detail=會員不存在)
     if not member.is_active:
-        raise HTTPException(status_code=403, detail=该账号当前不在籍无法修改信息)
+        raise HTTPException(status_code=403, detail=該賬號當前不在籍無法修改信息)
     result = await svc.create_info_update_application(member, body.model_dump(exclude_none=True))
     return result
 
@@ -163,7 +163,7 @@ async def manage_board(body: BoardManageRequest, user: dict = Depends(require_ro
     svc = MemberService(db)
     member = await svc.get_by_id(uuid.UUID(body.member_id))
     if not member:
-        raise HTTPException(status_code=404, detail="会员不存在")
+        raise HTTPException(status_code=404, detail="會員不存在")
     if body.is_board:
         member.tier = "理事"
         member.annual_fee = 0
@@ -218,7 +218,7 @@ async def admin_update_member(
     svc = MemberService(db)
     member = await svc.get_by_id(uuid.UUID(member_id))
     if not member:
-        raise HTTPException(status_code=404, detail="会员不存在")
+        raise HTTPException(status_code=404, detail="會員不存在")
     data = body.model_dump(exclude_none=True)
     for k, v in data.items():
         setattr(member, k, v)
@@ -314,7 +314,7 @@ async def admin_applications_summary(
         idnum = (app.id_number or "").split("_upd_")[0]
         key = f"{uname}||{idnum}"
         if key not in seen:
-            status = (app.status or "").replace("審", "审")
+            status = (app.status or "").replace("審", "審")
             seen[key] = {
                 "id": str(app.id),
                 "username": uname,

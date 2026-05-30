@@ -63,7 +63,7 @@ async def get_event(event_id: str, db: AsyncSession = Depends(get_db)):
     count_result = await db.execute(
         __import__('sqlalchemy').select(__import__('sqlalchemy').func.count()).select_from(__import__('src.models.event', fromlist=['EventRegistration']).EventRegistration).where(
             __import__('src.models.event', fromlist=['EventRegistration']).EventRegistration.event_id == event.id,
-            __import__('src.models.event', fromlist=['EventRegistration']).EventRegistration.status == "已报名"
+            __import__('src.models.event', fromlist=['EventRegistration']).EventRegistration.status == "已報名"
         )
     )
     reg_count = count_result.scalar() or 0

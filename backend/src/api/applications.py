@@ -61,7 +61,7 @@ UPLOAD_QUAL_DIR = Path("uploads/qualifications")
 
 @router.post("/upload-file", response_model=dict)
 async def upload_qualification_file(file: UploadFile = File(...)):
-    """上传资质文件图片"""
+    """上傳資質文件圖片"""
     UPLOAD_QUAL_DIR.mkdir(parents=True, exist_ok=True)
     ext = os.path.splitext(file.filename or "file.jpg")[1] or ".jpg"
     filename = f"{uuid.uuid4().hex}{ext}"
@@ -75,7 +75,7 @@ async def check_duplicate(
     id_number: str | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
 ):
-    """检查用户名或身份证号是否已被占用（含申请记录和已入會会员）"""
+    """檢查用戶名或身份證號是否已被佔用（含申請記錄和已入會會員）"""
     result = {"username_exists": False, "id_number_exists": False}
 
     if username:
@@ -153,9 +153,9 @@ async def screening(app_id: str, body: ScreeningRequest, db: AsyncSession = Depe
 async def final_review(app_id: str, body: FinalReviewRequest, user: dict = Depends(require_role("root")), db: AsyncSession = Depends(get_db)):
     app_svc = ApplicationService(db)
     app = await app_svc.get_application(uuid.UUID(app_id))
-    new_status = "终審通过" if body.result == "pass" else "终審不通过"
+    new_status = "終審通過" if body.result == "pass" else "終審不通過"
     await app_svc.transition_status(app.id, new_status, {"final_review_result": body.comment})
-    if new_status == "终審通过":
+    if new_status == "終審通過":
         if app.member_id:
             from ..models.member import Member as M
             member_result = await db.execute(select(M).where(M.id == app.member_id))
@@ -167,7 +167,7 @@ async def final_review(app_id: str, body: FinalReviewRequest, user: dict = Depen
                 member.real_name = app.applicant_name
                 if tier_changed:
                     member.tier = app.requested_tier
-                    member.annual_fee = {"普通会员": 500, "高级会员": 1000}.get(app.requested_tier, member.annual_fee)
+                    member.annual_fee = {"普通會員": 500, "高級會員": 1000}.get(app.requested_tier, member.annual_fee)
                     member.updated_at = datetime.now(timezone.utc)
                     await db.flush()
                     await app_svc.transition_status(app.id, "待繳費")

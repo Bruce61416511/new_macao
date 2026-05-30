@@ -9,11 +9,11 @@ from ..ai.rag_pipeline import RAGPipeline
 from ..ai.deepseek_client import chat_stream
 from ..core.cache import cache_get, cache_set
 
-SENSITIVE_KEYWORDS = ["政治", "政府", "抗议", "示威"]
+SENSITIVE_KEYWORDS = ["政治", "政府", "抗議", "示威"]
 
 
 class ChatService:
-    """AI客服服务：FAQ→RAG→DeepSeek 三级管道"""
+    """AI客服服務：FAQ→RAG→DeepSeek 三級管道"""
 
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -26,12 +26,12 @@ class ChatService:
         return False
 
     async def answer(self, message: str, history: List[dict] | None = None) -> AsyncGenerator[str, None]:
-        # Stage 0: 政敏过滤
+        # Stage 0: 政敏過濾
         if self._filter_sensitive(message):
-            yield json.dumps({"type": "error", "content": "抱歉，该问题不在我的服务范围内，请咨询人工客服。"}, ensure_ascii=False)
+            yield json.dumps({"type": "error", "content": "抱歉，該問題不在我的服務範圍內，請諮詢人工客服。"}, ensure_ascii=False)
             return
 
-        # Stage 1: 精确FAQ匹配
+        # Stage 1: 精確FAQ匹配
         cache_key = f"faq:{message.strip()}"
         cached = await cache_get(cache_key)
         if cached:
@@ -55,23 +55,23 @@ class ChatService:
             return
 
         # Stage 3: Fallback
-        yield json.dumps({"type": "chunk", "content": "抱歉，我暂时无法回答这个问题。请输入「人工」转接人工客服。"}, ensure_ascii=False)
+        yield json.dumps({"type": "chunk", "content": "抱歉，我暫時無法回答這個問題。請輸入「人工」轉接人工客服。"}, ensure_ascii=False)
         yield json.dumps({"type": "done", "source": "fallback"}, ensure_ascii=False)
 
     async def chat_stream_response(self, message: str) -> AsyncGenerator[str, None]:
-        """SSE流式调用DeepSeek"""
+        """SSE流式調用DeepSeek"""
         if self._filter_sensitive(message):
-            yield f"data: {json.dumps({'type': 'error', 'content': '抱歉，该问题不在我的服务范围内。'}, ensure_ascii=False)}\n\n"
+            yield f"data: {json.dumps({'type': 'error', 'content': '抱歉，該問題不在我的服務範圍內。'}, ensure_ascii=False)}\n\n"
             yield "data: [DONE]\n\n"
             return
 
         messages = [
-            {"role": "system", "content": "你是小扬同学，澳门直播协会的AI助手。请用简体中文回答，语气友好专业。"},
+            {"role": "system", "content": "你是小揚同學，澳門直播協會的AI助手。請用簡體中文回答，語氣友好專業。"},
             {"role": "user", "content": message}
         ]
         try:
             async for chunk in chat_stream(messages):
                 yield f"data: {json.dumps({'type': 'chunk', 'content': chunk}, ensure_ascii=False)}\n\n"
         except Exception:
-            yield f"data: {json.dumps({'type': 'error', 'content': 'AI服务暂时不可用'}, ensure_ascii=False)}\n\n"
+            yield f"data: {json.dumps({'type': 'error', 'content': 'AI服務暫時不可用'}, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"

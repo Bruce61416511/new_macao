@@ -1,4 +1,4 @@
-﻿const API_BASE = "/v1";
+const API_BASE = "/v1";
 
 function getToken() {
   return sessionStorage.getItem("token");
@@ -20,13 +20,13 @@ async function request(path, options = {}) {
   if (res.status === 401) {
     setToken(null);
     window.location.href = "/login";
-    throw new Error("未登录");
+    throw new Error("未登錄");
   }
   const data = await res.json().catch(() => null);
   if (!res.ok) {
     const detail = data?.detail;
     const msg = typeof detail === "object" && detail !== null ? detail.message || JSON.stringify(detail) : detail;
-    throw new Error(msg || `请求失败 (${res.status})`);
+    throw new Error(msg || `請求失敗 (${res.status})`);
   }
   return data;
 }
@@ -83,12 +83,12 @@ export async function uploadQualificationFile(file) {
       const uploadMsg = typeof uploadDetail === "object" && uploadDetail !== null
         ? uploadDetail.message || JSON.stringify(uploadDetail)
         : uploadDetail;
-      throw new Error(uploadMsg || "上传失败");
+      throw new Error(uploadMsg || "上傳失敗");
     }
     return res.json();
   } catch (err) {
     if (err && err.name === "AbortError") {
-      throw new Error("上传超时，请检查网络后重试");
+      throw new Error("上傳逾時，請檢查網絡後重試");
     }
     throw err;
   } finally {
