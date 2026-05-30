@@ -1,16 +1,17 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getMyProfile } from "../services/api.js";
 import UpdateProfileModal from "./UpdateProfileModal.jsx";
 import ProfileViewModal from "./ProfileViewModal.jsx";
 import BenefitsModal from "./BenefitsModal.jsx";
 import { useAuth } from "../contexts/AuthContext";
-﻿const sidebarItems = [
+import NotificationModal from "./NotificationModal.jsx";
+const sidebarItems = [
   { label: '会员中心', active: true, icon: HomeIcon },
   { label: '资料中心', icon: FolderIcon },
   { label: '我的权益', icon: ShieldIcon },
   { label: '协会活动', icon: CalendarIcon },
   { label: '培训课程', icon: BookIcon },
-  { label: '消息通知', badge: 3, icon: BellIcon },
+  { label: '消息通知', badge: null, icon: BellIcon },
   { label: '我的收藏', icon: BookmarkIcon },
   { label: '设置中心', icon: GearIcon },
   { label: '会员终审', icon: CheckBadgeIcon, adminOnly: true },
@@ -207,7 +208,7 @@ function OutlineIcon({ children, className = 'h-6 w-6' }) {
   );
 }
 
-function MemberSidebar({ onViewProfile, onShowBenefits }) {
+function MemberSidebar({ onViewProfile, onShowBenefits, unreadCount, onOpenNotifications }) {
   const { user } = useAuth();
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] flex-col overflow-hidden bg-[linear-gradient(180deg,#00463d_0%,#005548_45%,#003f37_100%)] px-3 py-8 text-white shadow-[12px_0_30px_rgba(0,45,40,0.2)]">
@@ -223,6 +224,7 @@ function MemberSidebar({ onViewProfile, onShowBenefits }) {
       <nav className="mt-9 space-y-2">
         {sidebarItems.filter(item => !item.adminOnly || (user?.role === 'root')).map((item) => {
           const Icon = item.icon;
+          const badge = item.label === '消息通知' ? unreadCount : item.badge;
           return (
             <button
               className={[
@@ -231,11 +233,11 @@ function MemberSidebar({ onViewProfile, onShowBenefits }) {
               ].join(' ')}
               key={item.label}
               type="button"
-              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : item.label === "会员终审" ? () => window.location.href = "/admin/final-review" : item.label === "缴费审批" ? () => window.location.href = "/admin/payment-approval" : item.label === "会员管理" ? () => window.location.href = "/admin/members" : item.label === "我的权益" ? () => onShowBenefits() : undefined}
+              onClick={item.label === "资料中心" ? onViewProfile : item.label === "协会活动" ? () => window.location.href = "/events" : item.label === "会员终审" ? () => window.location.href = "/admin/final-review" : item.label === "缴费审批" ? () => window.location.href = "/admin/payment-approval" : item.label === "会员管理" ? () => window.location.href = "/admin/members" : item.label === "消息通知" ? () => onOpenNotifications() : item.label === "我的权益" ? () => onShowBenefits() : undefined}
             >
               <Icon />
               <span className="flex-1 text-left">{item.label}</span>
-              {item.badge ? <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[#ef513f] px-1 text-[11px] text-white">{item.badge}</span> : null}
+              {badge != null && badge !== false ? <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[#ef513f] px-1 text-[11px] text-white">{badge}</span> : null}
             </button>
           );
         })}
@@ -589,10 +591,17 @@ export default function MemberPage() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     getMyProfile().then(data => setProfile(data.member)).catch(() => {});
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      fetch("/v1/notifications", { headers: { Authorization: "Bearer " + token } })
+        .then(r => r.json()).then(d => setUnreadCount(d.unread_count || 0)).catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -607,7 +616,7 @@ export default function MemberPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fbf9] bg-[radial-gradient(circle_at_80%_0%,rgba(224,241,238,0.55),transparent_36%)] pl-[240px] text-[#004f46]">
-      <MemberSidebar onViewProfile={() => setShowProfileModal(true)} onShowBenefits={() => setShowBenefits(true)} />
+      <MemberSidebar onViewProfile={() => setShowProfileModal(true)} onShowBenefits={() => setShowBenefits(true)} unreadCount={unreadCount} onOpenNotifications={() => setShowNotifications(true)} />
       <MemberTopBar
         profile={profile}
         dropdownOpen={dropdownOpen}
@@ -637,6 +646,9 @@ export default function MemberPage() {
       )}
       {showBenefits && (
         <BenefitsModal tier={profile?.tier} onClose={() => setShowBenefits(false)} />
+      )}
+      {showNotifications && (
+        <NotificationModal onClose={() => { setShowNotifications(false); }} />
       )}
       {showUpdateModal && (
         <UpdateProfileModal

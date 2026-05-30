@@ -54,3 +54,14 @@ async def mark_all_read(user: dict = Depends(get_current_user), db: AsyncSession
     )
     await db.flush()
     return {"status": "ok"}
+
+
+
+@router.get("/recipients", response_model=dict)
+async def list_recipients(user: dict = Depends(require_role("root")), db: AsyncSession = Depends(get_db)):
+    from ..models.member import Member
+    from sqlalchemy import select
+    result = await db.execute(select(Member).where(Member.is_active == True).order_by(Member.username))
+    members = result.scalars().all()
+    items = [{"id": str(m.id), "username": m.username, "real_name": m.real_name, "tier": m.tier} for m in members]
+    return {"items": items}
