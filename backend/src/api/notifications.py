@@ -45,6 +45,7 @@ async def send_notification(body: NotificationSend, user: dict = Depends(require
 async def mark_all_read(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if user is None:
         raise HTTPException(status_code=401)
+    from ..models.notification import Notification
     from sqlalchemy import update
     import uuid
     await db.execute(

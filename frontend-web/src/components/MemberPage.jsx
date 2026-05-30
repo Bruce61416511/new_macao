@@ -283,10 +283,6 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
             <span>EN</span>
             <span>PT</span>
           </div>
-          <div className="relative">
-            <BellIcon />
-            <span className="absolute -right-2 -top-2 grid h-4 w-4 place-items-center rounded-full bg-[#ef513f] text-[10px] font-bold text-white">3</span>
-          </div>
           <div className="relative" ref={dropdownRef}>
             <button
               className="flex items-center gap-3 cursor-pointer"

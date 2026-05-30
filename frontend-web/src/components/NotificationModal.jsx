@@ -49,9 +49,12 @@ export default function NotificationModal({ onClose, onReadCount }) {
 
   async function markAllRead() {
     try {
-      await fetch("/v1/notifications/read-all", { method: "POST", headers: authHeaders });
+      const res = await fetch("/v1/notifications/read-all", { method: "POST", headers: authHeaders });
+      if (!res.ok) throw new Error("FAIL");
       fetchNotifications();
-    } catch (e) {}
+    } catch (e) {
+      setSendMsg('标记失败，请重试');
+    }
   }
 
   function toggleMember(id) {
