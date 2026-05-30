@@ -277,8 +277,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
             權威認證 · 值得信賴
           </div>
           <div className="flex items-center gap-5 text-[14px] font-semibold">
-            <span className="rounded-full bg-[#006252] px-4 py-2 text-white">簡體</span>
-            <span>繁體</span>
+            <span className="rounded-full bg-[#006252] px-4 py-2 text-white">繁體</span>
             <span>EN</span>
             <span>PT</span>
           </div>

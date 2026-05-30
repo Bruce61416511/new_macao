@@ -8,7 +8,7 @@ const menuItems = [
   '幫助中心',
 ];
 
-const languages = ['繁中', '簡中', 'Português', 'EN'];
+const languages = ['繁中', 'Português', 'EN'];
 
 function LogoPlaceholder() {
   return (
@@ -50,7 +50,7 @@ function LanguageSwitch() {
           <button
             className={[
               'px-[9px] transition-colors hover:text-[#004f46]',
-              language === '簡中' ? 'font-semibold text-[#005d50]' : '',
+              language === '繁中' ? 'font-semibold text-[#005d50]' : '',
             ].join(' ')}
             type="button"
           >
