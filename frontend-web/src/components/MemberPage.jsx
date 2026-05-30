@@ -462,12 +462,12 @@ function RecentUpdates({ items, onViewAll }) {
 function AssistantMini() {
   return (
     <section className="rounded-[12px] border border-[#dbe6e4] bg-white/82 p-5 text-center shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
-      <h2 className="text-left text-[18px] font-bold text-[#004f46]">智能小荷 · 您的會員助手</h2>
+      <h2 className="text-left text-[18px] font-bold text-[#004f46]">小揚同學 · 您的會員助手</h2>
       <div className="mx-auto mt-5 grid h-[140px] w-[140px] place-items-center rounded-full bg-[#dff3ef] shadow-[inset_0_0_30px_rgba(0,98,82,0.16)]">
         <LotusLogo className="h-[90px] w-[90px] text-white drop-shadow-[0_8px_16px_rgba(0,98,82,0.22)]" />
       </div>
       <div className="mx-auto mt-3 w-fit rounded-[10px] bg-[#eef7f5] px-5 py-3 text-[13px] font-medium text-[#476468]">我可以幫你整理續費材料或報名活動</div>
-      <button className="mt-4 rounded-full border border-[#006252] px-8 py-2 text-[14px] font-bold text-[#006252]" type="button">立即諮詢</button>
+      <button className="mt-4 rounded-full border border-[#006252] px-8 py-2 text-[14px] font-bold text-[#006252] hover:bg-[#006252] hover:text-white transition" type="button" onClick={() => { window.location.href = "/"; }}>立即諮詢</button>
     </section>
   );
 }

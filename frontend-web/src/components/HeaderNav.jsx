@@ -1,3 +1,6 @@
+﻿import { useState, useEffect, useRef } from "react";
+import { useAuth } from "../contexts/AuthContext.jsx";
+
 const menuItems = [
   '首頁',
   '協會介紹',
@@ -42,6 +45,40 @@ function NavLink({ children, active = false, href = "#" }) {
   );
 }
 
+
+function UserMenu() {
+  const { user, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClick(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  if (!user) return null;
+
+  return (
+    <div className="relative ml-4" ref={ref}>
+      <button
+        className="flex items-center gap-2 cursor-pointer"
+        onClick={() => setOpen(!open)}
+        type="button"
+      >
+        <div className="h-9 w-9 rounded-full bg-[url('/lotus-assistant.png')] bg-cover bg-center" />
+        <span className="text-[13.5px] font-semibold text-[#555f68]">{user.username || "小揚同學"}</span>
+        <svg className="h-3 w-3 text-[#8b9298]" fill="none" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeWidth="2" /></svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-[200px] rounded-[10px] border border-[#dde7e5] bg-white p-3 shadow-[0_14px_30px_rgba(35,70,74,0.16)] text-[#1b292b]">
+          <a className="block rounded-[6px] px-3 py-2 text-[13px] font-semibold hover:bg-[#eef7f5] transition" href="/member">會員中心</a>
+          <button className="mt-1 w-full rounded-[6px] px-3 py-2 text-left text-[13px] font-semibold text-[#c53030] hover:bg-[#fef0f0] transition" onClick={logout} type="button">登出</button>
+        </div>
+      )}
+    </div>
+  );
+}
 function LanguageSwitch() {
   return (
     <div className="ml-auto flex h-full items-center whitespace-nowrap text-[13.5px] font-semibold leading-none tracking-normal text-[#555f68]">
@@ -97,6 +134,7 @@ export default function HeaderNav() {
 
           <div className="hidden h-full flex-1 items-center xl:flex">
             <LanguageSwitch />
+            <UserMenu />
           </div>
 
           <button
