@@ -422,7 +422,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
     </section>
   );
 }
-function RecentUpdates({ items }) {
+function RecentUpdates({ items, onViewAll }) {
   const FEED_ICONS = {
     event: CalendarIcon,
     payment: CardIcon,
@@ -433,7 +433,7 @@ function RecentUpdates({ items }) {
     <section className="rounded-[12px] border border-[#dbe6e4] bg-white/82 p-4 shadow-[0_10px_24px_rgba(42,72,76,0.12)] backdrop-blur-xl">
       <div className="flex items-center justify-between px-1">
         <h2 className="text-[18px] font-bold text-[#004f46]">近期動態</h2>
-        <a className="text-[13px] font-semibold text-[#647477]" href="#">查看全部 ›</a>
+        <a className="text-[13px] font-semibold text-[#647477] cursor-pointer" onClick={onViewAll}>查看全部 ›</a>
       </div>
       <div className="mt-3 overflow-hidden rounded-[9px] border border-[#dce6e4] bg-white/70">
         {items.length === 0 ? (
@@ -556,6 +556,57 @@ function Recommendations({ events }) {
   );
 }
 
+function FeedAllModal({ items, onClose }) {
+  const FEED_ICONS = {
+    event: CalendarIcon,
+    payment: CardIcon,
+    announcement: BellIcon,
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="w-full max-w-[1000px] max-h-[90vh] rounded-[14px] border border-[#d4e8e3] bg-white shadow-[0_20px_60px_rgba(0,45,40,0.3)] flex flex-col">
+        <div className="flex items-center justify-between border-b border-[#e5eceb] px-6 py-4">
+          <h2 className="text-[18px] font-bold text-[#004f46]">近期動態</h2>
+          <button className="grid h-9 w-9 place-items-center rounded-full text-[#6a7679] transition hover:bg-[#f0f4f3]" onClick={onClose} type="button">
+            <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeLinecap="round" strokeWidth="2" /></svg>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+          {items.length === 0 ? (
+            <p className="text-center text-[14px] text-[#8ba09c] py-8">暫無動態</p>
+          ) : (
+            items.map(function(item) {
+              var Icon = FEED_ICONS[item.type] || FileTextIcon;
+              var displayDate = item.date ? new Date(item.date).toLocaleDateString("zh-CN") : "";
+              var displayTime = item.date ? new Date(item.date).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }) : "";
+              return (
+                <div className="flex items-start gap-4 rounded-[9px] border border-[#dce6e4] bg-[#f8fbfb] p-4" key={item.title + item.date}>
+                  <span className={"grid h-10 w-10 shrink-0 place-items-center rounded-[9px] " + (item.type === "payment" ? "text-[#ad7b00] bg-[#fff8e9]" : "text-[#006252] bg-[#eef7f5]")}>
+                    <Icon />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-bold text-[#203335]">{item.title}</p>
+                    <p className="mt-1 text-[12px] text-[#6d7c7f]">{item.description}</p>
+                  </div>
+                  <span className="shrink-0 text-[12px] text-[#7d8a8d] text-right">
+                    <span>{displayDate}</span>
+                    <br />
+                    <span>{displayTime}</span>
+                  </span>
+                </div>
+              );
+            })
+          )}
+        </div>
+        <div className="border-t border-[#e5eceb] px-6 py-3">
+          <button className="w-full rounded-[8px] bg-[#eef7f5] py-2.5 text-[14px] font-semibold text-[#006252] transition hover:bg-[#dff3ef]" onClick={onClose} type="button">關閉</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 function ContactCard() {
   const contacts = [
     { text: '(853) 2872 1234', icon: PhoneIcon },
@@ -599,6 +650,8 @@ export default function MemberPage() {
   const [showBenefits, setShowBenefits] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [feedItems, setFeedItems] = useState([]);
+  const [showFeedAll, setShowFeedAll] = useState(false);
+  const [allFeedItems, setAllFeedItems] = useState([]);
 
   const [upcomingEvents, setUpcomingEvents] = useState([]);  const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -645,7 +698,7 @@ export default function MemberPage() {
         <div className="mt-4 grid grid-cols-[1fr_380px] items-stretch gap-4">
           <div className="flex h-full flex-col gap-4">
             <div className="grid grid-cols-[1fr_344px] gap-4">
-              <RecentUpdates items={feedItems} />
+              <RecentUpdates items={feedItems} onViewAll={function() { fetch("/v1/members/me/feed?limit=50", { headers: { Authorization: "Bearer " + sessionStorage.getItem("token") } }).then(function(r) { return r.json(); }).then(function(d) { setAllFeedItems(d.items || []); setShowFeedAll(true); }).catch(function() {}); }} />
               <AssistantMini />
             </div>
             <Recommendations events={upcomingEvents}  />
@@ -675,6 +728,9 @@ export default function MemberPage() {
           onClose={() => setShowUpdateModal(false)}
           onSaved={(updated) => setProfile(updated)}
         />
+      )}
+      {showFeedAll && (
+        <FeedAllModal items={allFeedItems} onClose={function() { setShowFeedAll(false); }} />
       )}
     </main>
   );

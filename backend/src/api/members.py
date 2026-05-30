@@ -37,8 +37,8 @@ from ..services.announcement_service import AnnouncementService
 
 
 @router.get("/me/feed", response_model=dict)
-async def get_my_feed(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    """聚合近期動態：已報名活動 + 繳費提醒 + 公告資訊，取最近 4 條"""
+async def get_my_feed(limit: int = Query(default=4, ge=1), user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """聚合近期動態：已報名活動 + 繳費提醒 + 公告資訊，取最近 N 條"""
     if user is None:
         raise HTTPException(status_code=401, detail="請先登錄")
     
@@ -86,7 +86,7 @@ async def get_my_feed(user: dict = Depends(get_current_user), db: AsyncSession =
     # 3. 公告資訊
     ann_svc = AnnouncementService(db)
     try:
-        anns = await ann_svc.list_announcements(page=1, page_size=4)
+        anns = await ann_svc.list_announcements(page=1, page_size=50)
         for ann in (anns.get("items") or []):
             if not ann.get("published", True):
                 continue
@@ -100,9 +100,9 @@ async def get_my_feed(user: dict = Depends(get_current_user), db: AsyncSession =
     except Exception:
         pass
 
-    # 按日期倒序，取前 4 条
+    # 按日期倒序，取前 N 条（若提供 limit）
     feed_items.sort(key=lambda x: x.get("date", ""), reverse=True)
-    feed_items = feed_items[:4]
+    feed_items = feed_items[:limit]
 
     return {"items": feed_items}
 @router.get("/me", response_model=dict)
