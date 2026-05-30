@@ -3,6 +3,7 @@ import { getMyProfile } from "../services/api.js";
 import UpdateProfileModal from "./UpdateProfileModal.jsx";
 import ProfileViewModal from "./ProfileViewModal.jsx";
 import BenefitsModal from "./BenefitsModal.jsx";
+import PaymentModal from "./PaymentModal.jsx";
 import { useAuth } from "../contexts/AuthContext";
 import NotificationModal from "./NotificationModal.jsx";
 const sidebarItems = [
@@ -339,7 +340,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
       </header>
     );
   }
-  function MemberHero({ profile, onUpdateProfile }) {
+  function MemberHero({ profile, onUpdateProfile, onPayment }) {
   const { user } = useAuth();
   const memberNo = profile?.id ? `MMA-${profile.id.replace(/-/g, "").slice(-8).toUpperCase()}` : "加載中...";
   const yearEnd = `${new Date().getFullYear()}-12-31`;
@@ -417,7 +418,7 @@ function MemberTopBar({ profile, dropdownOpen, setDropdownOpen, dropdownRef, onL
           {actions.map((action) => {
             const Icon = action.icon;
             return (
-              <button className="flex h-[40px] items-center justify-between rounded-[6px] bg-white px-4 text-[14px] font-bold text-[#004f46] shadow-[0_4px_10px_rgba(0,28,25,0.12)]" key={action.label} type="button" onClick={action.label === "更新資料" ? onUpdateProfile : action.onClick}>
+              <button className="flex h-[40px] items-center justify-between rounded-[6px] bg-white px-4 text-[14px] font-bold text-[#004f46] shadow-[0_4px_10px_rgba(0,28,25,0.12)]" key={action.label} type="button" onClick={action.label === "更新資料" ? onUpdateProfile : action.label === "續費" ? onPayment : action.onClick}>
                 <span className="flex items-center gap-2">
                   <span className="grid h-7 w-7 place-items-center rounded-[6px] text-[#006252] bg-[#eef7f5]"><Icon /></span>
                   {action.label}
@@ -584,6 +585,7 @@ export default function MemberPage() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
@@ -618,7 +620,7 @@ export default function MemberPage() {
         onLogout={logout}
       />
       <div className="w-full px-3 pb-8">
-        <MemberHero profile={profile} onUpdateProfile={() => setShowUpdateModal(true)} />
+        <MemberHero profile={profile} onUpdateProfile={() => setShowUpdateModal(true)} onPayment={() => setShowPayment(true)} />
         <div className="mt-4 grid grid-cols-[1fr_380px] items-stretch gap-4">
           <div className="flex h-full flex-col gap-4">
             <div className="grid grid-cols-[1fr_344px] gap-4">
@@ -642,6 +644,9 @@ export default function MemberPage() {
       )}
       {showNotifications && (
         <NotificationModal onClose={() => { setShowNotifications(false); }} />
+      )}
+      {showPayment && (
+        <PaymentModal profile={profile} onClose={() => setShowPayment(false)} />
       )}
       {showUpdateModal && (
         <UpdateProfileModal

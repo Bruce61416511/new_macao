@@ -15,15 +15,15 @@ class ApplicationService:
 
     VALID_TRANSITIONS = {
         "待審核": ["初審通過", "初審不通過"],
-        "初審通過": ["縈審通過", "縈審不通過"],
-        "縈審通過": ["待繳費"],
+        "初審通過": ["終審通過", "終審不通過"],
+        "終審通過": ["待繳費"],
         "待繳費": ["已繳費", "已過期"],
         "已繳費": ["已入會", "待繳費"],
         "初審不通過": ["待審核"],
-        "縈審不通過": ["待審核"],
+        "終審不通過": ["待審核"],
     }
 
-    RESUBMIT_COOLDOWN = {"初審不通過": timedelta(0), "縈審不通過": timedelta(days=30)}
+    RESUBMIT_COOLDOWN = {"初審不通過": timedelta(0), "終審不通過": timedelta(days=30)}
 
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -125,7 +125,7 @@ class ApplicationService:
     async def resubmit(self, app_id: uuid.UUID, updated_data: dict) -> Application:
         """駁回重申請：檢查冷卻期，保留原數據，修改後重新提交"""
         old_app = await self.get_application(app_id)
-        if old_app.status not in ("初審不通過", "縈審不通過"):
+        if old_app.status not in ("初審不通過", "終審不通過"):
             raise HTTPException(status_code=400, detail={"error": "not_rejected", "message": "只有被駁回的申請才能重申請"})
 
         cooldown = self.RESUBMIT_COOLDOWN.get(old_app.status, timedelta(0))
