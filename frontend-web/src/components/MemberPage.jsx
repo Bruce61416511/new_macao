@@ -10,7 +10,6 @@ const sidebarItems = [
   { label: '資料中心', icon: FolderIcon },
   { label: '我的權益', icon: ShieldIcon },
   { label: '協會活動', icon: CalendarIcon },
-  { label: '培訓課程', icon: BookIcon },
   { label: '消息通知', badge: null, icon: BellIcon },
   { label: '會員終審', icon: CheckBadgeIcon, adminOnly: true },
   { label: '繳費審批', icon: CardIcon, adminOnly: true },
@@ -43,8 +42,8 @@ const services = [
 
 const recommendations = [
   { tag: '活動', title: '跨境電商交流會', date: '2025-06-05 14:30', image: '/activity-card-1.webp' },
-  { tag: '培訓', title: '財稅合規實務培訓', date: '2025-06-10 09:30', image: '/activity-card-2.webp' },
   { tag: '活動', title: '會員交流晚宴', date: '2025-06-18 18:30', image: '/activity-card-3.webp' },
+  { tag: '培訓', title: '財稅合規實務培訓', date: '2025-06-10 09:30', image: '/activity-card-2.webp' },
   { tag: '培訓', title: 'AI商業應用工作坊', date: '2025-06-25 14:00', image: '/activity-card-4.webp' },
 ];
 
