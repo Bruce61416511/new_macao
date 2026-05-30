@@ -12,8 +12,6 @@ const sidebarItems = [
   { label: '协会活动', icon: CalendarIcon },
   { label: '培训课程', icon: BookIcon },
   { label: '消息通知', badge: null, icon: BellIcon },
-  { label: '我的收藏', icon: BookmarkIcon },
-  { label: '设置中心', icon: GearIcon },
   { label: '会员终审', icon: CheckBadgeIcon, adminOnly: true },
   { label: '缴费审批', icon: CardIcon, adminOnly: true },
   { label: '会员管理', icon: UsersIcon, adminOnly: true },
