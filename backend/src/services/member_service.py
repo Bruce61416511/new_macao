@@ -79,7 +79,21 @@ class MemberService:
     async def force_delete(self, member_id) -> dict:
         member = await self.get_by_id(member_id)
         if not member:
+            from ..models.application import Application
+            from sqlalchemy import select as sa_select
+            r = await self.db.execute(sa_select(Application).where(Application.member_id == member_id))
+            app = r.scalar_one_or_none()
+            if app:
+                await self.db.delete(app)
+                await self.db.flush()
+                return {"id": str(member_id), "status": "已删除", "note": "仅删除了关联申请记录"}
             return {"error": "not_found"}
+        from ..models.application import Application
+        from sqlalchemy import select as sa_select
+        r = await self.db.execute(sa_select(Application).where(Application.member_id == member.id))
+        app = r.scalar_one_or_none()
+        if app:
+            await self.db.delete(app)
         await self.db.delete(member)
         self._audit_log("force_delete", member_id, {})
         await self.db.flush()

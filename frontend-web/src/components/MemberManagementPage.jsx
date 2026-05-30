@@ -74,13 +74,15 @@ export default function MemberManagementPage() {
   async function handleDelete(userId) {
     const user = users.find(u => u.id === userId);
     const memberId = user?.member_id;
-    if (!memberId) {
-      setMsg("该用户没有会员记录，无法删除");
-      return;
+    let deleteUrl;
+    if (memberId) {
+      deleteUrl = `/v1/admin/members/${memberId}`;
+    } else {
+      deleteUrl = `/v1/admin/members/applications/${userId}`;
     }
-    if (!confirm("确认删除该会员？此操作不可恢复。")) return;
+    if (!confirm("????????????????")) return;
     try {
-      const res = await fetch(`/v1/admin/members/${memberId}`, { method: "DELETE", headers: authHeaders });
+      const res = await fetch(deleteUrl, { method: "DELETE", headers: authHeaders });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
         throw new Error(d.detail || "删除失败");

@@ -236,9 +236,21 @@ async def admin_delete_member(
     svc = MemberService(db)
     result = await svc.force_delete(uuid.UUID(member_id))
     if result.get("error"):
-        raise HTTPException(status_code=404, detail="会员不存在")
+        raise HTTPException(status_code=404, detail="\u4f1a\u5458\u4e0d\u5b58\u5728")
     return result
 
+
+@router_admin.delete("/applications/{app_id}", response_model=dict)
+async def admin_delete_application(
+    app_id: str,
+    user: dict = Depends(require_role("root")),
+    db: AsyncSession = Depends(get_db)
+):
+    app_svc = ApplicationService(db)
+    app = await app_svc.get_application(uuid.UUID(app_id))
+    await db.delete(app)
+    await db.flush()
+    return {"id": app_id, "status": "\u5df2\u5220\u9664"}
 
 @router_admin.get("/applications", response_model=dict)
 async def admin_list_applications(
