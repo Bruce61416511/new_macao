@@ -1,4 +1,6 @@
-﻿
+
+import { useState } from "react";
+
 function ChatIcon({ className = 'h-6 w-6' }) {
   return (
     <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
@@ -94,6 +96,20 @@ function AvatarBadge({ large = false }) {
 }
 
 export default function AssistantPanel() {
+  const [input, setInput] = useState("");
+  const [sent, setSent] = useState(false);
+
+  function handleSend() {
+    if (!input.trim()) return;
+    setSent(true);
+    setInput("");
+    setTimeout(() => setSent(false), 2000);
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === "Enter") handleSend();
+  }
+
   return (
     <section className="mx-auto mt-[12px] flex max-w-[1196px] overflow-hidden rounded-[10px] border border-white/70 bg-white/72 text-[#064f47] shadow-[0_18px_38px_rgba(38,74,78,0.18)] backdrop-blur-xl">
       <aside className="hidden w-[244px] shrink-0 border-r border-white/55 bg-white/58 px-[20px] py-[25px] backdrop-blur-xl md:block">
@@ -122,47 +138,35 @@ export default function AssistantPanel() {
       </aside>
 
       <div className="min-h-[438px] flex-1 bg-white/28 px-[44px] py-[29px] backdrop-blur-xl">
-        <div className="flex justify-end">
-          <div className="flex items-center gap-[22px]">
-            <div className="relative rounded-[8px] bg-[#e7f2ef] px-[24px] py-[16px] text-[18px] font-semibold leading-none tracking-normal text-[#004f46]">
-              <span className="absolute right-[-7px] top-1/2 h-4 w-4 -translate-y-1/2 rotate-45 bg-[#e7f2ef]" />
-              <span className="relative">
-              我是 MCN 負責人，想了解如何入會
-              </span>
-            </div>
-            <div className="grid h-[60px] w-[60px] place-items-center rounded-full bg-gradient-to-br from-[#12816f] to-[#006252] text-white shadow-[0_8px_16px_rgba(0,93,80,0.22)]">
-              <UserIcon className="h-[34px] w-[34px]" />
-            </div>
-          </div>
-        </div>
+
 
         <div className="mt-[22px] flex items-start gap-[22px]">
           <AvatarBadge />
           <div className="relative rounded-[9px] border border-[#d9e2e1] bg-white px-[29px] py-[22px] shadow-[0_4px_10px_rgba(18,45,46,0.08)]">
             <span className="absolute left-[-9px] top-[18px] h-4 w-4 rotate-45 border-b border-l border-[#d9e2e1] bg-white" />
-            <p className="relative text-[18px] font-medium leading-none text-[#1d2f31]">我先確認兩點：你是個人申請還是機構申請？</p>
+            <p className="relative text-[18px] font-medium leading-none text-[#1d2f31]">你好！我是小揚同學，澳門直播協會的 AI 助理。我可以協助你了解入會流程、會員權益，或者解答任何關於協會的問題。請問有什麼可以幫到你？</p>
             <p className="relative mt-5 text-[13px] font-medium leading-none text-[#9aa3a6]">10:24</p>
           </div>
         </div>
 
-        <div className="mt-[26px] flex justify-center gap-2">
-          <button className="flex h-[54px] w-[136px] items-center justify-center gap-3 rounded-full border border-[#3c9b8e] bg-white text-[17px] font-semibold text-[#005d50]" type="button">
-            <UserIcon className="h-[25px] w-[25px]" />
-            個人
-          </button>
-          <button className="flex h-[54px] w-[164px] items-center justify-center gap-3 rounded-full border border-[#3c9b8e] bg-white text-[17px] font-semibold text-[#005d50]" type="button">
-            <BuildingIcon className="h-[27px] w-[27px]" />
-            機構
-          </button>
-        </div>
+
 
         <div className="mx-auto mt-[29px] flex h-[88px] max-w-[862px] items-center rounded-[14px] border border-[#d9e2e1] bg-white px-[33px] shadow-[0_4px_12px_rgba(32,61,65,0.08)]">
-          <span className="flex-1 text-[16px] font-medium text-[#9aa3a6]">請輸入你的問題...</span>
-          <button className="grid h-[47px] w-[47px] place-items-center rounded-full bg-gradient-to-br from-[#118370] to-[#006252] text-white shadow-[0_7px_14px_rgba(0,93,80,0.22)]" type="button" aria-label="發送">
+          <input
+            className="flex-1 text-[16px] font-medium text-[#1b292b] placeholder:text-[#9aa3a6] bg-transparent outline-none"
+            placeholder="請輸入你的問題..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <button onClick={handleSend} className="grid h-[47px] w-[47px] place-items-center rounded-full bg-gradient-to-br from-[#118370] to-[#006252] text-white shadow-[0_7px_14px_rgba(0,93,80,0.22)] hover:shadow-[0_9px_18px_rgba(0,93,80,0.3)] transition-shadow" type="button" aria-label="發送">
             <SendIcon />
           </button>
         </div>
 
+        {sent && (
+          <p className="mt-3 text-center text-[14px] font-medium text-[#006252]">✓ 已發送，小揚同學正在回覆中...</p>
+        )}
         <p className="mt-[13px] flex items-center justify-center gap-2 text-[12px] font-medium text-[#7c898b]">
           <LockIcon />
           內容由 AI 生成，僅供參考，請以協會官方信息爲準。
