@@ -23,7 +23,7 @@ function LogoPlaceholder() {
   );
 }
 
-function NavLink({ children, active = false }) {
+function NavLink({ children, active = false, href = "#" }) {
   return (
     <a
       className={[
@@ -32,7 +32,7 @@ function NavLink({ children, active = false }) {
           ? 'font-semibold text-[#005d50]'
           : 'font-semibold text-[#555f68] hover:text-[#004f46]',
       ].join(' ')}
-      href="#"
+      href={href}
     >
       {children}
       {active ? (
@@ -64,6 +64,8 @@ function LanguageSwitch() {
 }
 
 export default function HeaderNav() {
+  const currentPath = window.location.pathname;
+
   return (
     <header className="sticky top-0 z-50 w-full">
       <div className="h-[92px] rounded-b-[9px] border border-white/90 bg-white px-[32px] shadow-nav">
@@ -73,11 +75,21 @@ export default function HeaderNav() {
           </div>
 
           <nav className="ml-[68px] hidden h-full items-center xl:flex" aria-label="主導航">
-            {menuItems.map((item, index) => (
-              <NavLink active={index === 0} key={item}>
-                {item}
-              </NavLink>
-            ))}
+            {menuItems.map((item, index) => {
+              const itemHrefs = {
+                '首頁': '/',
+                '協會介紹': '/about',
+                '入會指南': '/guide',
+                '活動日曆': '/calendar',
+              };
+              const itemPath = itemHrefs[item] || "#";
+              const isActive = itemPath !== "#" && currentPath === itemPath;
+              return (
+                <NavLink active={isActive} key={item} href={itemPath}>
+                  {item}
+                </NavLink>
+              );
+            })}
           </nav>
 
           <div className="hidden h-full flex-1 items-center xl:flex">
